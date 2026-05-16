@@ -1,0 +1,63 @@
+/*Dark-mode*/
+body.dark-theme .title-header, .perfil-icon, h1,h2,p {
+    color: var(--color-text-primary);
+}
+
+/*Titulo*/
+.title-header {
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+/*Contenedor principal*/
+.perfil-content {
+    margin-right: 20px;
+    margin-left: 20px;
+    padding: 30px;
+    border-radius: 8px;
+    background-color: var(--color-bg-sidebar);
+    box-shadow: 0 0 10px var(--color-shadow);
+    margin-bottom: 30px;
+}
+
+.perfil-container {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 120px;
+    align-items: stretch; /* Opcional: iguala la altura de los items */
+}
+
+.perfil-item {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    gap: 15px;
+    margin-bottom: 10px;
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+}
+
+.perfil-item span {
+    font-size: 40px;
+    top: 20px;
+}
+.perfil-item h2 {
+    padding: 10px;
+}
+.perfil-info p {
+    height: auto;
+    padding: 8px;
+    text-align: center;
+    font-size: 16px;
+    border-radius: 8px;
+    background: var(--color-border-hr);
+}
+
+@media (max-width:768px) {
+    .perfil-content .perfil-container {
+        flex-direction: column;
+    }
+}

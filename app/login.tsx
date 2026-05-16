@@ -16,7 +16,7 @@ export default function LoginScreen() {
     const handleLogin = () => {
         // Implement login logic here
         console.log('Logging in:', { email, password });
-        router.replace('/'); // Navigate to home after login
+        router.replace('/profile'); // Navigate directly to user profile after login
     };
 
     return (
