@@ -19,6 +19,7 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
   const menuItems = [
     { title: 'Inicio', icon: 'home', route: '/dashboard' },
     { title: 'Mi Perfil', icon: 'person', route: '/profile' },
+    { title: 'Lista de Pacientes', icon: 'people', route: '/lista-pacientes' },
     { title: 'Agendar Cita', icon: 'calendar', route: '/agendar-citas' },
     { title: 'Calendario de Citas', icon: 'calendar', route: '/calendario-citas' },
     { title: 'Historial de Citas', icon: 'receipt', route: '/historial-citas' },

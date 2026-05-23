@@ -15,6 +15,7 @@ export default function DashboardScreen() {
 
     const menuItems = [
         { title: 'Mi Perfil', icon: 'person', route: '/profile', color: '#4A90E2', desc: 'Ver datos personales' },
+        { title: 'Pacientes', icon: 'people', route: '/lista-pacientes', color: '#F39C12', desc: 'Gestionar lista de pacientes' },
         { title: 'Agendar Cita', icon: 'calendar', route: '/agendar-citas', color: '#e83e8c', desc: 'Solicita una nueva consulta' },
         { title: 'Calendario', icon: 'calendar-outline', route: '/calendario-citas', color: '#2E8B57', desc: 'Visualiza tus citas del mes' },
         { title: 'Historial de Citas', icon: 'receipt', route: '/historial-citas', color: '#9B51E0', desc: 'Revisa tus citas pasadas y futuras' },
