@@ -103,21 +103,22 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     header: {
+        alignItems: 'center',
         marginBottom: 24,
         marginTop: 20,
         width: '100%',
         maxWidth: 600,
     },
     title: {
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: 'bold',
-        marginTop: 30,
+        color: '#e83e8c',
         marginBottom: 8,
-        color: '#e83e8c', // Primary pink
     },
     subtitle: {
-        opacity: 0.7,
-        fontSize: 18,
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
     },
     list: {
         gap: 24,

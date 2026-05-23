@@ -1,6 +1,6 @@
+import { SideMenu } from '@/components/SideMenu';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { SideMenu } from '@/components/SideMenu';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -26,7 +26,7 @@ export default function AgendarCitasScreen() {
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <SideMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
             <Stack.Screen options={{ headerShown: false }} />
-            
+
             <View style={styles.topBar}>
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />
@@ -116,10 +116,11 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     header: {
+        alignItems: 'center',
         marginBottom: 32,
     },
     title: {
-        fontSize: 28,
+        fontSize: 32,
         fontWeight: 'bold',
         color: '#e83e8c',
         marginBottom: 8,
@@ -127,6 +128,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 16,
         color: '#555',
+        textAlign: 'center',
     },
     formContainer: {
         backgroundColor: '#FFFFFF',
@@ -143,9 +145,10 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     label: {
-        fontSize: 14,
+        fontSize: 16,
         fontWeight: '600',
         color: '#333',
+        textAlign: 'center',
     },
     input: {
         height: 50,
@@ -156,6 +159,7 @@ const styles = StyleSheet.create({
         borderColor: '#E0E0E0',
         fontSize: 16,
         color: '#333',
+        textAlign: 'center',
     },
     readOnlyInput: {
         backgroundColor: '#F0F0F0',
@@ -176,7 +180,7 @@ const styles = StyleSheet.create({
     },
     buttonText: {
         color: '#FFFFFF',
-        fontSize: 18,
+        fontSize: 20,
         fontWeight: 'bold',
     },
 });

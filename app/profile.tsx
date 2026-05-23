@@ -106,14 +106,15 @@ const styles = StyleSheet.create({
         borderRadius: 50,
     },
     title: {
-        fontSize: 24,
+        fontSize: 28,
         fontWeight: 'bold',
-        color: '#333',
-        marginBottom: 4,
+        color: '#e83e8c',
+        marginBottom: 8,
     },
     subtitle: {
-        fontSize: 14,
-        color: '#888',
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
     },
     profileContainer: {
         backgroundColor: '#FFFFFF',

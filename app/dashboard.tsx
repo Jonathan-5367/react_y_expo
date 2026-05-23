@@ -60,13 +60,12 @@ export default function DashboardScreen() {
                                 }
                             }}>
                                 <View style={[styles.iconContainer, { backgroundColor: item.color }]}>
-                                    <Ionicons name={item.icon as any} size={24} color="#FFF" />
+                                    <Ionicons name={item.icon as any} size={32} color="#FFF" />
                                 </View>
                                 <View style={styles.cardContent}>
                                     <ThemedText type="subtitle" style={styles.cardTitle}>{item.title}</ThemedText>
                                     <ThemedText style={styles.cardDesc}>{item.desc}</ThemedText>
                                 </View>
-                                <Ionicons name="chevron-forward" size={24} color="#ccc" />
                             </TouchableOpacity>
                         ))}
                     </View>
@@ -96,6 +95,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     header: {
+        alignItems: 'center',
         marginBottom: 32,
     },
     title: {
@@ -107,12 +107,14 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 16,
         color: '#555',
+        textAlign: 'center',
     },
     sectionTitle: {
         fontSize: 20,
         fontWeight: 'bold',
         color: '#333',
         marginBottom: 16,
+        textAlign: 'center',
     },
     calendarSection: {
         marginBottom: 32,
@@ -152,10 +154,11 @@ const styles = StyleSheet.create({
         gap: 16,
     },
     card: {
-        flexDirection: 'row',
+        flexDirection: 'column',
         alignItems: 'center',
+        justifyContent: 'center',
         backgroundColor: '#FFFFFF',
-        padding: 16,
+        padding: 24,
         borderRadius: 16,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -164,23 +167,25 @@ const styles = StyleSheet.create({
         elevation: 2,
     },
     iconContainer: {
-        width: 48,
-        height: 48,
-        borderRadius: 24,
+        width: 64,
+        height: 64,
+        borderRadius: 32,
         alignItems: 'center',
         justifyContent: 'center',
-        marginRight: 16,
+        marginBottom: 16,
     },
     cardContent: {
-        flex: 1,
+        alignItems: 'center',
     },
     cardTitle: {
         fontSize: 18,
         color: '#333',
         marginBottom: 4,
+        textAlign: 'center',
     },
     cardDesc: {
         fontSize: 14,
         color: '#888',
+        textAlign: 'center',
     },
 });

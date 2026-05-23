@@ -99,6 +99,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     header: {
+        alignItems: 'center',
         marginBottom: 32,
         marginTop: 20,
         width: '100%',
@@ -107,13 +108,13 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 28,
         fontWeight: 'bold',
-        marginTop: 30,
+        color: '#e83e8c',
         marginBottom: 8,
-        color: '#e83e8c', // Pink brand color
     },
     subtitle: {
-        opacity: 0.7,
-        fontSize: 18,
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
     },
     grid: {
         gap: 20,

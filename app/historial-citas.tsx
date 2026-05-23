@@ -113,6 +113,7 @@ const styles = StyleSheet.create({
         marginRight: 15,
     },
     header: {
+        alignItems: 'center',
         marginBottom: 32,
     },
     title: {
@@ -124,6 +125,7 @@ const styles = StyleSheet.create({
     subtitle: {
         fontSize: 16,
         color: '#555',
+        textAlign: 'center',
     },
     listContainer: {
         gap: 16,
