@@ -20,6 +20,7 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
     { title: 'Inicio', icon: 'home', route: '/dashboard' },
     { title: 'Mi Perfil', icon: 'person', route: '/profile' },
     { title: 'Agendar Cita', icon: 'calendar', route: '/agendar-citas' },
+    { title: 'Calendario de Citas', icon: 'calendar', route: '/calendario-citas' },
     { title: 'Historial de Citas', icon: 'receipt', route: '/historial-citas' },
     { title: 'Testimonios', icon: 'chatbubbles', route: '/testimonials' },
     { title: 'Blog', icon: 'newspaper', route: '/blog' },
@@ -27,8 +28,8 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
 
   const handleNavigation = (route: string) => {
     onClose();
-    if (route === '/') {
-      router.replace(route);
+    if (route === '/' || route === '/login') {
+      router.replace(route as any);
     } else {
       router.push(route as any);
     }
@@ -70,7 +71,7 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
           </View>
 
           <View style={styles.footer}>
-            <TouchableOpacity style={styles.logoutButton} onPress={() => handleNavigation('/')}>
+            <TouchableOpacity style={styles.logoutButton} onPress={() => handleNavigation('/login')}>
               <Ionicons name="log-out-outline" size={24} color="#F44336" />
               <ThemedText style={styles.logoutText}>Cerrar Sesión</ThemedText>
             </TouchableOpacity>

@@ -16,16 +16,20 @@ export default function LoginScreen() {
     const handleLogin = () => {
         // Implement login logic here
         console.log('Logging in:', { email, password });
-        router.replace('/profile'); // Navigate directly to user profile after login
+        router.replace('/dashboard'); // Navigate directly to dashboard after login
     };
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
-            <Stack.Screen options={{ title: 'Inicio de Sesión', headerTransparent: true }} />
+            <Stack.Screen options={{ headerShown: false }} />
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
-                    <ThemedText type="title" style={styles.title}>Bienvenido</ThemedText>
-                    <ThemedText style={styles.subtitle}>Inicia sesión para continuar.</ThemedText>
+                    <View style={styles.logoCircle}>
+                        <Ionicons name="medical" size={40} color="#e83e8c" />
+                    </View>
+                    <ThemedText style={styles.clinicName}>CONSULTORIO ODONTOLÓGICO</ThemedText>
+                    <ThemedText type="title" style={styles.title}>Dra. Nazaret Lopez</ThemedText>
+                    <ThemedText style={styles.subtitle}>Inicia sesión para continuar</ThemedText>
                 </View>
 
                 <View style={styles.form}>
@@ -95,11 +99,34 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
     },
+    logoCircle: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#FFFFFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+        shadowColor: '#e83e8c',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        elevation: 4,
+    },
+    clinicName: {
+        fontSize: 12,
+        fontWeight: '800',
+        color: '#888',
+        letterSpacing: 3,
+        marginBottom: 4,
+        textAlign: 'center',
+    },
     title: {
-        fontSize: 32,
-        fontWeight: 'bold',
+        fontSize: 34,
+        fontWeight: '900',
+        color: '#e83e8c',
         marginBottom: 8,
-        color: '#e83e8c', // Primary pink
+        textAlign: 'center',
     },
     subtitle: {
         opacity: 0.7,

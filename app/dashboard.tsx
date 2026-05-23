@@ -16,8 +16,9 @@ export default function DashboardScreen() {
     const menuItems = [
         { title: 'Mi Perfil', icon: 'person', route: '/profile', color: '#4A90E2', desc: 'Ver datos personales' },
         { title: 'Agendar Cita', icon: 'calendar', route: '/agendar-citas', color: '#e83e8c', desc: 'Solicita una nueva consulta' },
+        { title: 'Calendario', icon: 'calendar-outline', route: '/calendario-citas', color: '#2E8B57', desc: 'Visualiza tus citas del mes' },
         { title: 'Historial de Citas', icon: 'receipt', route: '/historial-citas', color: '#9B51E0', desc: 'Revisa tus citas pasadas y futuras' },
-        { title: 'Cerrar Sesión', icon: 'log-out', route: '/', color: '#FF6B6B', desc: 'Salir de la cuenta' },
+        { title: 'Cerrar Sesión', icon: 'log-out', route: '/login', color: '#FF6B6B', desc: 'Salir de la cuenta' },
     ];
 
     return (
@@ -53,8 +54,8 @@ export default function DashboardScreen() {
                     <View style={styles.grid}>
                         {menuItems.map((item) => (
                             <TouchableOpacity key={item.route} style={styles.card} onPress={() => {
-                                if (item.route === '/') {
-                                    router.replace(item.route);
+                                if (item.route === '/' || item.route === '/login') {
+                                    router.replace(item.route as any);
                                 } else {
                                     router.push(item.route as any);
                                 }
