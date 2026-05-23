@@ -1,16 +1,18 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { SideMenu } from '@/components/SideMenu';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View, TextInput } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Picker } from '@react-native-picker/picker'; // Optional if they don't have it installed we will use simple text inputs or simulate a picker
 
 export default function AgendarCitasScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
-    
+
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
+
     const [fecha, setFecha] = useState('');
     const [hora, setHora] = useState('');
     const [procedimiento, setProcedimiento] = useState('');
@@ -22,13 +24,16 @@ export default function AgendarCitasScreen() {
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
-            <Stack.Screen options={{ title: 'Agendar Cita', headerTransparent: true }} />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#e83e8c" />
-                    <ThemedText style={styles.backText}>Volver</ThemedText>
+            <SideMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
+            <Stack.Screen options={{ headerShown: false }} />
+            
+            <View style={styles.topBar}>
+                <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
+                    <Ionicons name="menu" size={32} color="#e83e8c" />
                 </TouchableOpacity>
+            </View>
 
+            <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
                     <ThemedText type="title" style={styles.title}>Agendar Nueva Cita</ThemedText>
                     <ThemedText style={styles.subtitle}>Agenda tu cita de manera fácil y rápida.</ThemedText>
@@ -52,9 +57,9 @@ export default function AgendarCitasScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Fecha de la cita:</ThemedText>
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="AAAA-MM-DD" 
+                        <TextInput
+                            style={styles.input}
+                            placeholder="AAAA-MM-DD"
                             placeholderTextColor="#888"
                             value={fecha}
                             onChangeText={setFecha}
@@ -63,9 +68,9 @@ export default function AgendarCitasScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Hora de la cita:</ThemedText>
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Ej: 14:30" 
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Ej: 14:30"
                             placeholderTextColor="#888"
                             value={hora}
                             onChangeText={setHora}
@@ -74,9 +79,9 @@ export default function AgendarCitasScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Tipo de procedimiento:</ThemedText>
-                        <TextInput 
-                            style={styles.input} 
-                            placeholder="Ej: Limpieza dental, Ortodoncia..." 
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Ej: Limpieza dental, Ortodoncia..."
                             placeholderTextColor="#888"
                             value={procedimiento}
                             onChangeText={setProcedimiento}
@@ -100,16 +105,15 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: 24,
     },
-    backButton: {
+    topBar: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 20,
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 0,
     },
-    backText: {
-        marginLeft: 8,
-        color: '#e83e8c',
-        fontSize: 16,
-        fontWeight: 'bold',
+    menuButton: {
+        marginRight: 15,
     },
     header: {
         marginBottom: 32,

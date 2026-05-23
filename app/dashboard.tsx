@@ -1,3 +1,4 @@
+import { SideMenu } from '@/components/SideMenu';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
@@ -5,7 +6,6 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SideMenu } from '@/components/SideMenu';
 
 export default function DashboardScreen() {
     const router = useRouter();
@@ -23,8 +23,8 @@ export default function DashboardScreen() {
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <SideMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
-            <Stack.Screen options={{ title: 'Inicio - Panel', headerTransparent: true, headerLeft: () => null }} />
-            
+            <Stack.Screen options={{ headerShown: false }} />
+
             <View style={styles.topBar}>
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />

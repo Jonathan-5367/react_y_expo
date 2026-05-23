@@ -2,13 +2,15 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SideMenu } from '@/components/SideMenu';
 
 export default function HistorialCitasScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
 
     const citas = [
         { id: 1, fecha: '15/06/2026', hora: '10:00', procedimiento: 'Limpieza Dental', doctor: 'Dra. Nazaret Lopez', estado: 'confirmada', pasada: false },
@@ -28,13 +30,16 @@ export default function HistorialCitasScreen() {
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
-            <Stack.Screen options={{ title: 'Historial de Citas', headerTransparent: true }} />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={24} color="#e83e8c" />
-                    <ThemedText style={styles.backText}>Volver</ThemedText>
+            <SideMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
+            <Stack.Screen options={{ headerShown: false }} />
+            
+            <View style={styles.topBar}>
+                <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
+                    <Ionicons name="menu" size={32} color="#e83e8c" />
                 </TouchableOpacity>
+            </View>
 
+            <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
                     <ThemedText type="title" style={styles.title}>Mis Citas Agendadas</ThemedText>
                     <ThemedText style={styles.subtitle}>Revisa el historial de tus tratamientos.</ThemedText>
@@ -97,16 +102,15 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: 24,
     },
-    backButton: {
+    topBar: {
         flexDirection: 'row',
         alignItems: 'center',
-        marginBottom: 20,
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 0,
     },
-    backText: {
-        marginLeft: 8,
-        color: '#e83e8c',
-        fontSize: 16,
-        fontWeight: 'bold',
+    menuButton: {
+        marginRight: 15,
     },
     header: {
         marginBottom: 32,

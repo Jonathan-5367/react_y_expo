@@ -1,8 +1,8 @@
-import React from 'react';
-import { Modal, StyleSheet, TouchableOpacity, View, Animated, Dimensions } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
-import { useRouter } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+import { useRouter } from 'expo-router';
+import React from 'react';
+import { Dimensions, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 interface SideMenuProps {
@@ -18,9 +18,9 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
 
   const menuItems = [
     { title: 'Inicio', icon: 'home', route: '/dashboard' },
+    { title: 'Mi Perfil', icon: 'person', route: '/profile' },
     { title: 'Agendar Cita', icon: 'calendar', route: '/agendar-citas' },
     { title: 'Historial de Citas', icon: 'receipt', route: '/historial-citas' },
-    { title: 'Mi Perfil', icon: 'person', route: '/profile' },
     { title: 'Testimonios', icon: 'chatbubbles', route: '/testimonials' },
     { title: 'Blog', icon: 'newspaper', route: '/blog' },
   ];
@@ -28,9 +28,9 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
   const handleNavigation = (route: string) => {
     onClose();
     if (route === '/') {
-        router.replace(route);
+      router.replace(route);
     } else {
-        router.push(route as any);
+      router.push(route as any);
     }
   };
 
@@ -43,24 +43,24 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
     >
       <View style={styles.overlay}>
         <TouchableOpacity style={styles.overlayBackground} activeOpacity={1} onPress={onClose} />
-        
+
         <View style={[styles.menuContainer, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 }]}>
           <View style={styles.header}>
             <View style={styles.logoContainer}>
-               <Ionicons name="medical" size={32} color="#e83e8c" />
+              <Ionicons name="medical" size={32} color="#e83e8c" />
             </View>
             <ThemedText style={styles.headerTitle}>Dra. Nazaret Lopez</ThemedText>
-            
+
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={28} color="#333" />
             </TouchableOpacity>
           </View>
-          
+
           <View style={styles.menuItems}>
             {menuItems.map((item, index) => (
-              <TouchableOpacity 
-                key={index} 
-                style={styles.menuItem} 
+              <TouchableOpacity
+                key={index}
+                style={styles.menuItem}
                 onPress={() => handleNavigation(item.route)}
               >
                 <Ionicons name={item.icon as any} size={24} color="#555" style={styles.menuIcon} />
@@ -68,12 +68,12 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
               </TouchableOpacity>
             ))}
           </View>
-          
+
           <View style={styles.footer}>
-             <TouchableOpacity style={styles.logoutButton} onPress={() => handleNavigation('/')}>
-                <Ionicons name="log-out-outline" size={24} color="#F44336" />
-                <ThemedText style={styles.logoutText}>Cerrar Sesión</ThemedText>
-             </TouchableOpacity>
+            <TouchableOpacity style={styles.logoutButton} onPress={() => handleNavigation('/')}>
+              <Ionicons name="log-out-outline" size={24} color="#F44336" />
+              <ThemedText style={styles.logoutText}>Cerrar Sesión</ThemedText>
+            </TouchableOpacity>
           </View>
         </View>
       </View>
