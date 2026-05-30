@@ -2,9 +2,11 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Image } from 'expo-image';
 import { Stack, useRouter } from 'expo-router';
-import React from 'react';
+import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { SideMenu } from '@/components/SideMenu';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 const posts = [
     {
@@ -39,10 +41,19 @@ const posts = [
 export default function BlogScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    const [isMenuVisible, setIsMenuVisible] = useState(false);
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
-            <Stack.Screen options={{ title: 'Blog', headerTransparent: true }} />
+            <SideMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
+            <Stack.Screen options={{ headerShown: false }} />
+            
+            <View style={styles.topBar}>
+                <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
+                    <Ionicons name="menu" size={32} color="#e83e8c" />
+                </TouchableOpacity>
+            </View>
+
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
                     <ThemedText type="title" style={styles.title}>Blog</ThemedText>
@@ -81,22 +92,33 @@ const styles = StyleSheet.create({
         padding: 30,
         alignItems: 'center',
     },
+    topBar: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 20,
+        paddingTop: 10,
+        paddingBottom: 0,
+    },
+    menuButton: {
+        marginRight: 15,
+    },
     header: {
+        alignItems: 'center',
         marginBottom: 24,
         marginTop: 20,
         width: '100%',
         maxWidth: 600,
     },
     title: {
-        fontSize: 32,
+        fontSize: 28,
         fontWeight: 'bold',
-        marginTop: 30,
+        color: '#e83e8c',
         marginBottom: 8,
-        color: '#e83e8c', // Primary pink
     },
     subtitle: {
-        opacity: 0.7,
-        fontSize: 18,
+        fontSize: 16,
+        color: '#555',
+        textAlign: 'center',
     },
     list: {
         gap: 24,

@@ -1,0 +1,358 @@
+body.dark-theme {
+    /* Paleta de colores para el tema oscuro */
+    --color-text-primary: #f1f5f9;
+    --color-text-placeholder: #a6b7d2;
+    --color-bg-primary: #0a1632;
+    --color-bg-secundary: #3d4859;
+    --color-bg-sidebar: #142846;
+    --color-border-hr: #3b475c;
+    --color-hover-primary: #48566a;
+    --color-hover-secundary: #e2e2fb;
+    --color-shadow: rgba(0,0,0, 0.3);
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-error: #ff6b6b;
+    --color-error-bg: #7f1d1d;
+    --color-success: #4ade80;
+    --color-success-bg: #14532d;
+    --color-whatsapp: #22c55e;
+}
+
+.historial-container {
+    background-color: var(--color-bg-sidebar);
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px var(--color-shadow);
+    margin-bottom: 30px;
+    margin-left: 20px;
+    margin-right: 20px;
+}
+
+/*Header*/
+.historial-header {
+    padding-bottom: 20px;
+    text-align: center;
+}
+
+/*Dark-mode*/
+body.dark-theme .historial-header h1, h3, th, td {
+    color: var(--color-text-primary);
+}
+
+body.dark-theme .citas-table tr:hover {
+    background: var(--color-hover-primary);
+}
+
+.body.dark-theme .modal .horario-info, p {
+    color: var(--color-text-primary);
+   
+}
+
+.body.dark-theme .containar-mensaje .horario-info {
+    color: var(--color-text-primary);
+}
+
+
+/*Tabla*/
+.citas-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.citas-table th, .citas-table td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--color-border-hr);
+}
+
+.citas-table th {
+    background-color: var(--color-bg-secundary);
+    font-weight: 600;
+}
+
+.citas-table tr:hover {
+    background-color: var(--color-hover-secundary);
+}
+
+.estado-badge {
+    padding: 5px 10px;
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+.estado-pendiente {
+    background-color: #fff3cd;
+    color: #856404;
+}
+
+.estado-confirmada {
+    background-color: #d4edda;
+    color: #155724;
+}
+
+.estado-realizada {
+    background-color: #d1ecf1;
+    color: #0c5460;
+}
+
+.estado-cancelada {
+    background-color: #f8d7da;
+    color: #721c24;
+}
+
+.sin-citas {
+    text-align: center;
+    padding: 30px;
+    color: var(--color-text-placeholder);
+}
+
+
+/*Botones tabla*/
+.container-btn {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.acciones-btn {
+    padding: 5px 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-right: 5px;
+    font-size: 0.85rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.btn-confirmar {
+    background-color: #2359ce;
+    color: white;
+}
+
+.btn-confirmar:hover {
+   background-color: #5c8aef;
+}
+
+.btn-reagendar {
+    height: 46px;
+    width: 46px;
+    background-color: #4CAF50;
+    color: white;
+}
+.btn-reagendar:hover {
+     background-color: #8be28e;
+}
+
+
+.btn-cancelar {
+    height: 46px;
+    width: 46px;
+    background-color: #e93911;
+    color: white;
+}
+.btn-cancelar:hover {
+    background-color: #f48c74;
+}
+
+
+.btn-ver {
+    background-color: #2196F3;
+    color: white;
+}
+.btn-ver:hover {
+    background-color: #6ec1ff;
+}
+
+
+
+/*Ventana modal Cancelar*/
+.modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Fijo en la pantalla */
+    z-index: 1000; /* Por encima de otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto; /* Habilita el scroll si es necesario */
+    background-color: rgba(0,0,0,0.5); /* Fondo semi-transparente */
+}
+
+.modal-content {
+    display: flex;
+    margin: 15% auto; /* Centrado vertical y horizontal */
+    padding: 20px;
+    width: 400px; /* Ancho fijo */
+    border-radius: 8px;
+    background-color: var(--color-bg-sidebar);
+    border: 1px solid var(--color-border-hr);
+    box-shadow: 0 5 10px var(--color-shadow);
+    flex-direction: column;
+    gap: 15px;
+}
+
+/*Titulo para confirmar, cancelar y Reagendar*/
+.modal-content .modal-title h3 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.modal-content .containar-mensaje {
+    margin: 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: justify;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.horario-info {
+    font-style: italic;
+    margin-bottom: 10px;
+}
+
+.modal-buttons {
+    display: flex;
+    gap: 10px;
+    text-align: left;
+}
+
+/*Boton Modal Confirmar cita*/
+.modal-buttons .btn-confirmar-modal {
+    height: 35px;
+    background-color: #2359ce;
+    color: white;
+}
+
+.modal-buttons .btn-confirmar-modal:hover {
+    background-color: #5c8aef;
+}
+
+
+
+/*Boton Modal Reagendar cita*/
+.modal-buttons .btn-reagendar-modal {
+    height: 35px;
+    background-color: #4CAF50;
+    color: white;
+}
+
+.modal-buttons .btn-reagendar-modal:hover {
+    background-color: #8be28e;
+}
+
+/*Boton Modal Cancelar cita*/
+.modal-buttons .btn-cancelar-modal {
+    height: 35px;
+    background: #e93911;
+    color: white;
+}
+.modal-buttons .btn-cancelar-modal:hover {
+    background-color: #f48c74;
+}
+
+/*Boton Modal cerrar para reagendar y cancelar Cita*/
+.modal-buttons .btn-cerrar-modal {
+    height: 35px;
+    background-color: var(--color-text-placeholder);
+    color: white; 
+}
+.modal-buttons .btn-cerrar-modal:hover {  
+    background-color: #b6cef4;   
+}
+
+/*Datatime*/
+#nuevaFechaHora {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+
+
+/* Estilos adicionales para mejorar la UI */
+.user-welcome {
+    margin-left: auto;
+    margin-right: 20px;
+    font-weight: bold;
+}
+
+.filtros-citas {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+}
+
+.filtro-btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 6px;
+    background-color: #f0f0f0;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.filtro-btn.active, .filtro-btn:hover {
+    background-color: #4a90e2;
+    color: white;
+}
+
+.cita-pasada {
+    opacity: 0.8;
+}
+
+.cita-proxima {
+    font-weight: bold;
+}
+
+
+/*responsive*/
+@media (max-width: 768px) {
+    /* La tabla será desplazable horizontalmente si es muy ancha */
+    .citas-table {
+        display: block;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch; /* Suaviza el desplazamiento en iOS */
+    }
+
+    /* Ocultar la cabecera para mayor claridad en móvil */
+    .citas-table thead {
+        display: none;
+    }
+
+    /* Cada fila en modo bloque para facilitar lectura */
+    .citas-table tbody,
+    .citas-table tr {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+
+    /* Cada celda se muestra como un bloque con etiqueta */
+    .citas-table td {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 15px;
+        border-bottom: 1px solid var(--color-border-hr);
+        position: relative;
+    }
+
+    /* Añade las etiquetas antes del contenido */
+    .citas-table td::before {
+        content: attr(data-label);
+        font-weight: bold;
+        width: 50%;
+        flex-shrink: 0;
+        text-align: right;
+        padding-right: 10px;
+        font-size: 0.9em;
+    }
+}
