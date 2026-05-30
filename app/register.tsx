@@ -14,10 +14,12 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('');
     const [telefono, setTelefono] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
+    const [telefonoFamiliar, setTelefonoFamiliar] = useState('');
+    const [alergias, setAlergias] = useState('');
 
     const handleRegister = () => {
         // Implement registration logic here
-        console.log('Registering:', { name, cedula, email, password, telefono, fechaNacimiento });
+        console.log('Registering:', { name, cedula, email, password, telefono, fechaNacimiento, telefonoFamiliar, alergias });
         router.replace('/login'); // Navigate to login after registration
     };
 
@@ -105,6 +107,33 @@ export default function RegisterScreen() {
                         />
                     </View>
 
+                    <View style={styles.inputContainer}>
+                        <ThemedText style={styles.label}>Número de Familiar</ThemedText>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Ej. 04141234567"
+                            placeholderTextColor="#888"
+                            value={telefonoFamiliar}
+                            onChangeText={setTelefonoFamiliar}
+                            keyboardType="phone-pad"
+                            maxLength={11}
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <ThemedText style={styles.label}>Alergias Conocidas</ThemedText>
+                        <TextInput
+                            style={styles.textArea}
+                            placeholder="Ej. Penicilina, látex, anestesia local..."
+                            placeholderTextColor="#888"
+                            value={alergias}
+                            onChangeText={setAlergias}
+                            multiline
+                            numberOfLines={4}
+                            textAlignVertical="top"
+                        />
+                    </View>
+
                     <TouchableOpacity style={styles.button} onPress={handleRegister}>
                         <ThemedText style={styles.buttonText}>Registrarse</ThemedText>
                     </TouchableOpacity>
@@ -165,6 +194,16 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
         paddingHorizontal: 16,
+        borderWidth: 1,
+        borderColor: '#E1E4E8',
+        fontSize: 16,
+    },
+    textArea: {
+        minHeight: 100,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         borderWidth: 1,
         borderColor: '#E1E4E8',
         fontSize: 16,

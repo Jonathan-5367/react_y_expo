@@ -1,6 +1,7 @@
 import { SideMenu } from '@/components/SideMenu';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { NotifBell } from '@/components/NotifBell';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
@@ -45,6 +46,7 @@ export default function ListaPacientesScreen() {
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />
                 </TouchableOpacity>
+                <NotifBell />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -109,6 +111,7 @@ const styles = StyleSheet.create({
     topBar: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingTop: 10,
         paddingBottom: 0,
