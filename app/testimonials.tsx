@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SideMenu } from '@/components/SideMenu';
+import { NotifBell } from '@/components/NotifBell';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
 const testimonials = [
@@ -52,6 +53,7 @@ export default function TestimonialsScreen() {
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />
                 </TouchableOpacity>
+                <NotifBell />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -91,6 +93,7 @@ const styles = StyleSheet.create({
     topBar: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingTop: 10,
         paddingBottom: 0,

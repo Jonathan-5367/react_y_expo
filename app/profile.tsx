@@ -6,6 +6,7 @@ import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SideMenu } from '@/components/SideMenu';
+import { NotifBell } from '@/components/NotifBell';
 
 export default function ProfileScreen() {
     const router = useRouter();
@@ -20,7 +21,9 @@ export default function ProfileScreen() {
         telefono: "04141234567",
         fecha_nacimiento: "1990-05-15",
         edad: "35",
-        rol_nombre: "Paciente"
+        rol_nombre: "Paciente",
+        telefono_familiar: "04149876543",
+        alergias: "Ninguna conocida"
     };
 
     return (
@@ -32,6 +35,7 @@ export default function ProfileScreen() {
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />
                 </TouchableOpacity>
+                <NotifBell />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -52,6 +56,8 @@ export default function ProfileScreen() {
                     <ProfileItem icon="calendar" label="Fecha de Nacimiento" value={usuario.fecha_nacimiento} />
                     <ProfileItem icon="accessibility" label="Edad" value={`${usuario.edad} años`} />
                     <ProfileItem icon="shield-checkmark" label="Rol" value={usuario.rol_nombre} />
+                    <ProfileItem icon="people" label="Número de Familiar" value={usuario.telefono_familiar} />
+                    <ProfileItem icon="alert-circle" label="Alergias Conocidas" value={usuario.alergias} />
                 </View>
 
             </ScrollView>
@@ -84,6 +90,7 @@ const styles = StyleSheet.create({
     topBar: {
         flexDirection: 'row',
         alignItems: 'center',
+        justifyContent: 'space-between',
         paddingHorizontal: 20,
         paddingTop: 10,
         paddingBottom: 10,
