@@ -5,22 +5,60 @@ import { NotifBell } from '@/components/NotifBell';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/store/auth';
+import { useAppointments } from '@/store/appointments';
 
 export default function AgendarCitasScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    const { user } = useAuth();
+    const { addAppointment } = useAppointments();
 
     const [isMenuVisible, setIsMenuVisible] = useState(false);
 
+    const isPatient = user?.rol !== 'administrador';
+
+    const [pacienteNombre, setPacienteNombre] = useState(isPatient ? (user?.nombre || '') : '');
+    const [pacienteTelefono, setPacienteTelefono] = useState(isPatient ? (user?.telefono || '') : '');
+    const [pacienteEmail, setPacienteEmail] = useState(isPatient ? (user?.email || '') : '');
     const [fecha, setFecha] = useState('');
     const [hora, setHora] = useState('');
     const [procedimiento, setProcedimiento] = useState('');
 
     const handleAgendar = () => {
-        console.log('Agendando cita:', { fecha, hora, procedimiento });
-        router.back();
+        if (!pacienteNombre.trim() || !pacienteTelefono.trim() || !pacienteEmail.trim() || !fecha.trim() || !hora.trim() || !procedimiento.trim()) {
+            Alert.alert('Campos requeridos', 'Por favor complete todos los campos.');
+            return;
+        }
+
+        // Validate date format YYYY-MM-DD
+        const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
+        if (!dateRegex.test(fecha.trim())) {
+            Alert.alert('Fecha inválida', 'La fecha debe estar en formato AAAA-MM-DD (ej: 2026-06-15).');
+            return;
+        }
+
+        // Validate time format (HH:MM)
+        const timeRegex = /^\d{2}:\d{2}$/;
+        if (!timeRegex.test(hora.trim())) {
+            Alert.alert('Hora inválida', 'La hora debe estar en formato de 24 horas HH:MM (ej: 14:30).');
+            return;
+        }
+
+        addAppointment({
+            pacienteNombre: pacienteNombre.trim(),
+            pacienteTelefono: pacienteTelefono.trim(),
+            pacienteEmail: pacienteEmail.trim().toLowerCase(),
+            fecha: fecha.trim(),
+            hora: hora.trim(),
+            procedimiento: procedimiento.trim()
+        });
+
+        Alert.alert('Cita Agendada', 'La cita ha sido registrada con éxito en el sistema.', [
+            { text: 'Aceptar', onPress: () => router.back() }
+        ]);
     };
 
     return (
@@ -44,24 +82,44 @@ export default function AgendarCitasScreen() {
                 <View style={styles.formContainer}>
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Nombre completo del paciente:</ThemedText>
-                        <TextInput style={[styles.input, styles.readOnlyInput]} value="Juan Pérez" editable={false} />
+                        <TextInput
+                            style={[styles.input, isPatient && styles.readOnlyInput]}
+                            value={pacienteNombre}
+                            onChangeText={setPacienteNombre}
+                            editable={!isPatient}
+                            placeholder="Nombre del Paciente"
+                        />
                     </View>
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Número de teléfono (WhatsApp):</ThemedText>
-                        <TextInput style={styles.input} defaultValue="04141234567" keyboardType="phone-pad" />
+                        <TextInput
+                            style={styles.input}
+                            value={pacienteTelefono}
+                            onChangeText={setPacienteTelefono}
+                            keyboardType="phone-pad"
+                            placeholder="Ej. 04161234567"
+                        />
                     </View>
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Correo electrónico:</ThemedText>
-                        <TextInput style={[styles.input, styles.readOnlyInput]} value="juan.perez@ejemplo.com" editable={false} />
+                        <TextInput
+                            style={[styles.input, isPatient && styles.readOnlyInput]}
+                            value={pacienteEmail}
+                            onChangeText={setPacienteEmail}
+                            editable={!isPatient}
+                            keyboardType="email-address"
+                            autoCapitalize="none"
+                            placeholder="correo@ejemplo.com"
+                        />
                     </View>
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Fecha de la cita:</ThemedText>
                         <TextInput
                             style={styles.input}
-                            placeholder="AAAA-MM-DD"
+                            placeholder="AAAA-MM-DD (Ej: 2026-06-15)"
                             placeholderTextColor="#888"
                             value={fecha}
                             onChangeText={setFecha}

@@ -3,21 +3,27 @@ import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SideMenu } from '@/components/SideMenu';
 import { NotifBell } from '@/components/NotifBell';
+import { useAuth } from '@/store/auth';
+import { useAppointments } from '@/store/appointments';
 
 export default function HistorialCitasScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const { user } = useAuth();
+    const { appointments, cancelAppointment } = useAppointments();
 
-    const citas = [
-        { id: 1, fecha: '15/06/2026', hora: '10:00', procedimiento: 'Limpieza Dental', doctor: 'Dra. Nazaret Lopez', estado: 'confirmada', pasada: false },
-        { id: 2, fecha: '02/05/2026', hora: '14:30', procedimiento: 'Ortodoncia', doctor: 'Dra. Nazaret Lopez', estado: 'completada', pasada: true },
-        { id: 3, fecha: '10/04/2026', hora: '09:00', procedimiento: 'Consulta General', doctor: 'Dra. Nazaret Lopez', estado: 'cancelada', pasada: true },
-    ];
+    const isAdmin = user?.rol === 'administrador';
+    
+    // Filter appointments: admins see all, patients see only their own
+    const citas = appointments.filter(cita => {
+        if (isAdmin) return true;
+        return cita.pacienteEmail.toLowerCase() === user?.email?.toLowerCase();
+    });
 
     const getStatusColor = (estado: string) => {
         switch (estado) {
@@ -27,6 +33,37 @@ export default function HistorialCitasScreen() {
             case 'pendiente': return '#FFC107';
             default: return '#888';
         }
+    };
+
+    const formatFecha = (fechaStr: string) => {
+        if (!fechaStr) return '';
+        const parts = fechaStr.split('-');
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return fechaStr;
+    };
+
+    const handleCancelar = (id: number) => {
+        Alert.alert(
+            'Confirmar Cancelación',
+            '¿Estás seguro de que deseas cancelar esta cita?',
+            [
+                { text: 'No', style: 'cancel' },
+                {
+                    text: 'Sí, Cancelar',
+                    style: 'destructive',
+                    onPress: () => {
+                        const success = cancelAppointment(id);
+                        if (success) {
+                            Alert.alert('Cita Cancelada', 'La cita ha sido cancelada con éxito.');
+                        } else {
+                            Alert.alert('Error', 'No se pudo cancelar la cita.');
+                        }
+                    }
+                }
+            ]
+        );
     };
 
     return (
@@ -43,8 +80,12 @@ export default function HistorialCitasScreen() {
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
-                    <ThemedText type="title" style={styles.title}>Mis Citas Agendadas</ThemedText>
-                    <ThemedText style={styles.subtitle}>Revisa el historial de tus tratamientos.</ThemedText>
+                    <ThemedText type="title" style={styles.title}>
+                        {isAdmin ? "Todas las Citas" : "Mis Citas Agendadas"}
+                    </ThemedText>
+                    <ThemedText style={styles.subtitle}>
+                        {isAdmin ? "Gestión global de citas del consultorio." : "Revisa el historial de tus tratamientos."}
+                    </ThemedText>
                 </View>
 
                 <View style={styles.listContainer}>
@@ -53,7 +94,7 @@ export default function HistorialCitasScreen() {
                             <View style={styles.cardHeader}>
                                 <View style={styles.dateInfo}>
                                     <Ionicons name="calendar" size={18} color="#e83e8c" style={{ marginRight: 6 }} />
-                                    <ThemedText style={styles.dateText}>{cita.fecha} - {cita.hora}</ThemedText>
+                                    <ThemedText style={styles.dateText}>{formatFecha(cita.fecha)} - {cita.hora}</ThemedText>
                                 </View>
                                 <View style={[styles.statusBadge, { backgroundColor: getStatusColor(cita.estado) + '20' }]}>
                                     <ThemedText style={[styles.statusText, { color: getStatusColor(cita.estado) }]}>
@@ -64,6 +105,16 @@ export default function HistorialCitasScreen() {
                             
                             <View style={styles.cardBody}>
                                 <ThemedText type="subtitle" style={styles.procedimientoText}>{cita.procedimiento}</ThemedText>
+                                
+                                {isAdmin && (
+                                    <View style={styles.patientInfoRow}>
+                                        <Ionicons name="person" size={15} color="#e83e8c" style={{ marginRight: 6 }} />
+                                        <ThemedText style={styles.patientInfoText}>
+                                            Paciente: <ThemedText style={{ fontWeight: 'bold' }}>{cita.pacienteNombre}</ThemedText> ({cita.pacienteTelefono})
+                                        </ThemedText>
+                                    </View>
+                                )}
+
                                 <View style={styles.doctorInfo}>
                                     <Ionicons name="medical" size={16} color="#888" style={{ marginRight: 6 }} />
                                     <ThemedText style={styles.doctorText}>{cita.doctor}</ThemedText>
@@ -72,7 +123,7 @@ export default function HistorialCitasScreen() {
 
                             {!cita.pasada && cita.estado !== 'cancelada' && (
                                 <View style={styles.cardFooter}>
-                                    <TouchableOpacity style={styles.cancelButton}>
+                                    <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancelar(cita.id)}>
                                         <Ionicons name="close-circle-outline" size={18} color="#F44336" style={{ marginRight: 4 }} />
                                         <ThemedText style={styles.cancelText}>Cancelar Cita</ThemedText>
                                     </TouchableOpacity>
@@ -84,10 +135,14 @@ export default function HistorialCitasScreen() {
                     {citas.length === 0 && (
                         <View style={styles.emptyContainer}>
                             <Ionicons name="calendar-clear-outline" size={64} color="#ccc" />
-                            <ThemedText style={styles.emptyText}>No tienes citas agendadas.</ThemedText>
-                            <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/agendar-citas')}>
-                                <ThemedText style={styles.emptyButtonText}>Agendar mi primera cita</ThemedText>
-                            </TouchableOpacity>
+                            <ThemedText style={styles.emptyText}>
+                                {isAdmin ? "No hay citas registradas en el consultorio." : "No tienes citas agendadas."}
+                            </ThemedText>
+                            {!isAdmin && (
+                                <TouchableOpacity style={styles.emptyButton} onPress={() => router.push('/agendar-citas')}>
+                                    <ThemedText style={styles.emptyButtonText}>Agendar mi primera cita</ThemedText>
+                                </TouchableOpacity>
+                            )}
                         </View>
                     )}
                 </View>
@@ -186,10 +241,25 @@ const styles = StyleSheet.create({
     doctorInfo: {
         flexDirection: 'row',
         alignItems: 'center',
+        marginTop: 4,
     },
     doctorText: {
         color: '#666',
         fontSize: 14,
+    },
+    patientInfoRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        marginBottom: 6,
+        backgroundColor: '#FFF0F6',
+        paddingHorizontal: 8,
+        paddingVertical: 4,
+        borderRadius: 6,
+        alignSelf: 'flex-start',
+    },
+    patientInfoText: {
+        fontSize: 13,
+        color: '#555',
     },
     cardFooter: {
         flexDirection: 'row',
@@ -220,6 +290,8 @@ const styles = StyleSheet.create({
         marginBottom: 24,
         color: '#888',
         fontSize: 16,
+        textAlign: 'center',
+        paddingHorizontal: 16,
     },
     emptyButton: {
         backgroundColor: '#e83e8c',

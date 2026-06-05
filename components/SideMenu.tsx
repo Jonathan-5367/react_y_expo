@@ -4,6 +4,7 @@ import { useRouter } from 'expo-router';
 import React from 'react';
 import { Dimensions, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/store/auth';
 
 interface SideMenuProps {
   visible: boolean;
@@ -15,11 +16,15 @@ const { width } = Dimensions.get('window');
 export function SideMenu({ visible, onClose }: SideMenuProps) {
   const router = useRouter();
   const insets = useSafeAreaInsets();
+  const { user, logout } = useAuth();
 
   const menuItems = [
     { title: 'Inicio', icon: 'home', route: '/dashboard' },
     { title: 'Mi Perfil', icon: 'person', route: '/profile' },
-    { title: 'Lista de Pacientes', icon: 'people', route: '/lista-pacientes' },
+    ...(user?.rol === 'administrador' ? [
+      { title: 'Lista de Pacientes', icon: 'people', route: '/lista-pacientes' },
+      { title: 'Registrar Admin', icon: 'person-add', route: '/registro-admin' }
+    ] : []),
     { title: 'Agendar Cita', icon: 'calendar', route: '/agendar-citas' },
     { title: 'Calendario de Citas', icon: 'calendar', route: '/calendario-citas' },
     { title: 'Historial de Citas', icon: 'receipt', route: '/historial-citas' },
@@ -29,7 +34,10 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
 
   const handleNavigation = (route: string) => {
     onClose();
-    if (route === '/' || route === '/login') {
+    if (route === '/login') {
+      logout();
+      router.replace(route as any);
+    } else if (route === '/') {
       router.replace(route as any);
     } else {
       router.push(route as any);
@@ -51,7 +59,14 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
             <View style={styles.logoContainer}>
               <Ionicons name="medical" size={32} color="#e83e8c" />
             </View>
-            <ThemedText style={styles.headerTitle}>Dra. Nazaret Lopez</ThemedText>
+            <View style={{ flex: 1 }}>
+              <ThemedText style={styles.headerTitle} numberOfLines={1}>{user?.nombre || "Dra. Nazaret Lopez"}</ThemedText>
+              <View style={[styles.roleBadge, { backgroundColor: user?.rol === 'administrador' ? '#e83e8c' : '#4A90E2' }]}>
+                <ThemedText style={styles.roleText}>
+                  {user?.rol === 'administrador' ? 'Administrador' : 'Paciente'}
+                </ThemedText>
+              </View>
+            </View>
 
             <TouchableOpacity onPress={onClose} style={styles.closeButton}>
               <Ionicons name="close" size={28} color="#333" />
@@ -162,5 +177,18 @@ const styles = StyleSheet.create({
     color: '#F44336',
     fontWeight: 'bold',
     marginLeft: 12,
+  },
+  roleBadge: {
+    alignSelf: 'flex-start',
+    paddingHorizontal: 8,
+    paddingVertical: 2,
+    borderRadius: 4,
+    marginTop: 4,
+  },
+  roleText: {
+    fontSize: 10,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+    textTransform: 'uppercase',
   },
 });

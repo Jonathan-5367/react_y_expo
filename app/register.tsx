@@ -2,12 +2,14 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/store/auth';
 
 export default function RegisterScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    const { registerPatient } = useAuth();
     const [name, setName] = useState('');
     const [cedula, setCedula] = useState('');
     const [email, setEmail] = useState('');
@@ -18,9 +20,29 @@ export default function RegisterScreen() {
     const [alergias, setAlergias] = useState('');
 
     const handleRegister = () => {
-        // Implement registration logic here
-        console.log('Registering:', { name, cedula, email, password, telefono, fechaNacimiento, telefonoFamiliar, alergias });
-        router.replace('/login'); // Navigate to login after registration
+        if (!name.trim() || !cedula.trim() || !email.trim() || !password.trim()) {
+            Alert.alert('Campos requeridos', 'Por favor, llena los campos obligatorios: Nombre, Cédula, Correo y Contraseña.');
+            return;
+        }
+
+        const result = registerPatient({
+            nombre: name,
+            cedula,
+            email,
+            password,
+            telefono,
+            fechaNacimiento,
+            telefonoFamiliar,
+            alergias
+        });
+
+        if (result.success) {
+            Alert.alert('Registro Exitoso', 'Tu cuenta de paciente ha sido creada con éxito.', [
+                { text: 'OK', onPress: () => router.replace('/login') }
+            ]);
+        } else {
+            Alert.alert('Error al Registrarse', result.error || 'Ocurrió un error inesperado.');
+        }
     };
 
     return (

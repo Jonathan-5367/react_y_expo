@@ -7,22 +7,60 @@ import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/store/auth';
+import { useAppointments } from '@/store/appointments';
 
 export default function CalendarioCitasScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const { user } = useAuth();
+    const { appointments } = useAppointments();
 
-    // Mock data for the calendar
+    const isAdmin = user?.rol === 'administrador';
+
+    // State to manage the viewed month and year
+    const [viewDate, setViewDate] = useState(new Date(2026, 5, 1)); // Default: June 2026 (index 5)
+
+    const handlePrevMonth = () => {
+        setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1));
+    };
+
+    const handleNextMonth = () => {
+        setViewDate(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1));
+    };
+
     const daysOfWeek = ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'];
-    const daysInMonth = Array.from({ length: 30 }, (_, i) => i + 1); // Mock 30 days
-    const startDayOffset = 2; // Starts on Tuesday
+    
+    // Calculate calendar variables for current viewDate
+    const year = viewDate.getFullYear();
+    const month = viewDate.getMonth();
+    
+    const totalDays = new Date(year, month + 1, 0).getDate();
+    const daysInMonth = Array.from({ length: totalDays }, (_, i) => i + 1);
+    const startDayOffset = new Date(year, month, 1).getDay();
 
-    const citas = [
-        { day: 10, time: '09:00 AM', type: 'Consulta General' },
-        { day: 15, time: '10:00 AM', type: 'Limpieza Dental' },
-        { day: 22, time: '02:30 PM', type: 'Ortodoncia' },
+    const meses = [
+        'Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio',
+        'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'
     ];
+    const monthText = `${meses[month]} ${year}`;
+
+    // Filter appointments for the current viewed month/year and active status
+    const viewYearStr = String(year);
+    const viewMonthStr = String(month + 1).padStart(2, '0');
+
+    const relevantAppointments = appointments.filter(a => {
+        if (a.estado === 'cancelada') return false;
+        
+        // Patients see only their own, admins see all
+        if (!isAdmin && a.pacienteEmail.toLowerCase() !== user?.email?.toLowerCase()) {
+            return false;
+        }
+
+        const [aYear, aMonth] = a.fecha.split('-');
+        return aYear === viewYearStr && aMonth === viewMonthStr;
+    });
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
@@ -39,14 +77,20 @@ export default function CalendarioCitasScreen() {
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
                     <ThemedText type="title" style={styles.title}>Calendario de Citas</ThemedText>
-                    <ThemedText style={styles.subtitle}>Visualiza y planifica tus consultas mensuales</ThemedText>
+                    <ThemedText style={styles.subtitle}>
+                        {isAdmin ? "Vista global de citas programadas en la clínica" : "Visualiza y planifica tus consultas mensuales"}
+                    </ThemedText>
                 </View>
 
                 <View style={styles.calendarContainer}>
                     <View style={styles.monthHeader}>
-                        <Ionicons name="chevron-back" size={24} color="#e83e8c" />
-                        <ThemedText style={styles.monthText}>Mayo 2026</ThemedText>
-                        <Ionicons name="chevron-forward" size={24} color="#e83e8c" />
+                        <TouchableOpacity onPress={handlePrevMonth}>
+                            <Ionicons name="chevron-back" size={24} color="#e83e8c" />
+                        </TouchableOpacity>
+                        <ThemedText style={styles.monthText}>{monthText}</ThemedText>
+                        <TouchableOpacity onPress={handleNextMonth}>
+                            <Ionicons name="chevron-forward" size={24} color="#e83e8c" />
+                        </TouchableOpacity>
                     </View>
 
                     <View style={styles.daysRow}>
@@ -60,11 +104,15 @@ export default function CalendarioCitasScreen() {
                             <View key={`empty-${i}`} style={styles.dayCell} />
                         ))}
                         {daysInMonth.map(day => {
-                            const isCita = citas.find(c => c.day === day);
+                            const dayStr = String(day).padStart(2, '0');
+                            const targetDateStr = `${viewYearStr}-${viewMonthStr}-${dayStr}`;
+                            const dayCitas = relevantAppointments.filter(c => c.fecha === targetDateStr);
+                            const hasCita = dayCitas.length > 0;
+                            
                             return (
-                                <View key={day} style={[styles.dayCell, isCita && styles.dayCellActive]}>
-                                    <ThemedText style={[styles.dayText, isCita && styles.dayTextActive]}>{day}</ThemedText>
-                                    {isCita && <View style={styles.dot} />}
+                                <View key={day} style={[styles.dayCell, hasCita && styles.dayCellActive]}>
+                                    <ThemedText style={[styles.dayText, hasCita && styles.dayTextActive]}>{day}</ThemedText>
+                                    {hasCita && <View style={styles.dot} />}
                                 </View>
                             );
                         })}
@@ -72,22 +120,37 @@ export default function CalendarioCitasScreen() {
                 </View>
 
                 <View style={styles.citasList}>
-                    <ThemedText style={styles.listTitle}>Próximas Citas</ThemedText>
-                    {citas.map((cita, idx) => (
-                        <View key={idx} style={styles.citaCard}>
-                            <View style={styles.citaDateBox}>
-                                <ThemedText style={styles.citaDateDay}>{cita.day}</ThemedText>
-                                <ThemedText style={styles.citaDateMonth}>MAY</ThemedText>
-                            </View>
-                            <View style={styles.citaInfo}>
-                                <ThemedText style={styles.citaType}>{cita.type}</ThemedText>
-                                <View style={styles.citaTimeRow}>
-                                    <Ionicons name="time-outline" size={16} color="#888" style={{ marginRight: 4 }} />
-                                    <ThemedText style={styles.citaTime}>{cita.time}</ThemedText>
+                    <ThemedText style={styles.listTitle}>Citas del Mes</ThemedText>
+                    {relevantAppointments.map((cita) => {
+                        const dayNum = parseInt(cita.fecha.split('-')[2]);
+                        const monthAbbr = meses[month].substring(0, 3).toUpperCase();
+                        return (
+                            <View key={cita.id} style={styles.citaCard}>
+                                <View style={styles.citaDateBox}>
+                                    <ThemedText style={styles.citaDateDay}>{dayNum}</ThemedText>
+                                    <ThemedText style={styles.citaDateMonth}>{monthAbbr}</ThemedText>
+                                </View>
+                                <View style={styles.citaInfo}>
+                                    <ThemedText style={styles.citaType}>{cita.procedimiento}</ThemedText>
+                                    {isAdmin && (
+                                        <ThemedText style={styles.patientLabel}>
+                                            Paciente: <ThemedText style={{ fontWeight: 'bold' }}>{cita.pacienteNombre}</ThemedText>
+                                        </ThemedText>
+                                    )}
+                                    <View style={styles.citaTimeRow}>
+                                        <Ionicons name="time-outline" size={16} color="#888" style={{ marginRight: 4 }} />
+                                        <ThemedText style={styles.citaTime}>{cita.hora}</ThemedText>
+                                    </View>
                                 </View>
                             </View>
+                        );
+                    })}
+                    {relevantAppointments.length === 0 && (
+                        <View style={styles.emptyAppointments}>
+                            <Ionicons name="calendar-clear-outline" size={32} color="#aaa" />
+                            <ThemedText style={styles.emptyAppointmentsText}>No hay citas programadas para este mes.</ThemedText>
                         </View>
-                    ))}
+                    )}
                 </View>
             </ScrollView>
         </ThemedView>
@@ -236,12 +299,18 @@ const styles = StyleSheet.create({
     },
     citaInfo: {
         flex: 1,
+        gap: 2,
     },
     citaType: {
         fontSize: 18,
         fontWeight: 'bold',
         color: '#333',
-        marginBottom: 4,
+        marginBottom: 2,
+    },
+    patientLabel: {
+        fontSize: 13,
+        color: '#555',
+        marginBottom: 2,
     },
     citaTimeRow: {
         flexDirection: 'row',
@@ -250,5 +319,18 @@ const styles = StyleSheet.create({
     citaTime: {
         fontSize: 16,
         color: '#888',
+    },
+    emptyAppointments: {
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+        backgroundColor: '#FFF',
+        borderRadius: 12,
+        gap: 8,
+    },
+    emptyAppointmentsText: {
+        fontSize: 14,
+        color: '#888',
+        textAlign: 'center',
     },
 });
