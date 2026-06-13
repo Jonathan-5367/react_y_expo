@@ -3,29 +3,42 @@ import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/store/auth';
 
 export default function LoginScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
 
     const handleLogin = () => {
-        // Implement login logic here
-        console.log('Logging in:', { email, password });
-        router.replace('/'); // Navigate to home after login
+        if (!email.trim() || !password.trim()) {
+            Alert.alert('Campos requeridos', 'Por favor, introduce tu correo y contraseña.');
+            return;
+        }
+        const result = login(email, password);
+        if (result.success) {
+            router.replace('/dashboard');
+        } else {
+            Alert.alert('Error de Inicio de Sesión', result.error || 'Credenciales inválidas');
+        }
     };
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
-            <Stack.Screen options={{ title: 'Inicio de Sesión', headerTransparent: true }} />
+            <Stack.Screen options={{ headerShown: false }} />
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
-                    <ThemedText type="title" style={styles.title}>Bienvenido</ThemedText>
-                    <ThemedText style={styles.subtitle}>Inicia sesión para continuar.</ThemedText>
+                    <View style={styles.logoCircle}>
+                        <Ionicons name="medical" size={40} color="#e83e8c" />
+                    </View>
+                    <ThemedText style={styles.clinicName}>CONSULTORIO ODONTOLÓGICO</ThemedText>
+                    <ThemedText type="title" style={styles.title}>Dra. Nazaret Lopez</ThemedText>
+                    <ThemedText style={styles.subtitle}>Inicia sesión para continuar</ThemedText>
                 </View>
 
                 <View style={styles.form}>
@@ -72,6 +85,20 @@ export default function LoginScreen() {
                     <TouchableOpacity onPress={() => router.push('/register')} style={styles.linkButton}>
                         <ThemedText style={styles.linkText}>¿No tienes cuenta? Regístrate</ThemedText>
                     </TouchableOpacity>
+
+                    {/* Test Accounts Info Box */}
+                    <View style={styles.infoBox}>
+                        <View style={styles.infoBoxHeader}>
+                            <Ionicons name="information-circle" size={18} color="#e83e8c" />
+                            <ThemedText style={styles.infoBoxTitle}>Cuentas de prueba:</ThemedText>
+                        </View>
+                        <ThemedText style={styles.infoBoxText}>
+                            🔑 <ThemedText style={styles.boldText}>Paciente:</ThemedText> paciente@paciente.com / password
+                        </ThemedText>
+                        <ThemedText style={styles.infoBoxText}>
+                            🔑 <ThemedText style={styles.boldText}>Admin:</ThemedText> admin@admin.com / admin
+                        </ThemedText>
+                    </View>
                 </View>
             </ScrollView>
         </ThemedView>
@@ -95,11 +122,34 @@ const styles = StyleSheet.create({
         width: '100%',
         maxWidth: 400,
     },
+    logoCircle: {
+        width: 80,
+        height: 80,
+        borderRadius: 40,
+        backgroundColor: '#FFFFFF',
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginBottom: 16,
+        shadowColor: '#e83e8c',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 12,
+        elevation: 4,
+    },
+    clinicName: {
+        fontSize: 12,
+        fontWeight: '800',
+        color: '#888',
+        letterSpacing: 3,
+        marginBottom: 4,
+        textAlign: 'center',
+    },
     title: {
-        fontSize: 32,
-        fontWeight: 'bold',
+        fontSize: 34,
+        fontWeight: '900',
+        color: '#e83e8c',
         marginBottom: 8,
-        color: '#e83e8c', // Primary pink
+        textAlign: 'center',
     },
     subtitle: {
         opacity: 0.7,
@@ -172,5 +222,33 @@ const styles = StyleSheet.create({
         color: '#e83e8c',
         fontSize: 16,
         fontWeight: '600',
+    },
+    infoBox: {
+        backgroundColor: '#FFF5F9',
+        borderWidth: 1,
+        borderColor: '#FFD3E8',
+        borderRadius: 12,
+        padding: 12,
+        marginTop: 8,
+        gap: 4,
+    },
+    infoBoxHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        gap: 6,
+        marginBottom: 4,
+    },
+    infoBoxTitle: {
+        fontSize: 14,
+        fontWeight: '700',
+        color: '#e83e8c',
+    },
+    infoBoxText: {
+        fontSize: 12,
+        color: '#555',
+    },
+    boldText: {
+        fontWeight: 'bold',
+        color: '#e83e8c',
     },
 });

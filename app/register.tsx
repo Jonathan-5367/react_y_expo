@@ -2,23 +2,47 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/store/auth';
 
 export default function RegisterScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    const { registerPatient } = useAuth();
     const [name, setName] = useState('');
     const [cedula, setCedula] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [telefono, setTelefono] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
+    const [telefonoFamiliar, setTelefonoFamiliar] = useState('');
+    const [alergias, setAlergias] = useState('');
 
     const handleRegister = () => {
-        // Implement registration logic here
-        console.log('Registering:', { name, cedula, email, password, telefono, fechaNacimiento });
-        router.replace('/login'); // Navigate to login after registration
+        if (!name.trim() || !cedula.trim() || !email.trim() || !password.trim()) {
+            Alert.alert('Campos requeridos', 'Por favor, llena los campos obligatorios: Nombre, Cédula, Correo y Contraseña.');
+            return;
+        }
+
+        const result = registerPatient({
+            nombre: name,
+            cedula,
+            email,
+            password,
+            telefono,
+            fechaNacimiento,
+            telefonoFamiliar,
+            alergias
+        });
+
+        if (result.success) {
+            Alert.alert('Registro Exitoso', 'Tu cuenta de paciente ha sido creada con éxito.', [
+                { text: 'OK', onPress: () => router.replace('/login') }
+            ]);
+        } else {
+            Alert.alert('Error al Registrarse', result.error || 'Ocurrió un error inesperado.');
+        }
     };
 
     return (
@@ -105,6 +129,33 @@ export default function RegisterScreen() {
                         />
                     </View>
 
+                    <View style={styles.inputContainer}>
+                        <ThemedText style={styles.label}>Número de Familiar</ThemedText>
+                        <TextInput
+                            style={styles.input}
+                            placeholder="Ej. 04141234567"
+                            placeholderTextColor="#888"
+                            value={telefonoFamiliar}
+                            onChangeText={setTelefonoFamiliar}
+                            keyboardType="phone-pad"
+                            maxLength={11}
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <ThemedText style={styles.label}>Alergias Conocidas</ThemedText>
+                        <TextInput
+                            style={styles.textArea}
+                            placeholder="Ej. Penicilina, látex, anestesia local..."
+                            placeholderTextColor="#888"
+                            value={alergias}
+                            onChangeText={setAlergias}
+                            multiline
+                            numberOfLines={4}
+                            textAlignVertical="top"
+                        />
+                    </View>
+
                     <TouchableOpacity style={styles.button} onPress={handleRegister}>
                         <ThemedText style={styles.buttonText}>Registrarse</ThemedText>
                     </TouchableOpacity>
@@ -165,6 +216,16 @@ const styles = StyleSheet.create({
         backgroundColor: '#FFFFFF',
         borderRadius: 12,
         paddingHorizontal: 16,
+        borderWidth: 1,
+        borderColor: '#E1E4E8',
+        fontSize: 16,
+    },
+    textArea: {
+        minHeight: 100,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
         borderWidth: 1,
         borderColor: '#E1E4E8',
         fontSize: 16,

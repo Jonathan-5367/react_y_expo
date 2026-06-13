@@ -1,0 +1,89 @@
+/* Dashboard */
+.dashboard-container {
+    padding: 2rem 5%;
+    background-color: var(--rosa-claro);
+    min-height: 70vh;
+}
+
+.user-profile {
+    background-color: var(--blanco);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.profile-header {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid var(--rosa-medio);
+}
+
+.user-citas, .historial {
+    background-color: var(--blanco);
+    border-radius: 10px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.citas-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.cita-card {
+    background-color: var(--rosa-claro);
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid var(--rosa-oscuro);
+}
+
+.btn-cancelar {
+    background-color: #ff6b6b;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background 0.3s;
+}
+
+.btn-cancelar:hover {
+    background-color: #ff5252;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: var(--rosa-oscuro);
+    color: white;
+}
+
+tr:hover {
+    background-color: rgba(219, 112, 147, 0.1);
+}
