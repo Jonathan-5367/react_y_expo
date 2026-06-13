@@ -3,11 +3,12 @@ import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth, UserRole } from '@/store/auth';
 import { SideMenu } from '@/components/SideMenu';
 import { NotifBell } from '@/components/NotifBell';
+import { DropdownSelector } from '@/components/DropdownSelector';
 
 export default function RegistroAdminScreen() {
     const router = useRouter();
@@ -21,6 +22,7 @@ export default function RegistroAdminScreen() {
     const [password, setPassword] = useState('');
     const [telefono, setTelefono] = useState('');
     const [rol, setRol] = useState<UserRole>('administrador');
+    const [isRolDropdownVisible, setIsRolDropdownVisible] = useState(false);
 
     // Access control: only admins allowed
     useEffect(() => {
@@ -65,12 +67,10 @@ export default function RegistroAdminScreen() {
             <Stack.Screen options={{ headerShown: false }} />
 
             <View style={styles.topBar}>
-                <TouchableOpacity onPress={() => router.back()} style={styles.backButton}>
-                    <Ionicons name="arrow-back" size={28} color="#e83e8c" />
-                </TouchableOpacity>
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />
                 </TouchableOpacity>
+                <NotifBell />
             </View>
 
             <ScrollView contentContainerStyle={styles.scrollContent}>
@@ -148,19 +148,28 @@ export default function RegistroAdminScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Selecciona un Rol *</ThemedText>
-                        <View style={styles.roleChipsContainer}>
-                            {(['administrador', 'doctor', 'recepcionista'] as const).map((r) => (
-                                <TouchableOpacity
-                                    key={r}
-                                    style={[styles.roleChip, rol === r && styles.roleChipActive]}
-                                    onPress={() => setRol(r)}
-                                >
-                                    <ThemedText style={[styles.roleChipText, rol === r && styles.roleChipTextActive]}>
-                                        {r === 'administrador' ? 'Admin' : r.charAt(0).toUpperCase() + r.slice(1)}
-                                    </ThemedText>
-                                </TouchableOpacity>
-                            ))}
-                        </View>
+                        <TouchableOpacity
+                            style={styles.dropdownInputButton}
+                            onPress={() => setIsRolDropdownVisible(true)}
+                        >
+                            <Text style={styles.inputText}>
+                                {rol === 'administrador' ? 'Administrador' : rol.charAt(0).toUpperCase() + rol.slice(1)}
+                            </Text>
+                            <Ionicons name="chevron-down" size={20} color="#e83e8c" />
+                        </TouchableOpacity>
+                        <DropdownSelector
+                            visible={isRolDropdownVisible}
+                            onClose={() => setIsRolDropdownVisible(false)}
+                            selectedValue={rol}
+                            onSelect={(val) => setRol(val as UserRole)}
+                            title="Selecciona el rol del nuevo usuario"
+                            options={[
+                                { label: 'Administrador', value: 'administrador' },
+                                { label: 'Doctor', value: 'doctor' },
+                                { label: 'Recepcionista', value: 'recepcionista' },
+                                { label: 'Paciente', value: 'paciente' }
+                            ]}
+                        />
                     </View>
 
                     <TouchableOpacity style={styles.button} onPress={handleRegisterAdmin}>
@@ -274,31 +283,23 @@ const styles = StyleSheet.create({
         fontSize: 18,
         fontWeight: 'bold',
     },
-    roleChipsContainer: {
-        flexDirection: 'row',
-        gap: 10,
-        marginTop: 4,
-    },
-    roleChip: {
-        flex: 1,
-        height: 48,
+    dropdownInputButton: {
+        height: 50,
+        backgroundColor: '#F9F9F9',
+        borderRadius: 8,
+        paddingHorizontal: 16,
         borderWidth: 1,
         borderColor: '#E0E0E0',
-        borderRadius: 8,
+        flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center',
-        backgroundColor: '#F9F9F9',
+        justifyContent: 'space-between',
+        width: '100%',
+        alignSelf: 'stretch',
     },
-    roleChipActive: {
-        backgroundColor: '#e83e8c',
-        borderColor: '#e83e8c',
-    },
-    roleChipText: {
-        fontSize: 13,
-        fontWeight: '600',
-        color: '#555',
-    },
-    roleChipTextActive: {
-        color: '#FFFFFF',
+    inputText: {
+        fontSize: 16,
+        color: '#333333',
+        flex: 1,
+        textAlign: 'left',
     },
 });
