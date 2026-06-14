@@ -4,37 +4,70 @@ import { ThemedView } from '@/components/themed-view';
 import { NotifBell } from '@/components/NotifBell';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { API_URL, useProtectedRoute } from '@/store/auth';
 
 export default function ListaPacientesScreen() {
+    const user = useProtectedRoute();
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [filterType, setFilterType] = useState('Todos');
+    const [pacientes, setPacientes] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
 
-    const pacientes = [
-        { id: '1', name: 'Ana Gómez', age: 34, phone: '555-0101', lastVisit: '10 May 2026', cedula: 'V-12345678' },
-        { id: '2', name: 'Carlos Ruiz', age: 45, phone: '555-0202', lastVisit: '02 May 2026', cedula: 'E-87654321' },
-        { id: '3', name: 'María Fernández', age: 28, phone: '555-0303', lastVisit: '28 Abr 2026', cedula: 'V-23456789' },
-        { id: '4', name: 'Roberto Sánchez', age: 52, phone: '555-0404', lastVisit: '15 Abr 2026', cedula: 'V-34567890' },
-        { id: '5', name: 'Lucía Morales', age: 21, phone: '555-0505', lastVisit: '05 Abr 2026', cedula: 'E-98765432' },
-    ];
+    const fetchPatients = async () => {
+        setLoading(true);
+        setError(null);
+        try {
+            const response = await fetch(`${API_URL}/patients`);
+            if (!response.ok) {
+                throw new Error('No se pudo obtener el listado de pacientes.');
+            }
+            const data = await response.json();
+            setPacientes(data);
+        } catch (err: any) {
+            console.error('Error fetching patients:', err);
+            setError(err.message || 'Error al conectar con el servidor.');
+        } finally {
+            setLoading(false);
+        }
+    };
 
-    let filteredPacientes = pacientes.filter(p => p.name.toLowerCase().includes(searchQuery.toLowerCase()));
+    useEffect(() => {
+        if (!user) return;
+
+        // Guard check: only allow administrador or doctor
+        if (user.rol !== 'administrador' && user.rol !== 'doctor') {
+            router.replace('/dashboard');
+            return;
+        }
+
+        fetchPatients();
+    }, [user]);
+
+    if (!user || (user.rol !== 'administrador' && user.rol !== 'doctor')) {
+        return null; // Don't render while redirecting
+    }
+
+    let filteredPacientes = pacientes.filter(p => 
+        (p.name || '').toLowerCase().includes(searchQuery.toLowerCase())
+    );
 
     if (filterType === 'Mayores de 30') {
         filteredPacientes = filteredPacientes.filter(p => p.age >= 30);
     } else if (filterType === 'Menores de 30') {
         filteredPacientes = filteredPacientes.filter(p => p.age < 30);
     } else if (filterType === 'Recientes') {
-        filteredPacientes = filteredPacientes.filter(p => p.lastVisit.includes('May'));
+        filteredPacientes = filteredPacientes.filter(p => p.lastVisit && p.lastVisit !== 'Sin citas');
     } else if (filterType === 'Cédula V') {
-        filteredPacientes = filteredPacientes.filter(p => p.cedula.startsWith('V'));
+        filteredPacientes = filteredPacientes.filter(p => (p.cedula || '').toUpperCase().startsWith('V'));
     } else if (filterType === 'Cédula E') {
-        filteredPacientes = filteredPacientes.filter(p => p.cedula.startsWith('E'));
+        filteredPacientes = filteredPacientes.filter(p => (p.cedula || '').toUpperCase().startsWith('E'));
     }
 
     return (
@@ -79,20 +112,37 @@ export default function ListaPacientesScreen() {
                 </ScrollView>
 
                 <View style={styles.listContainer}>
-                    {filteredPacientes.map((paciente) => (
-                        <TouchableOpacity key={paciente.id} style={styles.card}>
-                            <View style={styles.avatar}>
-                                <ThemedText style={styles.avatarText}>{paciente.name.charAt(0)}</ThemedText>
-                            </View>
-                            <View style={styles.infoContainer}>
-                                <ThemedText style={styles.patientName}>{paciente.name}</ThemedText>
-                                <ThemedText style={styles.patientDetails}>C.I: {paciente.cedula} | Edad: {paciente.age} años | Tel: {paciente.phone}</ThemedText>
-                            </View>
-                            <Ionicons name="chevron-forward" size={24} color="#ccc" />
-                        </TouchableOpacity>
-                    ))}
-                    {filteredPacientes.length === 0 && (
-                        <ThemedText style={styles.emptyText}>No se encontraron pacientes.</ThemedText>
+                    {loading ? (
+                        <View style={styles.loadingContainer}>
+                            <ActivityIndicator size="large" color="#e83e8c" />
+                            <ThemedText style={styles.loadingText}>Cargando pacientes...</ThemedText>
+                        </View>
+                    ) : error ? (
+                        <View style={styles.errorContainer}>
+                            <Ionicons name="alert-circle-outline" size={40} color="#D32F2F" />
+                            <ThemedText style={styles.errorText}>{error}</ThemedText>
+                            <TouchableOpacity style={styles.retryButton} onPress={fetchPatients}>
+                                <ThemedText style={styles.retryButtonText}>Reintentar</ThemedText>
+                            </TouchableOpacity>
+                        </View>
+                    ) : (
+                        <>
+                            {filteredPacientes.map((paciente) => (
+                                <TouchableOpacity key={paciente.id} style={styles.card}>
+                                    <View style={styles.avatar}>
+                                        <ThemedText style={styles.avatarText}>{(paciente.name || '').charAt(0)}</ThemedText>
+                                    </View>
+                                    <View style={styles.infoContainer}>
+                                        <ThemedText style={styles.patientName}>{paciente.name}</ThemedText>
+                                        <ThemedText style={styles.patientDetails}>C.I: {paciente.cedula} | Edad: {paciente.age} años | Tel: {paciente.phone}</ThemedText>
+                                    </View>
+                                    <Ionicons name="chevron-forward" size={24} color="#ccc" />
+                                </TouchableOpacity>
+                            ))}
+                            {filteredPacientes.length === 0 && (
+                                <ThemedText style={styles.emptyText}>No se encontraron pacientes.</ThemedText>
+                            )}
+                        </>
                     )}
                 </View>
             </ScrollView>
@@ -227,5 +277,40 @@ const styles = StyleSheet.create({
         color: '#888',
         fontSize: 16,
         marginTop: 20,
+    },
+    loadingContainer: {
+        paddingVertical: 40,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 12,
+        color: '#e83e8c',
+        fontWeight: 'bold',
+    },
+    errorContainer: {
+        paddingVertical: 30,
+        justifyContent: 'center',
+        alignItems: 'center',
+        gap: 12,
+    },
+    errorText: {
+        fontSize: 16,
+        color: '#D32F2F',
+        textAlign: 'center',
+        fontWeight: '500',
+    },
+    retryButton: {
+        backgroundColor: '#e83e8c',
+        paddingHorizontal: 20,
+        paddingVertical: 10,
+        borderRadius: 8,
+        marginTop: 8,
+        alignItems: 'center',
+    },
+    retryButtonText: {
+        color: '#FFF',
+        fontWeight: 'bold',
+        fontSize: 14,
     },
 });
