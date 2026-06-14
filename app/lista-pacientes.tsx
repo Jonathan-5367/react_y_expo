@@ -1,13 +1,13 @@
+import { NotifBell } from '@/components/NotifBell';
 import { SideMenu } from '@/components/SideMenu';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { NotifBell } from '@/components/NotifBell';
+import { API_URL, useProtectedRoute } from '@/store/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, ActivityIndicator } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { API_URL, useProtectedRoute } from '@/store/auth';
 
 export default function ListaPacientesScreen() {
     const user = useProtectedRoute();
@@ -109,7 +109,7 @@ export default function ListaPacientesScreen() {
                     <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="Buscar por nombre, cédula o teléfono..."
+                        placeholder="Buscar: Nombre, CI o Tlf."
                         placeholderTextColor="#888"
                         value={searchQuery}
                         onChangeText={setSearchQuery}

@@ -1,16 +1,16 @@
+import { CalendarModal } from '@/components/CalendarModal';
+import { DropdownSelector } from '@/components/DropdownSelector';
+import { NotifBell } from '@/components/NotifBell';
 import { SideMenu } from '@/components/SideMenu';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { NotifBell } from '@/components/NotifBell';
+import { useAppointments } from '@/store/appointments';
+import { useAuth } from '@/store/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
-import { useAppointments } from '@/store/appointments';
-import { CalendarModal } from '@/components/CalendarModal';
-import { DropdownSelector } from '@/components/DropdownSelector';
 
 export default function AgendarCitasScreen() {
     const router = useRouter();
@@ -156,10 +156,10 @@ export default function AgendarCitasScreen() {
                             onSelect={(val) => setHora(val)}
                             title="Selecciona la hora de la cita"
                             options={[
-                                { label: '09:00 AM', value: '09:00' },
-                                { label: '10:00 AM', value: '10:00' },
-                                { label: '11:00 AM', value: '11:00' },
-                                { label: '12:00 PM', value: '12:00' }
+                                { label: '08:00 AM - 09:00 AM', value: '08:00' },
+                                { label: '09:00 AM - 10:00 AM', value: '09:00' },
+                                { label: '10:00 AM - 11:00 AM', value: '10:00' },
+                                { label: '11:00 AM - 12:00 PM', value: '11:00' }
                             ]}
                         />
                     </View>
