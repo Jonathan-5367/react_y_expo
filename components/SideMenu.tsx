@@ -59,11 +59,16 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
             <View style={styles.logoContainer}>
               <Ionicons name="medical" size={32} color="#e83e8c" />
             </View>
-            <View style={{ flex: 1 }}>
-              <ThemedText style={styles.headerTitle} numberOfLines={1}>{user?.nombre || "Dra. Nazaret Lopez"}</ThemedText>
-              <View style={[styles.roleBadge, { backgroundColor: user?.rol === 'administrador' ? '#e83e8c' : '#4A90E2' }]}>
+            <View style={styles.userInfo}>
+              <ThemedText style={styles.headerTitle} numberOfLines={2}>{user?.nombre || "Dra. Nazaret Lopez"}</ThemedText>
+              <View style={[styles.roleBadge, { 
+                backgroundColor: 
+                  user?.rol === 'administrador' ? '#e83e8c' : 
+                  user?.rol === 'doctor' ? '#2E8B57' : 
+                  user?.rol === 'recepcionista' ? '#FD7E14' : '#4A90E2' 
+              }]}>
                 <ThemedText style={styles.roleText}>
-                  {user?.rol === 'administrador' ? 'Administrador' : 'Paciente'}
+                  {user?.rol ? (user.rol.charAt(0).toUpperCase() + user.rol.slice(1)) : 'Paciente'}
                 </ThemedText>
               </View>
             </View>
@@ -130,11 +135,16 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginRight: 12,
   },
-  headerTitle: {
+  userInfo: {
     flex: 1,
-    fontSize: 18,
+    justifyContent: 'center',
+    gap: 4,
+  },
+  headerTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+    lineHeight: 20,
   },
   closeButton: {
     padding: 4,
