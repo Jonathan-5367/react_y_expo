@@ -23,6 +23,7 @@ export default function RegistroAdminScreen() {
     const [telefono, setTelefono] = useState('');
     const [rol, setRol] = useState<UserRole>('administrador');
     const [isRolDropdownVisible, setIsRolDropdownVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     // Access control: only admins allowed
     useEffect(() => {
@@ -33,27 +34,32 @@ export default function RegistroAdminScreen() {
         }
     }, [user]);
 
-    const handleRegisterAdmin = () => {
+    const handleRegisterAdmin = async () => {
         if (!nombre.trim() || !cedula.trim() || !email.trim() || !password.trim()) {
             Alert.alert('Campos requeridos', 'Por favor, llena los campos obligatorios: Nombre, Cédula, Correo y Contraseña.');
             return;
         }
 
-        const result = registerAdmin({
-            nombre: nombre.trim(),
-            cedula: cedula.trim(),
-            email: email.trim().toLowerCase(),
-            password: password.trim(),
-            telefono: telefono.trim(),
-            rol: rol,
-        });
+        setLoading(true);
+        try {
+            const result = await registerAdmin({
+                nombre: nombre.trim(),
+                cedula: cedula.trim(),
+                email: email.trim().toLowerCase(),
+                password: password.trim(),
+                telefono: telefono.trim(),
+                rol: rol,
+            });
 
-        if (result.success) {
-            Alert.alert('Registro Exitoso', `El usuario ${nombre} con el rol de ${rol} ha sido creado con éxito.`, [
-                { text: 'Aceptar', onPress: () => router.back() }
-            ]);
-        } else {
-            Alert.alert('Error al Registrar', result.error || 'Ocurrió un error inesperado.');
+            if (result.success) {
+                Alert.alert('Registro Exitoso', `El usuario ${nombre} con el rol de ${rol} ha sido creado con éxito.`, [
+                    { text: 'Aceptar', onPress: () => router.back() }
+                ]);
+            } else {
+                Alert.alert('Error al Registrar', result.error || 'Ocurrió un error inesperado.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -172,8 +178,8 @@ export default function RegistroAdminScreen() {
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={handleRegisterAdmin}>
-                        <ThemedText style={styles.buttonText}>Crear Usuario</ThemedText>
+                    <TouchableOpacity style={[styles.button, loading && { opacity: 0.6 }]} onPress={handleRegisterAdmin} disabled={loading}>
+                        <ThemedText style={styles.buttonText}>{loading ? 'Creando...' : 'Crear Usuario'}</ThemedText>
                     </TouchableOpacity>
                 </View>
             </ScrollView>

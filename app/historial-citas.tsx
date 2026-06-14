@@ -53,8 +53,8 @@ export default function HistorialCitasScreen() {
                 {
                     text: 'Sí, Cancelar',
                     style: 'destructive',
-                    onPress: () => {
-                        const success = cancelAppointment(id);
+                    onPress: async () => {
+                        const success = await cancelAppointment(id);
                         if (success) {
                             Alert.alert('Cita Cancelada', 'La cita ha sido cancelada con éxito.');
                         } else {

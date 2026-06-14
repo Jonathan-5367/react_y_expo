@@ -14,17 +14,23 @@ export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [rememberMe, setRememberMe] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleLogin = () => {
+    const handleLogin = async () => {
         if (!email.trim() || !password.trim()) {
             Alert.alert('Campos requeridos', 'Por favor, introduce tu correo y contraseña.');
             return;
         }
-        const result = login(email, password);
-        if (result.success) {
-            router.replace('/dashboard');
-        } else {
-            Alert.alert('Error de Inicio de Sesión', result.error || 'Credenciales inválidas');
+        setLoading(true);
+        try {
+            const result = await login(email, password);
+            if (result.success) {
+                router.replace('/dashboard');
+            } else {
+                Alert.alert('Error de Inicio de Sesión', result.error || 'Credenciales inválidas');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -78,8 +84,8 @@ export default function LoginScreen() {
                         <ThemedText style={styles.forgotPasswordText}>¿Olvidaste tu contraseña?</ThemedText>
                     </TouchableOpacity>
 
-                    <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                        <ThemedText style={styles.buttonText}>Entrar</ThemedText>
+                    <TouchableOpacity style={[styles.button, loading && { opacity: 0.6 }]} onPress={handleLogin} disabled={loading}>
+                        <ThemedText style={styles.buttonText}>{loading ? 'Cargando...' : 'Entrar'}</ThemedText>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => router.push('/register')} style={styles.linkButton}>

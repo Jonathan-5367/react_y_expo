@@ -13,10 +13,12 @@ app.use(express.json());
 const authRouter = require('./routes/auth');
 const appointmentsRouter = require('./routes/appointments');
 const patientsRouter = require('./routes/patients');
+const testimonialsRouter = require('./routes/testimonials');
 
 app.use('/api/auth', authRouter);
 app.use('/api/appointments', appointmentsRouter);
 app.use('/api/patients', patientsRouter);
+app.use('/api/testimonials', testimonialsRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
