@@ -1,36 +1,86 @@
+import { NotifBell } from '@/components/NotifBell';
+import { SideMenu } from '@/components/SideMenu';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { API_URL, useAuth, User } from '@/store/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SideMenu } from '@/components/SideMenu';
-import { NotifBell } from '@/components/NotifBell';
 
 export default function ProfileScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const { user } = useAuth();
+    const [profileData, setProfileData] = useState<User | null>(user);
+    const [loading, setLoading] = useState(false);
 
-    // Mock data based on perfil.php structure
-    const usuario = {
-        nombre: "Juan Pérez",
-        cedula: "12345678",
-        email: "juan.perez@ejemplo.com",
-        telefono: "04141234567",
-        fecha_nacimiento: "1990-05-15",
-        edad: "35",
-        rol_nombre: "Paciente",
-        telefono_familiar: "04149876543",
-        alergias: "Ninguna conocida"
+    // Redirect to login if user is not logged in
+    useEffect(() => {
+        if (!user) {
+            router.replace('/login');
+        }
+    }, [user]);
+
+    // Fetch latest user details from DB on mount
+    useEffect(() => {
+        if (user?.id) {
+            setLoading(true);
+            fetch(`${API_URL}/auth/profile/${user.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.success && data.user) {
+                        setProfileData(data.user);
+                    }
+                })
+                .catch(err => {
+                    console.error('Error fetching user profile:', err);
+                })
+                .finally(() => {
+                    setLoading(false);
+                });
+        }
+    }, [user?.id]);
+
+    // Calculate age from date of birth helper
+    const calculateAge = (birthDateString?: string) => {
+        if (!birthDateString) return 'N/A';
+        const birthDate = new Date(birthDateString);
+        if (isNaN(birthDate.getTime())) return 'N/A';
+        const today = new Date();
+        let age = today.getFullYear() - birthDate.getFullYear();
+        const m = today.getMonth() - birthDate.getMonth();
+        if (m < 0 || (m === 0 && today.getDate() < birthDate.getDate())) {
+            age--;
+        }
+        return age.toString();
     };
+
+    // Format date YYYY-MM-DD to DD/MM/YYYY
+    const formatDate = (dateString?: string) => {
+        if (!dateString) return 'N/A';
+        const parts = dateString.split('T')[0].split('-');
+        if (parts.length === 3) {
+            const [year, month, day] = parts;
+            return `${day}/${month}/${year}`;
+        }
+        return dateString;
+    };
+
+    const displayAge = profileData?.fechaNacimiento ? `${calculateAge(profileData.fechaNacimiento)} años` : 'N/A';
+    const displayRol = profileData?.rol ? (profileData.rol.charAt(0).toUpperCase() + profileData.rol.slice(1)) : 'Paciente';
+
+    if (!user) {
+        return null; // Don't render while redirecting
+    }
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <SideMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
             <Stack.Screen options={{ headerShown: false }} />
-            
+
             <View style={styles.topBar}>
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />
@@ -38,29 +88,36 @@ export default function ProfileScreen() {
                 <NotifBell />
             </View>
 
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            {loading ? (
+                <View style={styles.loadingContainer}>
+                    <ActivityIndicator size="large" color="#e83e8c" />
+                    <ThemedText style={{ marginTop: 12, color: '#e83e8c', fontWeight: 'bold' }}>Cargando perfil...</ThemedText>
+                </View>
+            ) : (
+                <ScrollView contentContainerStyle={styles.scrollContent}>
 
-                <View style={styles.header}>
-                    <View style={styles.avatarContainer}>
-                        <Ionicons name="person-circle" size={100} color="#e83e8c" />
+                    <View style={styles.header}>
+                        <View style={styles.avatarContainer}>
+                            <Ionicons name="person-circle" size={100} color="#e83e8c" />
+                        </View>
+                        <ThemedText type="title" style={styles.title}>Mi Perfil</ThemedText>
+                        <ThemedText style={styles.subtitle}>Gestiona tu información personal</ThemedText>
                     </View>
-                    <ThemedText type="title" style={styles.title}>Mi Perfil de Usuario</ThemedText>
-                    <ThemedText style={styles.subtitle}>Gestiona tu información personal</ThemedText>
-                </View>
 
-                <View style={styles.profileContainer}>
-                    <ProfileItem icon="person" label="Nombre Completo" value={usuario.nombre} />
-                    <ProfileItem icon="card" label="Cédula" value={usuario.cedula} />
-                    <ProfileItem icon="mail" label="Correo Electrónico" value={usuario.email} />
-                    <ProfileItem icon="call" label="Teléfono" value={usuario.telefono} />
-                    <ProfileItem icon="calendar" label="Fecha de Nacimiento" value={usuario.fecha_nacimiento} />
-                    <ProfileItem icon="accessibility" label="Edad" value={`${usuario.edad} años`} />
-                    <ProfileItem icon="shield-checkmark" label="Rol" value={usuario.rol_nombre} />
-                    <ProfileItem icon="people" label="Número de Familiar" value={usuario.telefono_familiar} />
-                    <ProfileItem icon="alert-circle" label="Alergias Conocidas" value={usuario.alergias} />
-                </View>
+                    <View style={styles.profileContainer}>
+                        <ProfileItem icon="person" label="Nombre Completo" value={profileData?.nombre || 'N/A'} />
+                        <ProfileItem icon="card" label="Cédula" value={profileData?.cedula || 'N/A'} />
+                        <ProfileItem icon="mail" label="Correo Electrónico" value={profileData?.email || 'N/A'} />
+                        <ProfileItem icon="call" label="Teléfono" value={profileData?.telefono || 'N/A'} />
+                        <ProfileItem icon="calendar" label="Fecha de Nacimiento" value={formatDate(profileData?.fechaNacimiento)} />
+                        <ProfileItem icon="accessibility" label="Edad" value={displayAge} />
+                        <ProfileItem icon="shield-checkmark" label="Rol" value={displayRol} />
+                        <ProfileItem icon="people" label="Número de Familiar" value={profileData?.telefonoFamiliar || 'N/A'} />
+                        <ProfileItem icon="alert-circle" label="Alergias Conocidas" value={profileData?.alergias || 'Ninguna conocida'} />
+                    </View>
 
-            </ScrollView>
+                </ScrollView>
+            )}
         </ThemedView>
     );
 }
@@ -78,6 +135,7 @@ function ProfileItem({ icon, label, value }: { icon: any, label: string, value: 
         </View>
     );
 }
+
 
 const styles = StyleSheet.create({
     container: {
@@ -164,5 +222,11 @@ const styles = StyleSheet.create({
         fontSize: 16,
         color: '#333',
         fontWeight: '500',
+    },
+    loadingContainer: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        backgroundColor: '#FFF0F6',
     },
 });

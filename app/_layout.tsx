@@ -1,9 +1,11 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
 import 'react-native-reanimated';
+import React, { useEffect } from 'react';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { useAuth } from '@/store/auth';
 
 export const unstable_settings = {
   anchor: 'login',
@@ -11,6 +13,18 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const { user } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
+  useEffect(() => {
+    const path = segments[0];
+    const isPublic = path === 'login' || path === 'register' || path === undefined || path === '';
+    
+    if (!user && !isPublic) {
+      router.replace('/login');
+    }
+  }, [user, segments]);
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>

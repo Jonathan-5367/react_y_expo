@@ -215,4 +215,44 @@ router.post('/register-admin', async (req, res) => {
     }
 });
 
+// 4. GET USER PROFILE
+router.get('/profile/:id', async (req, res) => {
+    const { id } = req.params;
+    try {
+        const [users] = await db.query(
+            `SELECT u.*, r.nombre as rol 
+             FROM usuarios u 
+             LEFT JOIN roles r ON u.id_rol = r.id_rol 
+             WHERE u.id_usuario = ? AND u.activo = 1`,
+            [id]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado o inactivo' });
+        }
+
+        const user = users[0];
+        delete user.password;
+
+        return res.json({
+            success: true,
+            user: {
+                id: user.id_usuario,
+                nombre: user.nombre,
+                cedula: user.cedula,
+                email: user.email,
+                telefono: user.telefono,
+                telefonoFamiliar: user.telefono_familiar,
+                alergias: user.alergias,
+                fechaNacimiento: user.fecha_nacimiento,
+                rol: user.rol
+            }
+        });
+    } catch (err) {
+        console.error('Error fetching profile:', err);
+        return res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
 module.exports = router;
+
