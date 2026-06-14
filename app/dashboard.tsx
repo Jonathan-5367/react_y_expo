@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
+import { useAuth, useProtectedRoute } from '@/store/auth';
 
 export default function DashboardScreen() {
     const router = useRouter();
@@ -15,12 +15,7 @@ export default function DashboardScreen() {
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const { user, logout } = useAuth();
 
-    // Redirect to login if user is not logged in
-    useEffect(() => {
-        if (!user) {
-            router.replace('/login');
-        }
-    }, [user]);
+    useProtectedRoute();
 
     if (!user) {
         return null; // Don't render while redirecting

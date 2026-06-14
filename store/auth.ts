@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Platform } from 'react-native';
+import { useRouter } from 'expo-router';
 
 export type UserRole = 'administrador' | 'paciente' | 'doctor' | 'recepcionista';
 
@@ -136,6 +137,32 @@ export async function registerAdmin(details: Omit<User, 'id'>): Promise<{ succes
     }
 }
 
+export async function updateProfile(id: number, details: Omit<User, 'id' | 'rol'>): Promise<{ success: boolean; user?: User; error?: string }> {
+    try {
+        const response = await fetch(`${API_URL}/auth/profile/${id}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(details),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            return { success: false, error: data.error || 'Error al actualizar el perfil' };
+        }
+
+        currentUser = data.user;
+        saveCurrentUser();
+        notify();
+        return { success: true, user: data.user };
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        return { success: false, error: 'No se pudo conectar al servidor de base de datos.' };
+    }
+}
+
 export function useAuth() {
     const [, forceUpdate] = useState(0);
 
@@ -151,6 +178,20 @@ export function useAuth() {
         logout,
         registerPatient,
         registerAdmin,
+        updateProfile,
         users: [] // Left for backward compatibility if reference exists
     };
+}
+
+export function useProtectedRoute() {
+    const { user } = useAuth();
+    const router = useRouter();
+
+    useEffect(() => {
+        if (!user) {
+            router.replace('/login');
+        }
+    }, [user]);
+
+    return user;
 }

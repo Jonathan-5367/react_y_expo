@@ -254,5 +254,81 @@ router.get('/profile/:id', async (req, res) => {
     }
 });
 
+// 5. UPDATE USER PROFILE
+router.put('/profile/:id', async (req, res) => {
+    const { id } = req.params;
+    const { nombre, cedula, email, telefono, fechaNacimiento, telefonoFamiliar, alergias } = req.body;
+
+    if (!nombre || !cedula || !email) {
+        return res.status(400).json({ error: 'Nombre, cédula y correo son campos obligatorios.' });
+    }
+
+    try {
+        const trimmedEmail = email.trim().toLowerCase();
+        const trimmedCedula = cedula.trim();
+
+        // Check unique constraints (email and cedula) for other users
+        const [existing] = await db.query(
+            'SELECT id_usuario FROM usuarios WHERE (email = ? OR cedula = ?) AND id_usuario != ?',
+            [trimmedEmail, trimmedCedula, id]
+        );
+
+        if (existing.length > 0) {
+            return res.status(400).json({ error: 'El correo o la cédula ya se encuentran registrados por otro usuario.' });
+        }
+
+        // Update user
+        await db.query(
+            `UPDATE usuarios 
+             SET nombre = ?, cedula = ?, email = ?, telefono = ?, fecha_nacimiento = ?, telefono_familiar = ?, alergias = ?
+             WHERE id_usuario = ?`,
+            [
+                nombre.trim(),
+                trimmedCedula,
+                trimmedEmail,
+                telefono ? telefono.trim() : null,
+                fechaNacimiento ? fechaNacimiento.trim() : null,
+                telefonoFamiliar ? telefonoFamiliar.trim() : null,
+                alergias ? alergias.trim() : null,
+                id
+            ]
+        );
+
+        // Fetch updated data
+        const [users] = await db.query(
+            `SELECT u.*, r.nombre as rol 
+             FROM usuarios u 
+             LEFT JOIN roles r ON u.id_rol = r.id_rol 
+             WHERE u.id_usuario = ? AND u.activo = 1`,
+            [id]
+        );
+
+        if (users.length === 0) {
+            return res.status(404).json({ error: 'Usuario no encontrado' });
+        }
+
+        const updatedUser = users[0];
+        delete updatedUser.password;
+
+        return res.json({
+            success: true,
+            user: {
+                id: updatedUser.id_usuario,
+                nombre: updatedUser.nombre,
+                cedula: updatedUser.cedula,
+                email: updatedUser.email,
+                telefono: updatedUser.telefono,
+                telefonoFamiliar: updatedUser.telefono_familiar,
+                alergias: updatedUser.alergias,
+                fechaNacimiento: updatedUser.fecha_nacimiento,
+                rol: updatedUser.rol
+            }
+        });
+    } catch (err) {
+        console.error('Error updating profile:', err);
+        return res.status(500).json({ error: 'Error interno del servidor al actualizar el perfil.' });
+    }
+});
+
 module.exports = router;
 
