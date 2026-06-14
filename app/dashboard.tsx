@@ -45,7 +45,7 @@ export default function DashboardScreen() {
 
     const menuItems = [
         { title: 'Mi Perfil', icon: 'person', route: '/profile', color: '#4A90E2', desc: 'Ver datos personales' },
-        ...(user?.rol === 'administrador' ? [
+        ...(user?.rol === 'administrador' || user?.rol === 'doctor' ? [
             { title: 'Pacientes', icon: 'people', route: '/lista-pacientes', color: '#F39C12', desc: 'Gestionar lista de pacientes' },
             { title: 'Registrar Admin', icon: 'person-add', route: '/registro-admin', color: '#FD7E14', desc: 'Registrar nuevo administrador' }
         ] : []),

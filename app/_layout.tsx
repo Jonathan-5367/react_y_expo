@@ -1,8 +1,8 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { Stack, useRouter, useSegments } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import 'react-native-reanimated';
 import React, { useEffect } from 'react';
+import 'react-native-reanimated';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { useAuth } from '@/store/auth';
@@ -20,8 +20,11 @@ export default function RootLayout() {
   useEffect(() => {
     const path = segments[0];
     const isPublic = path === 'login' || path === 'register' || path === undefined || path === '';
+
+    console.log('[RootLayout Auth Guard]', { path, isPublic, hasUser: !!user });
     
     if (!user && !isPublic) {
+      console.log('[RootLayout Auth Guard] Redirecting to /login because user is null and route is protected.');
       router.replace('/login');
     }
   }, [user, segments]);

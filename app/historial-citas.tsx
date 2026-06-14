@@ -17,7 +17,7 @@ export default function HistorialCitasScreen() {
     const { user } = useAuth();
     const { appointments, cancelAppointment } = useAppointments();
 
-    const isAdmin = user?.rol === 'administrador';
+    const isAdmin = user?.rol === 'administrador' || user?.rol === 'doctor' || user?.rol === 'recepcionista';
     
     // Filter appointments: admins see all, patients see only their own
     const citas = appointments.filter(cita => {

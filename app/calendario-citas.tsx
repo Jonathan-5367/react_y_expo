@@ -17,7 +17,7 @@ export default function CalendarioCitasScreen() {
     const { user } = useAuth();
     const { appointments } = useAppointments();
 
-    const isAdmin = user?.rol === 'administrador';
+    const isAdmin = user?.rol === 'administrador' || user?.rol === 'doctor' || user?.rol === 'recepcionista';
 
     // State to manage the viewed month and year
     const [viewDate, setViewDate] = useState(new Date(2026, 5, 1)); // Default: June 2026 (index 5)
