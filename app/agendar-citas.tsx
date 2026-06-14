@@ -5,10 +5,12 @@ import { NotifBell } from '@/components/NotifBell';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '@/store/auth';
 import { useAppointments } from '@/store/appointments';
+import { CalendarModal } from '@/components/CalendarModal';
+import { DropdownSelector } from '@/components/DropdownSelector';
 
 export default function AgendarCitasScreen() {
     const router = useRouter();
@@ -17,6 +19,8 @@ export default function AgendarCitasScreen() {
     const { addAppointment } = useAppointments();
 
     const [isMenuVisible, setIsMenuVisible] = useState(false);
+    const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+    const [isHourDropdownVisible, setIsHourDropdownVisible] = useState(false);
 
     const isPatient = user?.rol !== 'administrador';
 
@@ -117,23 +121,46 @@ export default function AgendarCitasScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Fecha de la cita:</ThemedText>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="AAAA-MM-DD (Ej: 2026-06-15)"
-                            placeholderTextColor="#888"
-                            value={fecha}
-                            onChangeText={setFecha}
+                        <TouchableOpacity
+                            style={styles.calendarInputButton}
+                            onPress={() => setIsCalendarVisible(true)}
+                        >
+                            <Text style={[fecha ? styles.inputText : styles.placeholderText, { flex: 1, textAlign: 'left' }]}>
+                                {fecha || "Seleccionar fecha (AAAA-MM-DD)"}
+                            </Text>
+                            <Ionicons name="calendar-outline" size={20} color="#e83e8c" />
+                        </TouchableOpacity>
+                        <CalendarModal
+                            visible={isCalendarVisible}
+                            onClose={() => setIsCalendarVisible(false)}
+                            onSelectDate={(date) => setFecha(date)}
+                            initialDate={fecha || new Date().toISOString().split('T')[0]}
                         />
                     </View>
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Hora de la cita:</ThemedText>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Ej: 14:30"
-                            placeholderTextColor="#888"
-                            value={hora}
-                            onChangeText={setHora}
+                        <TouchableOpacity
+                            style={styles.calendarInputButton}
+                            onPress={() => setIsHourDropdownVisible(true)}
+                        >
+                            <Text style={[hora ? styles.inputText : styles.placeholderText, { flex: 1, textAlign: 'left' }]}>
+                                {hora ? (hora === '12:00' ? '12:00 PM' : `${parseInt(hora.split(':')[0])}:00 AM`) : "Seleccionar hora"}
+                            </Text>
+                            <Ionicons name="time-outline" size={20} color="#e83e8c" />
+                        </TouchableOpacity>
+                        <DropdownSelector
+                            visible={isHourDropdownVisible}
+                            onClose={() => setIsHourDropdownVisible(false)}
+                            selectedValue={hora}
+                            onSelect={(val) => setHora(val)}
+                            title="Selecciona la hora de la cita"
+                            options={[
+                                { label: '09:00 AM', value: '09:00' },
+                                { label: '10:00 AM', value: '10:00' },
+                                { label: '11:00 AM', value: '11:00' },
+                                { label: '12:00 PM', value: '12:00' }
+                            ]}
                         />
                     </View>
 
@@ -243,5 +270,54 @@ const styles = StyleSheet.create({
         color: '#FFFFFF',
         fontSize: 20,
         fontWeight: 'bold',
+    },
+    calendarInputButton: {
+        height: 50,
+        backgroundColor: '#F9F9F9',
+        borderRadius: 8,
+        paddingHorizontal: 16,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    inputText: {
+        fontSize: 16,
+        color: '#333',
+    },
+    placeholderText: {
+        fontSize: 16,
+        color: '#888',
+    },
+    timeSlotsContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        justifyContent: 'space-between',
+        gap: 10,
+        marginTop: 4,
+    },
+    timeSlotButton: {
+        flex: 1,
+        minWidth: '45%',
+        height: 50,
+        backgroundColor: '#F9F9F9',
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#E0E0E0',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    timeSlotButtonSelected: {
+        backgroundColor: '#e83e8c',
+        borderColor: '#e83e8c',
+    },
+    timeSlotText: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#333',
+    },
+    timeSlotTextSelected: {
+        color: '#FFF',
     },
 });
