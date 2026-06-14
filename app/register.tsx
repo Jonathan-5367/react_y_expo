@@ -2,23 +2,50 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useAuth } from '@/store/auth';
+import { CalendarModal } from '@/components/CalendarModal';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function RegisterScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
+    const { registerPatient } = useAuth();
     const [name, setName] = useState('');
     const [cedula, setCedula] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [telefono, setTelefono] = useState('');
     const [fechaNacimiento, setFechaNacimiento] = useState('');
+    const [telefonoFamiliar, setTelefonoFamiliar] = useState('');
+    const [alergias, setAlergias] = useState('');
+    const [isCalendarVisible, setIsCalendarVisible] = useState(false);
 
     const handleRegister = () => {
-        // Implement registration logic here
-        console.log('Registering:', { name, cedula, email, password, telefono, fechaNacimiento });
-        router.replace('/login'); // Navigate to login after registration
+        if (!name.trim() || !cedula.trim() || !email.trim() || !password.trim()) {
+            Alert.alert('Campos requeridos', 'Por favor, llena los campos obligatorios: Nombre, Cédula, Correo y Contraseña.');
+            return;
+        }
+
+        const result = registerPatient({
+            nombre: name,
+            cedula,
+            email,
+            password,
+            telefono,
+            fechaNacimiento,
+            telefonoFamiliar,
+            alergias
+        });
+
+        if (result.success) {
+            Alert.alert('Registro Exitoso', 'Tu cuenta de paciente ha sido creada con éxito.', [
+                { text: 'OK', onPress: () => router.replace('/login') }
+            ]);
+        } else {
+            Alert.alert('Error al Registrarse', result.error || 'Ocurrió un error inesperado.');
+        }
     };
 
     return (
@@ -96,12 +123,47 @@ export default function RegisterScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Fecha de Nacimiento</ThemedText>
+                        <TouchableOpacity
+                            style={styles.calendarInputButton}
+                            onPress={() => setIsCalendarVisible(true)}
+                        >
+                            <Text style={fechaNacimiento ? styles.inputText : styles.placeholderText}>
+                                {fechaNacimiento || "Seleccionar fecha (AAAA-MM-DD)"}
+                            </Text>
+                            <Ionicons name="calendar-outline" size={20} color="#e83e8c" />
+                        </TouchableOpacity>
+                        <CalendarModal
+                            visible={isCalendarVisible}
+                            onClose={() => setIsCalendarVisible(false)}
+                            onSelectDate={(date) => setFechaNacimiento(date)}
+                            initialDate={fechaNacimiento || "1995-01-01"}
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <ThemedText style={styles.label}>Número de Familiar</ThemedText>
                         <TextInput
                             style={styles.input}
-                            placeholder="AAAA-MM-DD"
+                            placeholder="Ej. 04141234567"
                             placeholderTextColor="#888"
-                            value={fechaNacimiento}
-                            onChangeText={setFechaNacimiento}
+                            value={telefonoFamiliar}
+                            onChangeText={setTelefonoFamiliar}
+                            keyboardType="phone-pad"
+                            maxLength={11}
+                        />
+                    </View>
+
+                    <View style={styles.inputContainer}>
+                        <ThemedText style={styles.label}>Alergias Conocidas</ThemedText>
+                        <TextInput
+                            style={styles.textArea}
+                            placeholder="Ej. Penicilina, látex, anestesia local..."
+                            placeholderTextColor="#888"
+                            value={alergias}
+                            onChangeText={setAlergias}
+                            multiline
+                            numberOfLines={4}
+                            textAlignVertical="top"
                         />
                     </View>
 
@@ -169,6 +231,16 @@ const styles = StyleSheet.create({
         borderColor: '#E1E4E8',
         fontSize: 16,
     },
+    textArea: {
+        minHeight: 100,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        paddingVertical: 12,
+        borderWidth: 1,
+        borderColor: '#E1E4E8',
+        fontSize: 16,
+    },
     button: {
         backgroundColor: '#e83e8c',
         height: 56,
@@ -195,5 +267,24 @@ const styles = StyleSheet.create({
         color: '#e83e8c',
         fontSize: 16,
         fontWeight: '600',
+    },
+    calendarInputButton: {
+        height: 50,
+        backgroundColor: '#FFFFFF',
+        borderRadius: 12,
+        paddingHorizontal: 16,
+        borderWidth: 1,
+        borderColor: '#E1E4E8',
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between',
+    },
+    inputText: {
+        fontSize: 16,
+        color: '#333333',
+    },
+    placeholderText: {
+        fontSize: 16,
+        color: '#888888',
     },
 });

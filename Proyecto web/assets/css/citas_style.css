@@ -1,0 +1,288 @@
+:root {
+    /* Paleta de colores para el tema claro */
+    --color-primary: #1e90ff;
+    --color-primary-hover: #0077e6;
+    --color-error: #ff3333;
+    --color-error-bg: #ffe6e6;
+    --color-success: #008800;
+    --color-success-bg: #e6ffe6;
+    --color-whatsapp: #25D366;
+}
+
+body.dark-theme {
+    /* Paleta de colores para el tema oscuro */
+    --color-text-primary: #f1f5f9;
+    --color-text-placeholder: #a6b7d2;
+    --color-bg-primary: #0a1632;
+    --color-bg-secundary: #3d4859;
+    --color-bg-sidebar: #142846;
+    --color-border-hr: #3b475c;
+    --color-hover-primary: #48566a;
+    --color-hover-secundary: #e2e2fb;
+    --color-shadow: rgba(0,0,0, 0.3);
+    --color-primary: #3b82f6;
+    --color-primary-hover: #2563eb;
+    --color-error: #ff6b6b;
+    --color-error-bg: #7f1d1d;
+    --color-success: #4ade80;
+    --color-success-bg: #14532d;
+    --color-whatsapp: #22c55e;
+}
+
+body {
+    display: flex;
+    flex-direction: row; 
+    height: 100vh; 
+    margin: 0;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+}
+
+/*Modo Nocturno*/
+
+/*Icono del calendario*/
+body.dark-theme input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1);
+}
+
+
+/*Main*/
+main {
+    flex: 1;
+    box-sizing: border-box;
+    overflow-y: auto;
+}
+
+.main-content {
+    flex: 1;
+    padding: 20px;
+    color: var(--color-text-primary);
+}
+
+.main-content .page-title {
+    font-size: 2rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+}
+
+.main-content .card {
+    border-radius: 8px;
+    padding: 20px;
+    background-color: var(--color-bg-sidebar);
+    box-shadow: 0 1px 3px rgba(0,0,0, 0.1);
+    margin-bottom: 25px;
+    text-align: center;
+}
+
+.container header{
+    text-align: center;
+    padding-bottom: 20px;
+}
+
+/*Header dentro del main*/
+.main-header {
+    text-align: center;
+    margin-bottom: 30px;
+    background-color: var(--color-primary);
+    color: white;
+    padding: 25px;
+    border-radius: 8px;
+}
+
+.main-header h1 {
+    margin-bottom: 10px;
+    font-size: 2.2rem;
+}
+
+
+/* --- FORM STYLES --- */
+.form-container {
+    margin-right: 20px;
+    margin-left: 20px;
+    padding: 30px;
+    border-radius: 8px;
+    background-color: var(--color-bg-sidebar);
+    box-shadow: 0 0 10px var(--color-shadow);
+    margin-bottom: 30px;
+}
+
+.form-column {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+}
+
+.form-group {
+    flex: 1 1 45%;
+    min-width: 200px;
+    margin-bottom: 1px;
+   
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: var(--color-text-primary);
+
+}
+
+input, select, textarea {
+    width: 100%;
+    padding: 12px 15px;
+    border: 1px solid var(--color-border-hr);
+    border-radius: 6px;
+    font-size: 16px;
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
+    transition: border-color 0.3s;   
+}
+
+input:focus, select:focus, textarea:focus {
+    outline: none;
+    border-color: var(--color-hover-primary);
+}
+
+.button-container {
+    margin-top: 20px;
+    width: 100%;
+    text-align: center;
+}
+
+button {
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    padding: 14px 20px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    width: 200px;
+    transition: background-color 0.3s;
+    
+}
+
+button:hover {
+    background-color: var(--color-primary-hover);
+}
+
+.error {
+    color: var(--color-error);
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--color-error-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--color-error);
+}
+
+.success {
+    color: var(--color-success);
+    margin-bottom: 20px;
+    padding: 15px;
+    background-color: var(--color-success-bg);
+    border-radius: 6px;
+    border-left: 4px solid var(--color-success);
+}
+
+.whatsapp-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 20px;
+    padding: 12px 20px;
+    background-color: var(--color-whatsapp);
+    color: white;
+    text-decoration: none;
+    border-radius: 6px;
+    font-weight: 600;
+    transition: opacity 0.3s;
+}
+
+.whatsapp-link:hover {
+    opacity: 0.9;
+}
+
+
+/*Responsive*/
+@media (max-width: 1024px) {
+    .sidebar {
+        position: fixed;
+        left: 0;
+        z-index: 1000;
+        height: 100%;
+    }
+    
+    .sidebar.collapsed {
+        left: -270px;
+        width: 270px;
+    }
+    
+    main {
+        width: 100%;
+    }
+}
+
+@media (max-width: 768px) {
+    body::before {
+        content: "";
+        position: fixed;
+        inset: 0;
+        z-index: 10;
+        pointer-events: none;
+        background: rgba(0,0,0, 0.6);
+        opacity: 0;
+        transition: 0.4s ease;
+    }
+    
+    body:has(.sidebar:not(.collapsed))::before {
+        opacity: 1;
+        pointer-events: auto;
+    }
+    
+    .site-nav {
+        display: flex;
+        align-items: center;
+        z-index: 20;
+    }
+    
+    .main-content {
+        padding: 20px 15px;
+    }
+    
+    .form-container {
+        padding: 20px;
+    }
+    
+    .main-header {
+        padding: 20px 15px;
+    }
+    
+    .main-header h1 {
+        font-size: 1.8rem;
+    }
+    .form-columns {
+    flex-direction: column;
+    }
+    .form-group {
+    flex: 1 1 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .main-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .main-content .page-title {
+        font-size: 1.6rem;
+    }
+    
+    input, select, textarea {
+        padding: 10px 12px;
+    }
+    
+    button {
+        padding: 12px 16px;
+    }
+}
