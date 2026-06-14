@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Platform } from 'react-native';
 
 export type AppointmentStatus = 'pendiente' | 'confirmada' | 'completada' | 'cancelada' | 'no_asistio';
 
@@ -15,69 +16,9 @@ export type Appointment = {
     pasada: boolean;
 };
 
-// Initial realistic mock data
-let appointments: Appointment[] = [
-    {
-        id: 1,
-        pacienteNombre: 'Juan Pérez',
-        pacienteTelefono: '04141234567',
-        pacienteEmail: 'paciente@paciente.com',
-        fecha: '2026-06-15',
-        hora: '10:00',
-        procedimiento: 'Limpieza Dental',
-        doctor: 'Dra. Nazaret Lopez',
-        estado: 'confirmada',
-        pasada: false
-    },
-    {
-        id: 2,
-        pacienteNombre: 'Juan Pérez',
-        pacienteTelefono: '04141234567',
-        pacienteEmail: 'paciente@paciente.com',
-        fecha: '2026-05-02',
-        hora: '14:30',
-        procedimiento: 'Ortodoncia',
-        doctor: 'Dra. Nazaret Lopez',
-        estado: 'completada',
-        pasada: true
-    },
-    {
-        id: 3,
-        pacienteNombre: 'Juan Pérez',
-        pacienteTelefono: '04141234567',
-        pacienteEmail: 'paciente@paciente.com',
-        fecha: '2026-04-10',
-        hora: '09:00',
-        procedimiento: 'Consulta General',
-        doctor: 'Dra. Nazaret Lopez',
-        estado: 'cancelada',
-        pasada: true
-    },
-    {
-        id: 4,
-        pacienteNombre: 'Ana Gómez',
-        pacienteTelefono: '555-0101',
-        pacienteEmail: 'ana@gmail.com',
-        fecha: '2026-06-22',
-        hora: '14:30',
-        procedimiento: 'Ortodoncia',
-        doctor: 'Dra. Nazaret Lopez',
-        estado: 'confirmada',
-        pasada: false
-    },
-    {
-        id: 5,
-        pacienteNombre: 'Carlos Ruiz',
-        pacienteTelefono: '555-0202',
-        pacienteEmail: 'carlos@gmail.com',
-        fecha: '2026-06-10',
-        hora: '09:00',
-        procedimiento: 'Consulta General',
-        doctor: 'Dra. Nazaret Lopez',
-        estado: 'pendiente',
-        pasada: false
-    }
-];
+const API_URL = Platform.OS === 'web' ? 'http://localhost:3000/api' : 'http://192.168.0.193:3000/api';
+
+let appointments: Appointment[] = [];
 
 type AppointmentsListener = () => void;
 const listeners: Set<AppointmentsListener> = new Set();
@@ -86,39 +27,74 @@ function notify() {
     listeners.forEach(fn => fn());
 }
 
+export async function fetchAppointments(): Promise<Appointment[]> {
+    try {
+        const response = await fetch(`${API_URL}/appointments`);
+        if (!response.ok) throw new Error('Error fetching appointments');
+        const data = await response.json();
+        appointments = data;
+        notify();
+        return appointments;
+    } catch (err) {
+        console.error(err);
+        return appointments;
+    }
+}
+
 export function getAppointments() {
     return appointments;
 }
 
-export function addAppointment(app: Omit<Appointment, 'id' | 'doctor' | 'estado' | 'pasada'>): Appointment {
-    const newId = appointments.length > 0 ? Math.max(...appointments.map(a => a.id)) + 1 : 1;
-    
-    // Determine if the appointment date is in the past
-    const todayStr = new Date().toISOString().split('T')[0];
-    const isPast = app.fecha < todayStr;
+export async function addAppointment(app: Omit<Appointment, 'id' | 'doctor' | 'estado' | 'pasada'>): Promise<Appointment | null> {
+    try {
+        const response = await fetch(`${API_URL}/appointments`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(app),
+        });
 
-    const newAppointment: Appointment = {
-        ...app,
-        id: newId,
-        doctor: 'Dra. Nazaret Lopez',
-        estado: 'confirmada',
-        pasada: isPast
-    };
-
-    appointments = [newAppointment, ...appointments];
-    notify();
-    return newAppointment;
+        if (!response.ok) throw new Error('Error creating appointment');
+        const data = await response.json();
+        
+        if (data.success) {
+            appointments = [data.appointment, ...appointments];
+            notify();
+            return data.appointment;
+        }
+        return null;
+    } catch (err) {
+        console.error(err);
+        return null;
+    }
 }
 
-export function cancelAppointment(id: number): boolean {
-    const index = appointments.findIndex(a => a.id === id);
-    if (index !== -1) {
-        // Only allow canceling future non-canceled appointments
-        appointments[index].estado = 'cancelada';
-        notify();
-        return true;
+export async function cancelAppointment(id: number): Promise<boolean> {
+    try {
+        const response = await fetch(`${API_URL}/appointments/${id}/cancel`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        });
+
+        if (!response.ok) throw new Error('Error canceling appointment');
+        const data = await response.json();
+
+        if (data.success) {
+            const index = appointments.findIndex(a => a.id === id);
+            if (index !== -1) {
+                appointments[index].estado = 'cancelada';
+                notify();
+            }
+            return true;
+        }
+        return false;
+    } catch (err) {
+        console.error(err);
+        return false;
     }
-    return false;
 }
 
 export function useAppointments() {
@@ -127,12 +103,17 @@ export function useAppointments() {
     useEffect(() => {
         const listener = () => forceUpdate(c => c + 1);
         listeners.add(listener);
+        
+        // Auto-fetch on mount
+        fetchAppointments();
+
         return () => { listeners.delete(listener); };
     }, []);
 
     return {
         appointments,
         getAppointments,
+        fetchAppointments,
         addAppointment,
         cancelAppointment
     };
