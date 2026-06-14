@@ -54,21 +54,38 @@ export default function ListaPacientesScreen() {
         return null; // Don't render while redirecting
     }
 
-    let filteredPacientes = pacientes.filter(p => 
-        (p.name || '').toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    // Search across name, cedula, and phone
+    const query = searchQuery.toLowerCase().trim();
+    let filteredPacientes = pacientes.filter(p => {
+        if (!query) return true;
+        const name = (p.name || '').toLowerCase();
+        const cedula = (p.cedula || '').toLowerCase();
+        const phone = (p.phone || '').toLowerCase();
+        return name.includes(query) || cedula.includes(query) || phone.includes(query);
+    });
 
-    if (filterType === 'Mayores de 30') {
-        filteredPacientes = filteredPacientes.filter(p => p.age >= 30);
-    } else if (filterType === 'Menores de 30') {
-        filteredPacientes = filteredPacientes.filter(p => p.age < 30);
-    } else if (filterType === 'Recientes') {
+    // Apply category filter
+    if (filterType === 'Con Citas') {
         filteredPacientes = filteredPacientes.filter(p => p.lastVisit && p.lastVisit !== 'Sin citas');
-    } else if (filterType === 'Cédula V') {
-        filteredPacientes = filteredPacientes.filter(p => (p.cedula || '').toUpperCase().startsWith('V'));
-    } else if (filterType === 'Cédula E') {
-        filteredPacientes = filteredPacientes.filter(p => (p.cedula || '').toUpperCase().startsWith('E'));
+    } else if (filterType === 'Sin Citas') {
+        filteredPacientes = filteredPacientes.filter(p => !p.lastVisit || p.lastVisit === 'Sin citas');
+    } else if (filterType === 'Mayores de 30') {
+        filteredPacientes = filteredPacientes.filter(p => p.age > 0 && p.age >= 30);
+    } else if (filterType === 'Menores de 30') {
+        filteredPacientes = filteredPacientes.filter(p => p.age > 0 && p.age < 30);
+    } else if (filterType === 'Con Fecha Nac.') {
+        filteredPacientes = filteredPacientes.filter(p => p.age > 0);
     }
+
+    // Filter options with descriptions
+    const filterOptions = [
+        { key: 'Todos', icon: 'people-outline' as const },
+        { key: 'Con Citas', icon: 'checkmark-circle-outline' as const },
+        { key: 'Sin Citas', icon: 'alert-circle-outline' as const },
+        { key: 'Mayores de 30', icon: 'arrow-up-outline' as const },
+        { key: 'Menores de 30', icon: 'arrow-down-outline' as const },
+        { key: 'Con Fecha Nac.', icon: 'calendar-outline' as const },
+    ];
 
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
@@ -92,24 +109,36 @@ export default function ListaPacientesScreen() {
                     <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
-                        placeholder="Buscar por..."
+                        placeholder="Buscar por nombre, cédula o teléfono..."
                         placeholderTextColor="#888"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
+                    {searchQuery.length > 0 && (
+                        <TouchableOpacity onPress={() => setSearchQuery('')}>
+                            <Ionicons name="close-circle" size={20} color="#aaa" />
+                        </TouchableOpacity>
+                    )}
                 </View>
 
                 <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll} contentContainerStyle={styles.filterContainer}>
-                    {['Todos', 'Recientes', 'Cédula V', 'Cédula E', 'Mayores de 30', 'Menores de 30'].map(type => (
+                    {filterOptions.map(({ key, icon }) => (
                         <TouchableOpacity
-                            key={type}
-                            style={[styles.filterChip, filterType === type && styles.filterChipActive]}
-                            onPress={() => setFilterType(type)}
+                            key={key}
+                            style={[styles.filterChip, filterType === key && styles.filterChipActive]}
+                            onPress={() => setFilterType(key)}
                         >
-                            <ThemedText style={[styles.filterText, filterType === type && styles.filterTextActive]}>{type}</ThemedText>
+                            <Ionicons name={icon} size={14} color={filterType === key ? '#FFF' : '#888'} style={{ marginRight: 4 }} />
+                            <ThemedText style={[styles.filterText, filterType === key && styles.filterTextActive]}>{key}</ThemedText>
                         </TouchableOpacity>
                     ))}
                 </ScrollView>
+
+                {!loading && !error && (
+                    <ThemedText style={styles.resultCount}>
+                        {filteredPacientes.length} {filteredPacientes.length === 1 ? 'paciente encontrado' : 'pacientes encontrados'}
+                    </ThemedText>
+                )}
 
                 <View style={styles.listContainer}>
                     {loading ? (
@@ -204,14 +233,16 @@ const styles = StyleSheet.create({
         color: '#333',
     },
     filterScroll: {
-        marginBottom: 24,
+        marginBottom: 12,
     },
     filterContainer: {
         gap: 12,
         paddingRight: 24, // extra padding for scrolling
     },
     filterChip: {
-        paddingHorizontal: 16,
+        flexDirection: 'row',
+        alignItems: 'center',
+        paddingHorizontal: 14,
         paddingVertical: 8,
         borderRadius: 20,
         backgroundColor: '#FFFFFF',
@@ -229,6 +260,12 @@ const styles = StyleSheet.create({
     },
     filterTextActive: {
         color: '#FFFFFF',
+    },
+    resultCount: {
+        fontSize: 13,
+        color: '#999',
+        marginBottom: 16,
+        fontWeight: '500',
     },
     listContainer: {
         gap: 12,
