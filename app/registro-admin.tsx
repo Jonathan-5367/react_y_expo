@@ -25,10 +25,10 @@ export default function RegistroAdminScreen() {
     const [isRolDropdownVisible, setIsRolDropdownVisible] = useState(false);
     const [loading, setLoading] = useState(false);
 
-    // Access control: only admins allowed
+    // Access control: only admins and doctors allowed
     useEffect(() => {
-        if (!user || user.rol !== 'administrador') {
-            Alert.alert('Acceso Denegado', 'Esta sección es exclusiva para administradores.', [
+        if (!user || (user.rol !== 'administrador' && user.rol !== 'doctor')) {
+            Alert.alert('Acceso Denegado', 'Esta sección es exclusiva para administradores y doctores.', [
                 { text: 'Aceptar', onPress: () => router.replace('/login') }
             ]);
         }
@@ -63,7 +63,7 @@ export default function RegistroAdminScreen() {
         }
     };
 
-    if (!user || user.rol !== 'administrador') {
+    if (!user || (user.rol !== 'administrador' && user.rol !== 'doctor')) {
         return null; // Don't render anything while redirecting
     }
 

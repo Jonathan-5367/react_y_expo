@@ -22,7 +22,7 @@ export default function AgendarCitasScreen() {
     const [isCalendarVisible, setIsCalendarVisible] = useState(false);
     const [isHourDropdownVisible, setIsHourDropdownVisible] = useState(false);
 
-    const isPatient = user?.rol !== 'administrador';
+    const isPatient = user?.rol === 'paciente';
 
     const [pacienteNombre, setPacienteNombre] = useState(isPatient ? (user?.nombre || '') : '');
     const [pacienteTelefono, setPacienteTelefono] = useState(isPatient ? (user?.telefono || '') : '');

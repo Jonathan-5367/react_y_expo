@@ -21,7 +21,7 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
   const menuItems = [
     { title: 'Inicio', icon: 'home', route: '/dashboard' },
     { title: 'Mi Perfil', icon: 'person', route: '/profile' },
-    ...(user?.rol === 'administrador' ? [
+    ...(user?.rol === 'administrador' || user?.rol === 'doctor' ? [
       { title: 'Lista de Pacientes', icon: 'people', route: '/lista-pacientes' },
       { title: 'Registrar Admin', icon: 'person-add', route: '/registro-admin' }
     ] : []),
