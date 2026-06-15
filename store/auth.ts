@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { useRouter } from 'expo-router';
+import Constants from 'expo-constants';
 
 export type UserRole = 'administrador' | 'paciente' | 'doctor' | 'recepcionista';
 
@@ -18,7 +19,17 @@ export type User = {
 };
 
 // API Base URL config: uses Localhost on Web, computer's LAN IP on Mobile/Expo Go
-export const API_URL = Platform.OS === 'web' ? 'http://localhost:3000/api' : 'http://192.168.0.193:3000/api';
+const getHostIp = () => {
+    const hostUri = Constants.expoConfig?.hostUri;
+    if (!hostUri) {
+        return '192.168.0.193'; // Fallback if no hostUri is available
+    }
+    return hostUri.split(':')[0];
+};
+
+export const API_URL = Platform.OS === 'web' 
+    ? 'http://localhost:3000/api' 
+    : `http://${getHostIp()}:3000/api`;
 
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
 
