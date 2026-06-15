@@ -27,9 +27,14 @@ const getHostIp = () => {
     return hostUri.split(':')[0];
 };
 
-export const API_URL = Platform.OS === 'web' 
-    ? 'http://localhost:3000/api' 
-    : `http://${getHostIp()}:3000/api`;
+// Cambia a true para usar Railway (producción) o false para usar tu servidor local
+const USE_PRODUCTION = true;
+
+export const API_URL = USE_PRODUCTION
+    ? 'https://reactyexpo-production.up.railway.app/api'
+    : (Platform.OS === 'web' 
+        ? 'http://localhost:3000/api' 
+        : `http://${getHostIp()}:3000/api`);
 
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
 
