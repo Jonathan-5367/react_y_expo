@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Platform } from 'react-native';
+import { API_URL } from './auth';
 
 export type AppointmentStatus = 'pendiente' | 'confirmada' | 'completada' | 'cancelada' | 'no_asistio';
 
@@ -15,8 +16,6 @@ export type Appointment = {
     estado: AppointmentStatus;
     pasada: boolean;
 };
-
-const API_URL = Platform.OS === 'web' ? 'http://localhost:3000/api' : 'http://192.168.0.193:3000/api';
 
 let appointments: Appointment[] = [];
 

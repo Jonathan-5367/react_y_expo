@@ -4,24 +4,32 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
-1. Install dependencies
+### 1. Start the Database (MySQL)
+Ensure your MySQL server is running (e.g., via XAMPP, Laragon, or your native MySQL installation) on the default port `3306`.
+The application expects a database named `consultorio_dental`. You can import the database structure using the script located in:
+`backend/db/init.sql`
 
-   ```bash
-   npm install
-   ```
+### 2. Install dependencies
+Install dependencies for both the root project (Expo) and the backend:
+```bash
+npm install
+cd backend && npm install
+```
 
-2. Start the app
+### 3. Start the Backend Server
+Run the backend server in a separate terminal. This will connect to the MySQL database:
+```bash
+npm run backend
+```
 
-   ```bash
-   npx expo start
-   ```
+### 4. Start the Expo App
+Run the Expo development server in another terminal:
+```bash
+npm start
+```
+From here, you can open the app on your physical device using the Expo Go app by scanning the QR code, or open it in an Android/iOS emulator.
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+*Note: The API URL is dynamically configured to resolve your development machine's local IP address so it connects seamlessly when testing on physical devices.*
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
 
