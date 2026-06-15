@@ -31,7 +31,7 @@ const getHostIp = () => {
 const USE_PRODUCTION = true;
 
 export const API_URL = USE_PRODUCTION
-    ? 'https://reactyexpo-production.up.railway.app'
+    ? 'https://reactyexpo-production.up.railway.app/api'
     : (Platform.OS === 'web'
         ? 'http://localhost:3000/api'
         : `http://${getHostIp()}:3000/api`);
