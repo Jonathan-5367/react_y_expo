@@ -27,9 +27,11 @@ const getHostIp = () => {
     return hostUri.split(':')[0];
 };
 
-export const API_URL = Platform.OS === 'web' 
-    ? 'http://localhost:3000/api' 
-    : `http://${getHostIp()}:3000/api`;
+export const API_URL = process.env.EXPO_PUBLIC_API_URL
+    ? process.env.EXPO_PUBLIC_API_URL
+    : (Platform.OS === 'web' 
+        ? 'http://localhost:3000/api' 
+        : `http://${getHostIp()}:3000/api`);
 
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
 
