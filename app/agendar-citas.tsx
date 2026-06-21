@@ -143,6 +143,7 @@ export default function AgendarCitasScreen() {
                             onClose={() => setIsCalendarVisible(false)}
                             onSelectDate={(date) => setFecha(date)}
                             initialDate={fecha || new Date().toISOString().split('T')[0]}
+                            restrictDates={true}
                         />
                     </View>
 
