@@ -15,6 +15,7 @@ interface CalendarModalProps {
     onClose: () => void;
     onSelectDate: (date: string) => void;
     initialDate?: string;
+    restrictDates?: boolean;
 }
 
 const MONTHS = [
@@ -24,7 +25,7 @@ const MONTHS = [
 
 const DAYS_OF_WEEK = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
 
-export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: CalendarModalProps) {
+export function CalendarModal({ visible, onClose, onSelectDate, initialDate, restrictDates = false }: CalendarModalProps) {
     const today = new Date();
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -92,6 +93,7 @@ export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: C
     const BLOCKED_DAYS = [0, 5, 6];
 
     const isDateBlocked = (year: number, month: number, day: number): boolean => {
+        if (!restrictDates) return false;
         const d = new Date(year, month, day);
         const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
         if (d < todayMidnight) return true; // días pasados

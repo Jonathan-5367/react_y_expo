@@ -100,7 +100,7 @@ export default function BlogScreen() {
 
                 <View style={styles.list}>
                     {posts.map((post) => (
-                        <TouchableOpacity key={post.id} style={styles.card} onPress={() => router.push(`/blog/${post.id}`)}>
+                        <TouchableOpacity key={post.id} style={styles.card} onPress={() => router.push(`/blog/${post.id}` as any)}>
                             <Image source={{ uri: post.image }} style={styles.cardImage} />
                             <View style={styles.cardContent}>
                                 <View style={styles.metaRow}>
