@@ -7,7 +7,7 @@ import { CalendarModal } from '@/components/CalendarModal';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, TextInput, Alert } from 'react-native';
+import { ActivityIndicator, Alert, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
@@ -186,7 +186,11 @@ export default function ProfileScreen() {
                     <ThemedText style={{ marginTop: 12, color: '#e83e8c', fontWeight: 'bold' }}>Cargando perfil...</ThemedText>
                 </View>
             ) : (
-                <ScrollView contentContainerStyle={styles.scrollContent}>
+                <ScrollView 
+                    contentContainerStyle={styles.scrollContent}
+                    automaticallyAdjustKeyboardInsets={true}
+                    keyboardShouldPersistTaps="handled"
+                >
 
                     <View style={styles.header}>
                         <View style={styles.avatarContainer}>
