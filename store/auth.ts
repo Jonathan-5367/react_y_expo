@@ -28,7 +28,7 @@ const getHostIp = () => {
 };
 
 // Cambia a true para usar Railway (producción) o false para usar tu servidor local
-const USE_PRODUCTION = false;
+const USE_PRODUCTION = true;
 
 export const API_URL = USE_PRODUCTION
     ? 'https://reactyexpo-production.up.railway.app/api'
