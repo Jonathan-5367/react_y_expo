@@ -88,6 +88,16 @@ export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: C
         years.push(y);
     }
 
+    // Blocked days: 0=Sunday, 5=Friday, 6=Saturday
+    const BLOCKED_DAYS = [0, 5, 6];
+
+    const isDateBlocked = (year: number, month: number, day: number): boolean => {
+        const d = new Date(year, month, day);
+        const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        if (d < todayMidnight) return true; // past days
+        return BLOCKED_DAYS.includes(d.getDay()); // weekends
+    };
+
     const renderCalendarGrid = () => {
         const daysInMonth = getDaysInMonth(currentYear, currentMonth);
         const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
@@ -108,22 +118,26 @@ export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: C
                 day === today.getDate() &&
                 currentMonth === today.getMonth() &&
                 currentYear === today.getFullYear();
+            const blocked = isDateBlocked(currentYear, currentMonth, day);
 
             gridCells.push(
                 <TouchableOpacity
                     key={`day-${day}`}
                     style={[
                         styles.dayCell,
-                        isToday && styles.dayCellToday,
-                        isSelected && styles.dayCellSelected
+                        isToday && !blocked && styles.dayCellToday,
+                        isSelected && styles.dayCellSelected,
+                        blocked && styles.dayCellBlocked,
                     ]}
-                    onPress={() => handleSelectDay(day)}
+                    onPress={() => !blocked && handleSelectDay(day)}
+                    disabled={blocked}
                 >
                     <Text
                         style={[
                             styles.dayText,
-                            isToday && styles.dayTextToday,
-                            isSelected && styles.dayTextSelected
+                            isToday && !blocked && styles.dayTextToday,
+                            isSelected && styles.dayTextSelected,
+                            blocked && styles.dayTextBlocked,
                         ]}
                     >
                         {day}
@@ -314,6 +328,10 @@ const styles = StyleSheet.create({
     dayCellSelected: {
         backgroundColor: '#e83e8c',
     },
+    dayCellBlocked: {
+        backgroundColor: '#F5F5F5',
+        opacity: 0.45,
+    },
     dayText: {
         fontSize: 14,
         fontWeight: '500',
@@ -326,6 +344,9 @@ const styles = StyleSheet.create({
     dayTextSelected: {
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    dayTextBlocked: {
+        color: '#BBBBBB',
     },
     yearPickerContainer: {
         height: 240,

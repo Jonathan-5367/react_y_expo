@@ -121,7 +121,7 @@ export default function RegisterScreen() {
                             placeholder="Ej. 04141234567"
                             placeholderTextColor="#888"
                             value={telefono}
-                            onChangeText={setTelefono}
+                            onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             maxLength={11}
                         />
@@ -153,7 +153,7 @@ export default function RegisterScreen() {
                             placeholder="Ej. 04141234567"
                             placeholderTextColor="#888"
                             value={telefonoFamiliar}
-                            onChangeText={setTelefonoFamiliar}
+                            onChangeText={(text) => setTelefonoFamiliar(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             maxLength={11}
                         />

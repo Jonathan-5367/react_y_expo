@@ -157,7 +157,11 @@ export default function ListaPacientesScreen() {
                     ) : (
                         <>
                             {filteredPacientes.map((paciente) => (
-                                <TouchableOpacity key={paciente.id} style={styles.card}>
+                                <TouchableOpacity 
+                                    key={paciente.id} 
+                                    style={styles.card}
+                                    onPress={() => router.push(`/paciente/${paciente.id}`)}
+                                >
                                     <View style={styles.avatar}>
                                         <ThemedText style={styles.avatarText}>{(paciente.name || '').charAt(0)}</ThemedText>
                                     </View>

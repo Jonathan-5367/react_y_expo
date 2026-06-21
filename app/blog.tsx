@@ -9,33 +9,69 @@ import { SideMenu } from '@/components/SideMenu';
 import { NotifBell } from '@/components/NotifBell';
 import Ionicons from '@expo/vector-icons/Ionicons';
 
-const posts = [
+export const posts = [
     {
         id: 1,
         title: 'Ortodoncia Invisible: Lo que debes saber',
         excerpt: 'Descubre cómo los alineadores transparentes pueden mejorar tu sonrisa sin que nadie lo note. La tecnología 3D al servicio de tu estética.',
         date: 'Oct 12, 2025',
+        author: 'Dra. Nazaret Lopez',
         likes: 120,
         readTime: '5 min',
         image: 'https://images.unsplash.com/photo-1598256989800-fe5f95da9787?auto=format&fit=crop&w=400&q=80',
+        content: `La ortodoncia invisible ha revolucionado la forma en que corregimos la alineación dental. A diferencia de los brackets metálicos tradicionales, este método utiliza una serie de alineadores transparentes hechos a medida. 
+
+**¿Cómo funciona?**
+Los alineadores aplican fuerzas controladas y graduales sobre los dientes para moverlos a la posición deseada. Cada juego de alineadores se usa durante un par de semanas antes de pasar al siguiente.
+
+**Beneficios principales:**
+- **Estética:** Son prácticamente invisibles.
+- **Comodidad:** Al no tener alambres ni brackets, evitan llagas e irritaciones en la boca.
+- **Higiene:** Son removibles, lo que facilita el cepillado y el uso del hilo dental.
+- **Sin restricciones:** Puedes comer lo que quieras, ya que debes quitártelos durante las comidas.
+
+Si estás pensando en mejorar tu sonrisa sin comprometer tu imagen durante el proceso, la ortodoncia invisible puede ser la solución perfecta para ti. Visítanos para una evaluación 3D y descubre cómo se verá tu nueva sonrisa antes de empezar el tratamiento.`,
     },
     {
         id: 2,
         title: '5 Consejos para un Blanqueamiento Seguro',
         excerpt: 'No todos los métodos caseros son seguros. Aprende cómo aclarar tus dientes sin dañar el esmalte y evitando la sensibilidad dental.',
         date: 'Sep 25, 2025',
+        author: 'Dra. Nazaret Lopez',
         likes: 85,
         readTime: '4 min',
         image: 'https://images.unsplash.com/photo-1606811971618-4486d14f3f99?auto=format&fit=crop&w=400&q=80',
+        content: `Tener una sonrisa blanca y brillante es el deseo de muchos, pero es vital hacerlo de forma segura para no comprometer la salud de tus dientes. Aquí te comparto 5 consejos clave:
+
+1. **Acude a un profesional:** Los tratamientos realizados o supervisados por un dentista son los únicos que garantizan resultados seguros y efectivos.
+2. **Evita los remedios caseros abrasivos:** El bicarbonato con limón o el carbón activado pueden desgastar tu esmalte de forma irreversible.
+3. **Trata la sensibilidad primero:** Si ya sufres de sensibilidad dental, debes tratarla antes de someterte a un blanqueamiento.
+4. **Sigue una "Dieta Blanca" post-tratamiento:** Durante las primeras 48 horas, evita alimentos con fuertes colorantes como el café, té, vino tinto, salsa de tomate, etc.
+5. **Mantén una buena higiene:** El blanqueamiento no sustituye la limpieza diaria. Cepíllate al menos dos veces al día y usa hilo dental.
+
+Recuerda que el esmalte dental no se regenera. ¡Cuídalo!`,
     },
     {
         id: 3,
         title: 'La Importancia de la Higiene Infantil',
         excerpt: 'Crear hábitos saludables desde pequeños es fundamental. Guía práctica para padres sobre el cuidado de los dientes de leche.',
         date: 'Ago 15, 2025',
+        author: 'Dra. Nazaret Lopez',
         likes: 210,
         readTime: '6 min',
         image: 'https://images.unsplash.com/photo-1571772996211-2f02c9727629?auto=format&fit=crop&w=400&q=80',
+        content: `Cuidar los dientes de leche es tan importante como cuidar los definitivos. Estos primeros dientes no solo sirven para masticar, sino que guardan el espacio para los dientes permanentes y son esenciales para el desarrollo del habla.
+
+**¿Cuándo empezar a limpiar?**
+Antes de que salgan los dientes, puedes limpiar las encías de tu bebé con una gasa húmeda. Una vez que aparezca el primer diente, empieza a usar un cepillo dental de cerdas suaves.
+
+**¿Cuándo usar pasta dental?**
+A partir de la erupción del primer diente, se debe usar una cantidad de pasta con flúor del tamaño de un granito de arroz. A partir de los 3 años, la cantidad puede ser del tamaño de un guisante.
+
+**La primera visita al odontopediatra**
+Se recomienda que la primera visita al dentista sea durante el primer año de vida o cuando salga el primer diente. Esto ayuda a detectar problemas a tiempo y a que el niño se familiarice con el entorno.
+
+**Consejo para padres:** ¡Haz que el cepillado sea divertido! Usa canciones, juegos o cepillos de sus personajes favoritos. El ejemplo es fundamental; si te ven cepillarte, ellos también querrán hacerlo.`,
     },
 ];
 
@@ -64,7 +100,7 @@ export default function BlogScreen() {
 
                 <View style={styles.list}>
                     {posts.map((post) => (
-                        <TouchableOpacity key={post.id} style={styles.card} onPress={() => console.log('Open post', post.id)}>
+                        <TouchableOpacity key={post.id} style={styles.card} onPress={() => router.push(`/blog/${post.id}`)}>
                             <Image source={{ uri: post.image }} style={styles.cardImage} />
                             <View style={styles.cardContent}>
                                 <View style={styles.metaRow}>

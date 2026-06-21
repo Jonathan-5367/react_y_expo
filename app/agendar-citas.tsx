@@ -31,7 +31,7 @@ export default function AgendarCitasScreen() {
     const [hora, setHora] = useState('');
     const [procedimiento, setProcedimiento] = useState('');
 
-    const handleAgendar = () => {
+    const handleAgendar = async () => {
         if (!pacienteNombre.trim() || !pacienteTelefono.trim() || !pacienteEmail.trim() || !fecha.trim() || !hora.trim() || !procedimiento.trim()) {
             Alert.alert('Campos requeridos', 'Por favor complete todos los campos.');
             return;
@@ -51,7 +51,7 @@ export default function AgendarCitasScreen() {
             return;
         }
 
-        addAppointment({
+        const result = await addAppointment({
             pacienteNombre: pacienteNombre.trim(),
             pacienteTelefono: pacienteTelefono.trim(),
             pacienteEmail: pacienteEmail.trim().toLowerCase(),
@@ -60,9 +60,13 @@ export default function AgendarCitasScreen() {
             procedimiento: procedimiento.trim()
         });
 
-        Alert.alert('Cita Agendada', 'La cita ha sido registrada con éxito en el sistema.', [
-            { text: 'Aceptar', onPress: () => router.back() }
-        ]);
+        if (result.success) {
+            Alert.alert('Cita Agendada', 'La cita ha sido registrada con éxito en el sistema.', [
+                { text: 'Aceptar', onPress: () => router.back() }
+            ]);
+        } else {
+            Alert.alert('No se pudo agendar', result.error);
+        }
     };
 
     return (
@@ -100,9 +104,10 @@ export default function AgendarCitasScreen() {
                         <TextInput
                             style={styles.input}
                             value={pacienteTelefono}
-                            onChangeText={setPacienteTelefono}
+                            onChangeText={(text) => setPacienteTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             placeholder="Ej. 04161234567"
+                            maxLength={11}
                         />
                     </View>
 
