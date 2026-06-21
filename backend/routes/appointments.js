@@ -96,9 +96,39 @@ router.post('/', async (req, res) => {
         // Combine date and time
         const datetimeStr = `${fecha.trim()} ${hora.trim()}:00`;
 
+        // --- VALIDATIONS ---
+
+        // 1. Block Fridays (5), Saturdays (6) and Sundays (0)
+        const selectedDate = new Date(`${fecha.trim()}T00:00:00`);
+        const dayOfWeek = selectedDate.getDay(); // 0=Sun,1=Mon,...,6=Sat
+        if (dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6) {
+            return res.status(400).json({ error: 'No se pueden agendar citas los viernes, sábados ni domingos.' });
+        }
+
+        // 2. Check same-hour conflict (only non-cancelled appointments)
+        const [sameHour] = await db.query(
+            `SELECT id_cita FROM citas 
+             WHERE DATE(fecha_hora) = ? AND TIME_FORMAT(fecha_hora, '%H:%i') = ? 
+             AND estado != 'cancelada'`,
+            [fecha.trim(), hora.trim()]
+        );
+        if (sameHour.length > 0) {
+            return res.status(400).json({ error: `El horario de las ${hora.trim()} ya está ocupado para ese día. Por favor selecciona otra hora.` });
+        }
+
+        // 3. Max 4 appointments per day (non-cancelled)
+        const [dayCount] = await db.query(
+            `SELECT COUNT(*) as total FROM citas 
+             WHERE DATE(fecha_hora) = ? AND estado != 'cancelada'`,
+            [fecha.trim()]
+        );
+        if (dayCount[0].total >= 4) {
+            return res.status(400).json({ error: 'El día seleccionado ya tiene el máximo de 4 citas. Por favor escoge otro día.' });
+        }
+
         const [result] = await db.query(
             `INSERT INTO citas (paciente_id, doctor_id, fecha_hora, motivo, estado, creado_por, creado_en) 
-             VALUES (?, ?, ?, ?, 'confirmada', ?, CURRENT_TIMESTAMP)`,
+             VALUES (?, ?, ?, ?, 'pendiente', ?, CURRENT_TIMESTAMP)`,
             [patientId, doctorId, datetimeStr, procedimiento.trim(), userId]
         );
 
@@ -115,7 +145,7 @@ router.post('/', async (req, res) => {
                 hora: hora.trim(),
                 procedimiento: procedimiento.trim(),
                 doctor: 'Dra. Nazaret Lopez',
-                estado: 'confirmada',
+                estado: 'pendiente',
                 pasada: fecha.trim() < todayStr
             }
         });
@@ -143,6 +173,27 @@ router.put('/:id/cancel', async (req, res) => {
     } catch (err) {
         console.error('Error canceling appointment:', err);
         return res.status(500).json({ error: 'Error al cancelar la cita en el servidor.' });
+    }
+});
+
+// 4. CONFIRM APPOINTMENT
+router.put('/:id/confirm', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        const [result] = await db.query(
+            "UPDATE citas SET estado = 'confirmada' WHERE id_cita = ?",
+            [id]
+        );
+
+        if (result.affectedRows === 0) {
+            return res.status(404).json({ error: 'Cita no encontrada.' });
+        }
+
+        return res.json({ success: true, message: 'La cita ha sido confirmada.' });
+    } catch (err) {
+        console.error('Error confirming appointment:', err);
+        return res.status(500).json({ error: 'Error al confirmar la cita en el servidor.' });
     }
 });
 
