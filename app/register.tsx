@@ -1,12 +1,12 @@
+import { CalendarModal } from '@/components/CalendarModal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAuth } from '@/store/auth';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
-import { CalendarModal } from '@/components/CalendarModal';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function RegisterScreen() {
     const router = useRouter();
@@ -21,30 +21,36 @@ export default function RegisterScreen() {
     const [telefonoFamiliar, setTelefonoFamiliar] = useState('');
     const [alergias, setAlergias] = useState('');
     const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
-    const handleRegister = () => {
+    const handleRegister = async () => {
         if (!name.trim() || !cedula.trim() || !email.trim() || !password.trim()) {
             Alert.alert('Campos requeridos', 'Por favor, llena los campos obligatorios: Nombre, Cédula, Correo y Contraseña.');
             return;
         }
 
-        const result = registerPatient({
-            nombre: name,
-            cedula,
-            email,
-            password,
-            telefono,
-            fechaNacimiento,
-            telefonoFamiliar,
-            alergias
-        });
+        setLoading(true);
+        try {
+            const result = await registerPatient({
+                nombre: name,
+                cedula,
+                email,
+                password,
+                telefono,
+                fechaNacimiento,
+                telefonoFamiliar,
+                alergias
+            });
 
-        if (result.success) {
-            Alert.alert('Registro Exitoso', 'Tu cuenta de paciente ha sido creada con éxito.', [
-                { text: 'OK', onPress: () => router.replace('/login') }
-            ]);
-        } else {
-            Alert.alert('Error al Registrarse', result.error || 'Ocurrió un error inesperado.');
+            if (result.success) {
+                Alert.alert('Registro Exitoso', 'Tu cuenta de paciente ha sido creada con éxito.', [
+                    { text: 'OK', onPress: () => router.replace('/login') }
+                ]);
+            } else {
+                Alert.alert('Error al Registrarse', result.error || 'Ocurrió un error inesperado.');
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -167,8 +173,8 @@ export default function RegisterScreen() {
                         />
                     </View>
 
-                    <TouchableOpacity style={styles.button} onPress={handleRegister}>
-                        <ThemedText style={styles.buttonText}>Registrarse</ThemedText>
+                    <TouchableOpacity style={[styles.button, loading && { opacity: 0.6 }]} onPress={handleRegister} disabled={loading}>
+                        <ThemedText style={styles.buttonText}>{loading ? 'Registrando...' : 'Registrarse'}</ThemedText>
                     </TouchableOpacity>
 
                     <TouchableOpacity onPress={() => router.push('/login')} style={styles.linkButton}>
@@ -221,6 +227,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         marginBottom: 4,
+        color: '#101010ff',
     },
     input: {
         height: 50,

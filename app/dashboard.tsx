@@ -3,17 +3,24 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Alert } from 'react-native';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
+import { useAuth, useProtectedRoute } from '@/store/auth';
 
 export default function DashboardScreen() {
     const router = useRouter();
     const insets = useSafeAreaInsets();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const { user, logout } = useAuth();
+
+    useProtectedRoute();
+
+    if (!user) {
+        return null; // Don't render while redirecting
+    }
+
     const userName = user?.nombre || "Usuario";
     const [notifications, setNotifications] = useState([
         { id: 1, title: 'Cita confirmada', message: 'Tu cita del 2 de junio a las 10:00 AM ha sido confirmada.', time: 'Hace 5 min', read: false, icon: 'checkmark-circle', color: '#2E8B57' },
@@ -33,7 +40,7 @@ export default function DashboardScreen() {
 
     const menuItems = [
         { title: 'Mi Perfil', icon: 'person', route: '/profile', color: '#4A90E2', desc: 'Ver datos personales' },
-        ...(user?.rol === 'administrador' ? [
+        ...(user?.rol === 'administrador' || user?.rol === 'doctor' ? [
             { title: 'Pacientes', icon: 'people', route: '/lista-pacientes', color: '#F39C12', desc: 'Gestionar lista de pacientes' },
             { title: 'Registrar Admin', icon: 'person-add', route: '/registro-admin', color: '#FD7E14', desc: 'Registrar nuevo administrador' }
         ] : []),

@@ -1,10 +1,10 @@
 import { ThemedText } from '@/components/themed-text';
+import { useAuth } from '@/store/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRouter } from 'expo-router';
 import React from 'react';
-import { Dimensions, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { Dimensions, Image, Modal, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
 
 interface SideMenuProps {
   visible: boolean;
@@ -21,7 +21,7 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
   const menuItems = [
     { title: 'Inicio', icon: 'home', route: '/dashboard' },
     { title: 'Mi Perfil', icon: 'person', route: '/profile' },
-    ...(user?.rol === 'administrador' ? [
+    ...(user?.rol === 'administrador' || user?.rol === 'doctor' ? [
       { title: 'Lista de Pacientes', icon: 'people', route: '/lista-pacientes' },
       { title: 'Registrar Admin', icon: 'person-add', route: '/registro-admin' }
     ] : []),
@@ -57,13 +57,22 @@ export function SideMenu({ visible, onClose }: SideMenuProps) {
         <View style={[styles.menuContainer, { paddingTop: insets.top + 20, paddingBottom: insets.bottom + 20 }]}>
           <View style={styles.header}>
             <View style={styles.logoContainer}>
-              <Ionicons name="medical" size={32} color="#e83e8c" />
+              <Image
+                source={require('@/assets/images/logo doctora - rosa pequeño.png')}
+                style={styles.logoImage}
+                resizeMode="contain"
+              />
             </View>
-            <View style={{ flex: 1 }}>
-              <ThemedText style={styles.headerTitle} numberOfLines={1}>{user?.nombre || "Dra. Nazaret Lopez"}</ThemedText>
-              <View style={[styles.roleBadge, { backgroundColor: user?.rol === 'administrador' ? '#e83e8c' : '#4A90E2' }]}>
+            <View style={styles.userInfo}>
+              <ThemedText style={styles.headerTitle} numberOfLines={2}>{user?.nombre || "Dra. Nazaret Lopez"}</ThemedText>
+              <View style={[styles.roleBadge, {
+                backgroundColor:
+                  user?.rol === 'administrador' ? '#e83e8c' :
+                    user?.rol === 'doctor' ? '#2E8B57' :
+                      user?.rol === 'recepcionista' ? '#FD7E14' : '#4A90E2'
+              }]}>
                 <ThemedText style={styles.roleText}>
-                  {user?.rol === 'administrador' ? 'Administrador' : 'Paciente'}
+                  {user?.rol ? (user.rol.charAt(0).toUpperCase() + user.rol.slice(1)) : 'Paciente'}
                 </ThemedText>
               </View>
             </View>
@@ -130,11 +139,20 @@ const styles = StyleSheet.create({
   logoContainer: {
     marginRight: 12,
   },
-  headerTitle: {
+  logoImage: {
+    width: 45,
+    height: 45,
+  },
+  userInfo: {
     flex: 1,
-    fontSize: 18,
+    justifyContent: 'center',
+    gap: 4,
+  },
+  headerTitle: {
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#333',
+    lineHeight: 20,
   },
   closeButton: {
     padding: 4,

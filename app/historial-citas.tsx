@@ -17,7 +17,7 @@ export default function HistorialCitasScreen() {
     const { user } = useAuth();
     const { appointments, cancelAppointment } = useAppointments();
 
-    const isAdmin = user?.rol === 'administrador';
+    const isAdmin = user?.rol === 'administrador' || user?.rol === 'doctor' || user?.rol === 'recepcionista';
     
     // Filter appointments: admins see all, patients see only their own
     const citas = appointments.filter(cita => {
@@ -53,8 +53,8 @@ export default function HistorialCitasScreen() {
                 {
                     text: 'Sí, Cancelar',
                     style: 'destructive',
-                    onPress: () => {
-                        const success = cancelAppointment(id);
+                    onPress: async () => {
+                        const success = await cancelAppointment(id);
                         if (success) {
                             Alert.alert('Cita Cancelada', 'La cita ha sido cancelada con éxito.');
                         } else {
