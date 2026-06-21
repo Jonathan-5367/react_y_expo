@@ -20,12 +20,14 @@ export type Appointment = {
 
 let appointments: Appointment[] = [];
 
-type AppointmentsListener = () => void;
-const listeners: Set<AppointmentsListener> = new Set();
+// --- SISTEMA DE REACTIVIDAD CUSTOMIZADO ---
+// Utilizamos un Set de "listeners" (funciones de escucha) para notificar a los componentes 
+// de React cada vez que las citas cambian (se agrega, cancela o confirma una).
+const listeners = new Set<() => void>();
 
-function notify() {
-    listeners.forEach(fn => fn());
-}
+// Esta función ejecuta todos los listeners registrados, forzando un re-renderizado
+// en los componentes que estén usando el hook useAppointments().
+const notifyListeners = () => listeners.forEach((listener) => listener());
 
 export async function fetchAppointments(): Promise<Appointment[]> {
     try {
@@ -33,7 +35,7 @@ export async function fetchAppointments(): Promise<Appointment[]> {
         if (!response.ok) throw new Error('Error fetching appointments');
         const data = await response.json();
         appointments = data;
-        notify();
+        notifyListeners();
         return appointments;
     } catch (err) {
         console.error(err);
@@ -63,7 +65,7 @@ export async function addAppointment(app: Omit<Appointment, 'id' | 'doctor' | 'e
         
         if (data.success) {
             appointments = [data.appointment, ...appointments];
-            notify();
+            notifyListeners();
             fetchAppointments();
 
             const dateParts = data.appointment.fecha.split('-');
@@ -139,7 +141,7 @@ export async function cancelAppointment(id: number): Promise<boolean> {
             appointments = appointments.map(a => 
                 a.id === id ? { ...a, estado: 'cancelada' } : a
             );
-            notify();
+            notifyListeners();
             fetchAppointments();
             return true;
         }
@@ -183,7 +185,7 @@ export async function confirmAppointment(id: number): Promise<boolean> {
             appointments = appointments.map(a => 
                 a.id === id ? { ...a, estado: 'confirmada' } : a
             );
-            notify();
+            notifyListeners();
             fetchAppointments();
             return true;
         }
@@ -194,18 +196,24 @@ export async function confirmAppointment(id: number): Promise<boolean> {
     }
 }
 
+// Hook principal que expone el estado de las citas a los componentes de la interfaz.
 export function useAppointments() {
+    // Almacenamos las citas en el estado local del componente para garantizar la reactividad.
     const [currentAppointments, setCurrentAppointments] = useState<Appointment[]>(appointments);
 
     useEffect(() => {
+        // Función que actualiza el estado local cuando se emite una notificación.
         const listener = () => {
             setCurrentAppointments([...appointments]);
         };
+        
+        // Suscribimos el componente a los cambios al montarse.
         listeners.add(listener);
         
         // Auto-fetch on mount
         fetchAppointments();
 
+        // Limpieza: nos desuscribimos cuando el componente se desmonta.
         return () => { listeners.delete(listener); };
     }, []);
 

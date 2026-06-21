@@ -81,21 +81,21 @@ export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: C
         onClose();
     };
 
-    // Generate years from 1930 to current year + 5
+    // Generar años desde 1930 hasta el año actual + 5
     const years: number[] = [];
     const endYear = today.getFullYear() + 5;
     for (let y = endYear; y >= 1930; y--) {
         years.push(y);
     }
 
-    // Blocked days: 0=Sunday, 5=Friday, 6=Saturday
+    // Días bloqueados: 0=Domingo, 5=Viernes, 6=Sábado
     const BLOCKED_DAYS = [0, 5, 6];
 
     const isDateBlocked = (year: number, month: number, day: number): boolean => {
         const d = new Date(year, month, day);
         const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
-        if (d < todayMidnight) return true; // past days
-        return BLOCKED_DAYS.includes(d.getDay()); // weekends
+        if (d < todayMidnight) return true; // días pasados
+        return BLOCKED_DAYS.includes(d.getDay()); // fines de semana
     };
 
     const renderCalendarGrid = () => {
@@ -103,12 +103,12 @@ export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: C
         const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
         const gridCells = [];
 
-        // Blank cells before the first day of the month
+        // Celdas vacías antes del primer día del mes
         for (let i = 0; i < firstDay; i++) {
             gridCells.push(<View key={`empty-${i}`} style={styles.dayCellEmpty} />);
         }
 
-        // Days of the month
+        // Días del mes
         for (let day = 1; day <= daysInMonth; day++) {
             const monthStr = String(currentMonth + 1).padStart(2, '0');
             const dayStr = String(day).padStart(2, '0');

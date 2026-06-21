@@ -18,23 +18,26 @@ export type User = {
     rol: UserRole;
 };
 
-// API Base URL config: uses Localhost on Web, computer's LAN IP on Mobile/Expo Go
+// Configuración de la URL Base de la API: Usa Localhost en Web, o la IP LAN en Móvil/Expo Go
 const getHostIp = () => {
     const hostUri = Constants.expoConfig?.hostUri;
     if (!hostUri) {
-        return '192.168.0.193'; // Fallback if no hostUri is available
+        return '192.168.0.193'; // Respaldo (Fallback) si no hay hostUri disponible
     }
     return hostUri.split(':')[0];
 };
 
-// Cambia a true para usar Railway (producción) o false para usar tu servidor local
+// --- CONFIGURACIÓN DEL SERVIDOR ---
+// Cambia USE_PRODUCTION a true para usar tu base de datos en Railway (producción).
+// Cambia a false para usar el servidor local en tu computadora.
 const USE_PRODUCTION = true;
 
+// La constante API_URL determina a dónde se enviarán todas las peticiones (fetch) de la app.
 export const API_URL = USE_PRODUCTION
-    ? 'https://reactyexpo-production.up.railway.app/api'
+    ? 'https://reactyexpo-production.up.railway.app/api' // Enlace a tu servidor en la nube
     : (Platform.OS === 'web'
-        ? 'http://localhost:3000/api'
-        : `http://${getHostIp()}:3000/api`);
+        ? 'http://localhost:3000/api' // Si estás probando en navegador web
+        : `http://${getHostIp()}:3000/api`); // Si estás en Expo Go (Android/iOS) usando Wi-Fi local
 
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
 
@@ -195,7 +198,7 @@ export function useAuth() {
         registerPatient,
         registerAdmin,
         updateProfile,
-        users: [] // Left for backward compatibility if reference exists
+        users: [] // Dejado para compatibilidad hacia atrás si existe referencia
     };
 }
 
