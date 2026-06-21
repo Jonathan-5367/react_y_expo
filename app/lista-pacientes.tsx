@@ -160,7 +160,7 @@ export default function ListaPacientesScreen() {
                                 <TouchableOpacity 
                                     key={paciente.id} 
                                     style={styles.card}
-                                    onPress={() => router.push(`/paciente/${paciente.id}`)}
+                                    onPress={() => router.push(`/paciente/${paciente.id}` as any)}
                                 >
                                     <View style={styles.avatar}>
                                         <ThemedText style={styles.avatarText}>{(paciente.name || '').charAt(0)}</ThemedText>
