@@ -248,9 +248,10 @@ export default function ProfileScreen() {
                             label="Teléfono" 
                             value={isEditing ? telefono : (profileData?.telefono || 'N/A')} 
                             isEditing={isEditing} 
-                            onChangeText={setTelefono} 
+                            onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, ''))} 
                             placeholder="Ej. 04141234567"
                             keyboardType="phone-pad"
+                            maxLength={11}
                         />
                         <ProfileItem 
                             icon="calendar" 
@@ -279,9 +280,10 @@ export default function ProfileScreen() {
                             label="Número de Familiar" 
                             value={isEditing ? telefonoFamiliar : (profileData?.telefonoFamiliar || 'N/A')} 
                             isEditing={isEditing} 
-                            onChangeText={setTelefonoFamiliar} 
+                            onChangeText={(text) => setTelefonoFamiliar(text.replace(/[^0-9]/g, ''))} 
                             placeholder="Ej. 04149876543"
                             keyboardType="phone-pad"
+                            maxLength={11}
                         />
                         <ProfileItem 
                             icon="alert-circle" 
@@ -299,7 +301,7 @@ export default function ProfileScreen() {
     );
 }
 
-function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyboardType, placeholder, editable = true, onPress, isButton = false }: { 
+function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyboardType, placeholder, editable = true, onPress, isButton = false, maxLength }: { 
     icon: any, 
     label: string, 
     value: string, 
@@ -309,7 +311,8 @@ function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyb
     placeholder?: string,
     editable?: boolean,
     onPress?: () => void,
-    isButton?: boolean
+    isButton?: boolean,
+    maxLength?: number
 }) {
     return (
         <View style={styles.profileItem}>
@@ -334,6 +337,7 @@ function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyb
                             keyboardType={keyboardType}
                             placeholder={placeholder}
                             placeholderTextColor="#aaa"
+                            maxLength={maxLength}
                         />
                     )
                 ) : (

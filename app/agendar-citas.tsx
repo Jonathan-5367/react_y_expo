@@ -104,9 +104,10 @@ export default function AgendarCitasScreen() {
                         <TextInput
                             style={styles.input}
                             value={pacienteTelefono}
-                            onChangeText={setPacienteTelefono}
+                            onChangeText={(text) => setPacienteTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             placeholder="Ej. 04161234567"
+                            maxLength={11}
                         />
                     </View>
 

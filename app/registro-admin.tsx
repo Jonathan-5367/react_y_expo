@@ -146,7 +146,7 @@ export default function RegistroAdminScreen() {
                             placeholder="Ej. 04141234567"
                             placeholderTextColor="#888"
                             value={telefono}
-                            onChangeText={setTelefono}
+                            onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             maxLength={11}
                         />
