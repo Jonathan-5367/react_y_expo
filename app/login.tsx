@@ -1,11 +1,11 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAuth } from '@/store/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert } from 'react-native';
+import { Alert, Image, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
 
 export default function LoginScreen() {
     const router = useRouter();
@@ -40,7 +40,11 @@ export default function LoginScreen() {
             <ScrollView contentContainerStyle={styles.scrollContent}>
                 <View style={styles.header}>
                     <View style={styles.logoCircle}>
-                        <Ionicons name="medical" size={40} color="#e83e8c" />
+                        <Image
+                            source={require('@/assets/images/logo doctora - rosa.png')}
+                            style={styles.logoImage}
+                            resizeMode="contain"
+                        />
                     </View>
                     <ThemedText style={styles.clinicName}>CONSULTORIO ODONTOLÓGICO</ThemedText>
                     <ThemedText type="title" style={styles.title}>Dra. Nazaret Lopez</ThemedText>
@@ -91,20 +95,6 @@ export default function LoginScreen() {
                     <TouchableOpacity onPress={() => router.push('/register')} style={styles.linkButton}>
                         <ThemedText style={styles.linkText}>¿No tienes cuenta? Regístrate</ThemedText>
                     </TouchableOpacity>
-
-                    {/* Test Accounts Info Box */}
-                    <View style={styles.infoBox}>
-                        <View style={styles.infoBoxHeader}>
-                            <Ionicons name="information-circle" size={18} color="#e83e8c" />
-                            <ThemedText style={styles.infoBoxTitle}>Cuentas de prueba:</ThemedText>
-                        </View>
-                        <ThemedText style={styles.infoBoxText}>
-                            🔑 <ThemedText style={styles.boldText}>Paciente:</ThemedText> paciente@paciente.com / password
-                        </ThemedText>
-                        <ThemedText style={styles.infoBoxText}>
-                            🔑 <ThemedText style={styles.boldText}>Admin:</ThemedText> admin@admin.com / admin
-                        </ThemedText>
-                    </View>
                 </View>
             </ScrollView>
         </ThemedView>
@@ -142,6 +132,10 @@ const styles = StyleSheet.create({
         shadowRadius: 12,
         elevation: 4,
     },
+    logoImage: {
+        width: 70,
+        height: 70,
+    },
     clinicName: {
         fontSize: 12,
         fontWeight: '800',
@@ -174,6 +168,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         marginBottom: 4,
+        color: '#101010ff',
     },
     input: {
         height: 52,

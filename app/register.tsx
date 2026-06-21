@@ -1,12 +1,12 @@
+import { CalendarModal } from '@/components/CalendarModal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAuth } from '@/store/auth';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
-import { CalendarModal } from '@/components/CalendarModal';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function RegisterScreen() {
     const router = useRouter();
@@ -227,6 +227,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         marginBottom: 4,
+        color: '#101010ff',
     },
     input: {
         height: 50,
