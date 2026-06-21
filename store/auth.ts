@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { Platform } from 'react-native';
-import { useRouter } from 'expo-router';
 import Constants from 'expo-constants';
+import { useRouter } from 'expo-router';
+import { useEffect, useState } from 'react';
+import { Platform } from 'react-native';
 
 export type UserRole = 'administrador' | 'paciente' | 'doctor' | 'recepcionista';
 
@@ -27,10 +27,20 @@ const getHostIp = () => {
     return hostUri.split(':')[0];
 };
 
+<<<<<<< HEAD
 export const API_URL = process.env.EXPO_PUBLIC_API_URL
     ? process.env.EXPO_PUBLIC_API_URL
     : (Platform.OS === 'web' 
         ? 'http://localhost:3000/api' 
+=======
+// Cambia a true para usar Railway (producción) o false para usar tu servidor local
+const USE_PRODUCTION = true;
+
+export const API_URL = USE_PRODUCTION
+    ? 'https://reactyexpo-production.up.railway.app/api'
+    : (Platform.OS === 'web'
+        ? 'http://localhost:3000/api'
+>>>>>>> master
         : `http://${getHostIp()}:3000/api`);
 
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
@@ -42,7 +52,7 @@ if (isWeb) {
         if (stored) {
             currentUser = JSON.parse(stored);
         }
-    } catch (e) {}
+    } catch (e) { }
 }
 
 function saveCurrentUser() {
@@ -53,7 +63,7 @@ function saveCurrentUser() {
             } else {
                 window.localStorage.removeItem('dental_current_user');
             }
-        } catch (e) {}
+        } catch (e) { }
     }
 }
 
