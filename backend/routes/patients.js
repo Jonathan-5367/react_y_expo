@@ -21,7 +21,7 @@ router.get('/', async (req, res) => {
              WHERE u.activo = 1`
         );
 
-        // Map and clean response
+        // Mapear y limpiar la respuesta
         const patients = rows.map(p => ({
             id: String(p.id),
             name: p.name || 'Sin Nombre',

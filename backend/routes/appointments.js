@@ -23,7 +23,7 @@ router.get('/', async (req, res) => {
              ORDER BY c.fecha_hora DESC`
         );
 
-        // Map to format required by the frontend store
+        // Mapear al formato requerido por el store del frontend
         const appointments = rows.map(item => {
             const todayStr = new Date().toISOString().split('T')[0];
             const isPast = item.fecha < todayStr;
@@ -59,14 +59,14 @@ router.post('/', async (req, res) => {
     try {
         const trimmedEmail = pacienteEmail.trim().toLowerCase();
         
-        // Find user by email or create a skeleton one if it doesn't exist
+        // Buscar usuario por correo electrónico o crear uno temporal si no existe
         const [users] = await db.query('SELECT id_usuario FROM usuarios WHERE email = ?', [trimmedEmail]);
         let userId;
         
         if (users.length > 0) {
             userId = users[0].id_usuario;
         } else {
-            // Auto-create skeleton user (role = 4 (paciente))
+            // Auto-crear usuario básico (rol = 4 (paciente))
             const [newU] = await db.query(
                 `INSERT INTO usuarios (nombre, email, telefono, id_rol, activo) 
                  VALUES (?, ?, ?, 4, 1)`,
@@ -75,7 +75,7 @@ router.post('/', async (req, res) => {
             userId = newU.insertId;
         }
 
-        // Find or create patient entry
+        // Buscar o crear la entrada en la tabla pacientes
         const [patients] = await db.query('SELECT id_paciente FROM pacientes WHERE id_origen = ?', [userId]);
         let patientId;
         
@@ -89,23 +89,25 @@ router.post('/', async (req, res) => {
             patientId = newP.insertId;
         }
 
-        // Default doctor selection (find first user with role 2 (doctor), otherwise default to null)
+        // Selección de doctor por defecto (buscar el primer usuario con rol 2 (doctor), de lo contrario asignar nulo)
         const [doctors] = await db.query('SELECT id_usuario FROM usuarios WHERE id_rol = 2 LIMIT 1');
         const doctorId = doctors.length > 0 ? doctors[0].id_usuario : null;
 
-        // Combine date and time
+        // Combinar fecha y hora
         const datetimeStr = `${fecha.trim()} ${hora.trim()}:00`;
 
-        // --- VALIDATIONS ---
+        // --- VALIDACIONES DE NEGOCIO ---
 
-        // 1. Block Fridays (5), Saturdays (6) and Sundays (0)
+        // 1. Bloquear citas en días específicos: Viernes (5), Sábados (6) y Domingos (0)
+        // Obtenemos el día de la semana a partir de la fecha seleccionada.
         const selectedDate = new Date(`${fecha.trim()}T00:00:00`);
         const dayOfWeek = selectedDate.getDay(); // 0=Sun,1=Mon,...,6=Sat
         if (dayOfWeek === 0 || dayOfWeek === 5 || dayOfWeek === 6) {
             return res.status(400).json({ error: 'No se pueden agendar citas los viernes, sábados ni domingos.' });
         }
 
-        // 2. Check same-hour conflict (only non-cancelled appointments)
+        // 2. Evitar que dos citas se solapen en la misma hora el mismo día.
+        // Solo verificamos citas que no estén canceladas (estado != 'cancelada').
         const [sameHour] = await db.query(
             `SELECT id_cita FROM citas 
              WHERE DATE(fecha_hora) = ? AND TIME_FORMAT(fecha_hora, '%H:%i') = ? 
@@ -116,7 +118,8 @@ router.post('/', async (req, res) => {
             return res.status(400).json({ error: `El horario de las ${hora.trim()} ya está ocupado para ese día. Por favor selecciona otra hora.` });
         }
 
-        // 3. Max 4 appointments per day (non-cancelled)
+        // 3. Límite máximo de 4 citas por día en la clínica.
+        // Contamos todas las citas agendadas para esa fecha que no estén canceladas.
         const [dayCount] = await db.query(
             `SELECT COUNT(*) as total FROM citas 
              WHERE DATE(fecha_hora) = ? AND estado != 'cancelada'`,

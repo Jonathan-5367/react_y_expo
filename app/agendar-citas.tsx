@@ -37,14 +37,14 @@ export default function AgendarCitasScreen() {
             return;
         }
 
-        // Validate date format YYYY-MM-DD
+        // Validar formato de fecha AAAA-MM-DD
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(fecha.trim())) {
             Alert.alert('Fecha inválida', 'La fecha debe estar en formato AAAA-MM-DD (ej: 2026-06-15).');
             return;
         }
 
-        // Validate time format (HH:MM)
+        // Validar formato de hora (HH:MM)
         const timeRegex = /^\d{2}:\d{2}$/;
         if (!timeRegex.test(hora.trim())) {
             Alert.alert('Hora inválida', 'La hora debe estar en formato de 24 horas HH:MM (ej: 14:30).');
@@ -65,7 +65,10 @@ export default function AgendarCitasScreen() {
                 { text: 'Aceptar', onPress: () => router.back() }
             ]);
         } else {
-            Alert.alert('No se pudo agendar', result.error);
+            // --- MANEJO DE ERRORES DEL SERVIDOR ---
+            // Si la cita no se pudo agendar (ej: más de 4 citas en un día, misma hora ocupada, fin de semana),
+            // el backend devuelve un mensaje de error específico que se almacena en el estado 'error'.
+            Alert.alert('No se pudo agendar', result.error || 'Revisa los datos e intenta nuevamente.');
         }
     };
 
