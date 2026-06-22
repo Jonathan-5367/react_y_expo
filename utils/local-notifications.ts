@@ -94,6 +94,7 @@ export async function syncAllAppointmentReminders(
                     content: {
                         title: 'Recordatorio de Cita',
                         body: `Mañana a las ${app.hora} tienes tu cita de ${app.procedimiento}. ¡No olvides asistir!`,
+                        sound: true,
                         data: { appointmentId: app.id, type: 'day_before' },
                     },
                     trigger: {
@@ -112,6 +113,7 @@ export async function syncAllAppointmentReminders(
                     content: {
                         title: 'Tu cita es pronto',
                         body: `Recuerda que en 2 horas (a las ${app.hora}) tienes tu cita de ${app.procedimiento}.`,
+                        sound: true,
                         data: { appointmentId: app.id, type: 'two_hours_before' },
                     },
                     trigger: {
