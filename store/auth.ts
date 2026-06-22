@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
@@ -39,28 +40,56 @@ export const API_URL = USE_PRODUCTION
         ? 'http://localhost:3000/api' // Si estás probando en navegador web
         : `http://${getHostIp()}:3000/api`); // Si estás en Expo Go (Android/iOS) usando Wi-Fi local
 
+const STORAGE_KEY = 'dental_current_user';
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
 
 let currentUser: User | null = null;
+
+// Carga sincrónica para web (localStorage)
 if (isWeb) {
     try {
-        const stored = window.localStorage.getItem('dental_current_user');
+        const stored = window.localStorage.getItem(STORAGE_KEY);
         if (stored) {
             currentUser = JSON.parse(stored);
         }
     } catch (e) { }
 }
 
-function saveCurrentUser() {
+// Guarda la sesión tanto en web (localStorage) como en móvil (AsyncStorage)
+async function saveCurrentUser() {
     if (isWeb) {
         try {
             if (currentUser) {
-                window.localStorage.setItem('dental_current_user', JSON.stringify(currentUser));
+                window.localStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
             } else {
-                window.localStorage.removeItem('dental_current_user');
+                window.localStorage.removeItem(STORAGE_KEY);
+            }
+        } catch (e) { }
+    } else {
+        try {
+            if (currentUser) {
+                await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(currentUser));
+            } else {
+                await AsyncStorage.removeItem(STORAGE_KEY);
             }
         } catch (e) { }
     }
+}
+
+/**
+ * Inicializa la sesión leyendo el usuario guardado desde AsyncStorage (móvil).
+ * Debe llamarse una vez al iniciar la aplicación, antes de mostrar cualquier pantalla.
+ */
+export async function initAuth(): Promise<User | null> {
+    if (isWeb) return currentUser; // En web ya se cargó sincrónicamente
+    try {
+        const stored = await AsyncStorage.getItem(STORAGE_KEY);
+        if (stored) {
+            currentUser = JSON.parse(stored);
+            notify();
+        }
+    } catch (e) { }
+    return currentUser;
 }
 
 type AuthListener = () => void;
@@ -100,9 +129,9 @@ export async function login(email: string, password: string): Promise<{ success:
     }
 }
 
-export function logout() {
+export async function logout() {
     currentUser = null;
-    saveCurrentUser();
+    await saveCurrentUser();
     notify();
 }
 
