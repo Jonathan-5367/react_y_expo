@@ -1,11 +1,13 @@
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
+import { Stack, useRouter } from 'expo-router';
 import { StatusBar } from 'expo-status-bar';
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import * as Notifications from 'expo-notifications';
+import { ActivityIndicator, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
+import { initAuth } from '@/store/auth';
 
 // Configure how notifications are handled when the app is in the foreground
 Notifications.setNotificationHandler({
@@ -24,6 +26,29 @@ export const unstable_settings = {
 
 export default function RootLayout() {
   const colorScheme = useColorScheme();
+  const router = useRouter();
+  const [isAuthReady, setIsAuthReady] = useState(false);
+
+  useEffect(() => {
+    // Al iniciar la app, verificamos si hay una sesión guardada
+    initAuth().then((user) => {
+      setIsAuthReady(true);
+      if (user) {
+        // Si hay sesión activa, redirigir directamente al dashboard
+        router.replace('/dashboard');
+      }
+      // Si no hay sesión, el anchor 'login' ya es la pantalla por defecto
+    });
+  }, []);
+
+  // Mostrar pantalla de carga mientras se verifica la sesión
+  if (!isAuthReady) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF0F6' }}>
+        <ActivityIndicator size="large" color="#e83e8c" />
+      </View>
+    );
+  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
