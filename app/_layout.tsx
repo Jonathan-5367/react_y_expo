@@ -4,7 +4,7 @@ import { StatusBar } from 'expo-status-bar';
 import React, { useEffect, useState } from 'react';
 import 'react-native-reanimated';
 import * as Notifications from 'expo-notifications';
-import { ActivityIndicator, View } from 'react-native';
+import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { initAuth } from '@/store/auth';
@@ -30,25 +30,17 @@ export default function RootLayout() {
   const [isAuthReady, setIsAuthReady] = useState(false);
 
   useEffect(() => {
-    // Al iniciar la app, verificamos si hay una sesión guardada
+    // Al iniciar la app, verificamos si hay una sesión guardada.
+    // El Stack ya está montado en este punto, por lo que el router funciona correctamente.
     initAuth().then((user) => {
-      setIsAuthReady(true);
       if (user) {
         // Si hay sesión activa, redirigir directamente al dashboard
         router.replace('/dashboard');
       }
-      // Si no hay sesión, el anchor 'login' ya es la pantalla por defecto
+      // Ocultar el spinner DESPUÉS de haber lanzado la redirección (o no)
+      setIsAuthReady(true);
     });
   }, []);
-
-  // Mostrar pantalla de carga mientras se verifica la sesión
-  if (!isAuthReady) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFF0F6' }}>
-        <ActivityIndicator size="large" color="#e83e8c" />
-      </View>
-    );
-  }
 
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
@@ -61,6 +53,22 @@ export default function RootLayout() {
         <Stack.Screen name="modal" options={{ presentation: 'modal', title: 'Modal' }} />
       </Stack>
       <StatusBar style="auto" />
+
+      {/* Spinner superpuesto: visible solo mientras se verifica la sesión guardada */}
+      {!isAuthReady && (
+        <View style={styles.loadingOverlay}>
+          <ActivityIndicator size="large" color="#e83e8c" />
+        </View>
+      )}
     </ThemeProvider>
   );
 }
+
+const styles = StyleSheet.create({
+  loadingOverlay: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: '#FFF0F6',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+});
