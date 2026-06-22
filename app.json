@@ -2,7 +2,7 @@
   "expo": {
     "name": "Agenda Virtual",
     "slug": "react_y_expo",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
     "scheme": "reactyexpo",
