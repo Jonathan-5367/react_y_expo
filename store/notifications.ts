@@ -1,4 +1,5 @@
 // Simple notification store shared across screens
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
 import { getCurrentUser } from './auth';
 
@@ -14,6 +15,7 @@ export type Notification = {
     destinatarioEmail?: string;
 };
 
+const NOTIF_STORAGE_KEY = 'dental_notifications';
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
 
 let initialNotifications: Notification[] = [
@@ -24,22 +26,43 @@ let initialNotifications: Notification[] = [
 
 let notifications: Notification[] = initialNotifications;
 
+// Carga sincrónica para web
 if (isWeb) {
     try {
-        const stored = window.localStorage.getItem('dental_notifications');
+        const stored = window.localStorage.getItem(NOTIF_STORAGE_KEY);
         if (stored) {
             notifications = JSON.parse(stored);
         }
     } catch (e) {}
 }
 
-function saveNotifications() {
+async function saveNotifications() {
     if (isWeb) {
         try {
-            window.localStorage.setItem('dental_notifications', JSON.stringify(notifications));
+            window.localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifications));
+        } catch (e) {}
+    } else {
+        try {
+            await AsyncStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifications));
         } catch (e) {}
     }
 }
+
+/**
+ * Inicializa las notificaciones leyendo desde AsyncStorage (móvil).
+ * Debe llamarse una vez al inicio de la app junto a initAuth().
+ */
+export async function initNotifications(): Promise<void> {
+    if (isWeb) return; // En web ya se cargó sincrónicamente
+    try {
+        const stored = await AsyncStorage.getItem(NOTIF_STORAGE_KEY);
+        if (stored) {
+            notifications = JSON.parse(stored);
+            notify();
+        }
+    } catch (e) {}
+}
+
 
 type Listener = () => void;
 const listeners: Set<Listener> = new Set();
