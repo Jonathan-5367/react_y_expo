@@ -57,7 +57,11 @@ export default function RegisterScreen() {
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <Stack.Screen options={{ title: 'Registro', headerTransparent: true }} />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.header}>
                     <ThemedText type="title" style={styles.title}>Crear Cuenta</ThemedText>
                     <ThemedText style={styles.subtitle}>Únete a nuestra comunidad hoy mismo.</ThemedText>
