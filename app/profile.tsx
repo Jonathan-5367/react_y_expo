@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
     },
     inputField: {
         fontSize: 16,
-        color: '#333',
+        color: '#000',
         fontWeight: '500',
         borderBottomWidth: 1,
         borderBottomColor: '#e83e8c',

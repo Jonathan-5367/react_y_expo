@@ -241,6 +241,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E1E4E8',
         fontSize: 16,
+        color: '#000',
     },
     textArea: {
         minHeight: 100,
@@ -251,6 +252,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E1E4E8',
         fontSize: 16,
+        color: '#000',
     },
     button: {
         backgroundColor: '#e83e8c',

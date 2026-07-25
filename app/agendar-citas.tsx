@@ -255,7 +255,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E0E0E0',
         fontSize: 16,
-        color: '#333',
+        color: '#000',
         textAlign: 'center',
     },
     readOnlyInput: {
