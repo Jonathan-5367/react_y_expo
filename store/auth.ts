@@ -28,17 +28,33 @@ const getHostIp = () => {
     return hostUri.split(':')[0];
 };
 
+<<<<<<< HEAD
 // --- CONFIGURACIÓN DEL SERVIDOR ---
 // Cambia USE_PRODUCTION a true para usar tu base de datos en Railway (producción).
 // Cambia a false para usar el servidor local en tu computadora.
+=======
+<<<<<<< HEAD
+export const API_URL = process.env.EXPO_PUBLIC_API_URL
+    ? process.env.EXPO_PUBLIC_API_URL
+    : (Platform.OS === 'web' 
+        ? 'http://localhost:3000/api' 
+=======
+// Cambia a true para usar Railway (producción) o false para usar tu servidor local
+>>>>>>> backup
 const USE_PRODUCTION = true;
 
 // La constante API_URL determina a dónde se enviarán todas las peticiones (fetch) de la app.
 export const API_URL = USE_PRODUCTION
     ? 'https://reactyexpo-production.up.railway.app/api' // Enlace a tu servidor en la nube
     : (Platform.OS === 'web'
+<<<<<<< HEAD
         ? 'http://localhost:3000/api' // Si estás probando en navegador web
         : `http://${getHostIp()}:3000/api`); // Si estás en Expo Go (Android/iOS) usando Wi-Fi local
+=======
+        ? 'http://localhost:3000/api'
+>>>>>>> master
+        : `http://${getHostIp()}:3000/api`);
+>>>>>>> backup
 
 const STORAGE_KEY = 'dental_current_user';
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;

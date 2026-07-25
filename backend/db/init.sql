@@ -3,7 +3,11 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
+<<<<<<< HEAD
+-- Tiempo de generación: 15-06-2026 a las 08:01:37
+=======
 -- Tiempo de generación: 15-06-2026 a las 07:03:17
+>>>>>>> master
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -24,6 +28,313 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
+<<<<<<< HEAD
+-- Estructura de tabla para la tabla `adjuntos_pacientes`
+--
+
+CREATE TABLE `adjuntos_pacientes` (
+  `id_adjunto` int(11) NOT NULL,
+  `paciente_id` int(11) DEFAULT NULL,
+  `cita_id` int(11) DEFAULT NULL,
+  `tipo` enum('foto','documento','radiografia','analisis','receta','otro') DEFAULT NULL,
+  `url_archivo` varchar(255) DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `subido_por` int(11) DEFAULT NULL,
+  `subido_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `agenda_horaria`
+--
+
+CREATE TABLE `agenda_horaria` (
+  `id_agenda` int(11) NOT NULL,
+  `doctor_id` int(11) DEFAULT NULL,
+  `fecha` date DEFAULT NULL,
+  `hora_inicio` time DEFAULT NULL,
+  `hora_fin` time DEFAULT NULL,
+  `cupos_disponibles` int(11) DEFAULT NULL,
+  `cupos_ocupados` int(11) DEFAULT 0,
+  `estado` enum('disponible','ocupado','cancelado','bloqueado') DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `bloqueos_horarios`
+--
+
+CREATE TABLE `bloqueos_horarios` (
+  `id_bloqueo` int(11) NOT NULL,
+  `doctor_id` int(11) DEFAULT NULL,
+  `fecha_inicio` datetime DEFAULT NULL,
+  `fecha_fin` datetime DEFAULT NULL,
+  `motivo` enum('vacaciones','enfermedad','capacitacion','reunion','emergencia','otro') DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `citas`
+--
+
+CREATE TABLE `citas` (
+  `id_cita` int(11) NOT NULL,
+  `paciente_id` int(11) DEFAULT NULL,
+  `doctor_id` int(11) DEFAULT NULL,
+  `id_agenda` int(11) DEFAULT NULL,
+  `fecha_hora` datetime DEFAULT NULL,
+  `motivo` text DEFAULT NULL,
+  `estado` enum('pendiente','confirmada','en_progreso','completada','cancelada','no_asistio') DEFAULT NULL,
+  `creado_por` int(11) DEFAULT NULL,
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `citas`
+--
+
+INSERT INTO `citas` (`id_cita`, `paciente_id`, `doctor_id`, `id_agenda`, `fecha_hora`, `motivo`, `estado`, `creado_por`, `creado_en`) VALUES
+(2, 3, 1, NULL, '2025-10-29 09:30:00', 'Blanqueamiento', 'confirmada', 9, '2025-10-19 23:41:50'),
+(3, 4, 1, NULL, '2026-02-18 09:30:00', 'Limpieza dental', 'cancelada', 10, '2026-02-16 04:26:42'),
+(4, 4, 1, NULL, '2026-02-20 10:30:00', 'Limpieza dental', 'confirmada', 10, '2026-02-16 04:30:47'),
+(5, 4, 1, NULL, '2026-02-18 10:00:00', 'Extracción', 'confirmada', 10, '2026-02-16 04:44:48'),
+(6, 7, 1, NULL, '2026-06-18 09:00:00', 'Ortodoncia', 'confirmada', 13, '2026-06-14 01:21:22');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `cita_tratamiento`
+--
+
+CREATE TABLE `cita_tratamiento` (
+  `cita_id` int(11) NOT NULL,
+  `tratamiento_id` int(11) NOT NULL,
+  `cantidad` int(11) DEFAULT NULL,
+  `precio_unitario` decimal(10,2) DEFAULT NULL,
+  `subtotal` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `detalle_presupuesto`
+--
+
+CREATE TABLE `detalle_presupuesto` (
+  `presupuesto_id` int(11) NOT NULL,
+  `tratamiento_id` int(11) NOT NULL,
+  `cantidad` int(11) DEFAULT NULL,
+  `precio_unitario` decimal(10,2) DEFAULT NULL,
+  `subtotal` decimal(10,2) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `familiares`
+--
+
+CREATE TABLE `familiares` (
+  `id_familiar` int(11) NOT NULL,
+  `id_usuario` int(11) DEFAULT NULL,
+  `nombre` varchar(50) DEFAULT NULL,
+  `cedula` varchar(8) DEFAULT NULL,
+  `fecha_nacimiento` date DEFAULT NULL,
+  `parentesco` enum('padre','madre','abuelo','abuela','tutor','otro') DEFAULT NULL,
+  `telefono` varchar(11) DEFAULT NULL,
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial_citas`
+--
+
+CREATE TABLE `historial_citas` (
+  `id_historial_cita` int(11) NOT NULL,
+  `cita_id` int(11) DEFAULT NULL,
+  `estado_anterior` enum('pendiente','confirmada','en_progreso','completada','cancelada','no_asistio') DEFAULT NULL,
+  `estado_nuevo` enum('pendiente','confirmada','en_progreso','completada','cancelada','no_asistio') DEFAULT NULL,
+  `notas` text DEFAULT NULL,
+  `actualizado_por` int(11) DEFAULT NULL,
+  `actualizado_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `historial_citas`
+--
+
+INSERT INTO `historial_citas` (`id_historial_cita`, `cita_id`, `estado_anterior`, `estado_nuevo`, `notas`, `actualizado_por`, `actualizado_en`) VALUES
+(1, 2, 'confirmada', 'confirmada', 'Confirmada por administrador', 7, '2025-10-23 04:42:32'),
+(2, 4, 'confirmada', 'confirmada', 'Confirmada por administrador', 13, '2026-02-16 04:45:44'),
+(3, 5, 'confirmada', 'confirmada', 'Confirmada por administrador', 13, '2026-02-16 04:45:48');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `historial_medico`
+--
+
+CREATE TABLE `historial_medico` (
+  `id_historial_medico` int(11) NOT NULL,
+  `paciente_id` int(11) DEFAULT NULL,
+  `cita_id` int(11) DEFAULT NULL,
+  `doctor_id` int(11) DEFAULT NULL,
+  `diagnostico` text DEFAULT NULL,
+  `tratamiento` text DEFAULT NULL,
+  `observaciones` text DEFAULT NULL,
+  `fecha_registro` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `horarios_doctores`
+--
+
+CREATE TABLE `horarios_doctores` (
+  `id_horario` int(11) NOT NULL,
+  `doctor_id` int(11) DEFAULT NULL,
+  `dia_semana` enum('lunes','martes','miercoles','jueves','viernes','sabado','domingo') DEFAULT NULL,
+  `hora_inicio` time DEFAULT NULL,
+  `hora_fin` time DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `notificaciones`
+--
+
+CREATE TABLE `notificaciones` (
+  `id_notificacion` int(11) NOT NULL,
+  `usuario_id` int(11) DEFAULT NULL,
+  `cita_id` int(11) DEFAULT NULL,
+  `tipo` enum('email','sms','sistema','push') DEFAULT NULL,
+  `asunto` varchar(100) DEFAULT NULL,
+  `mensaje` text DEFAULT NULL,
+  `estado` enum('pendiente','enviado','entregado','fallido') DEFAULT NULL,
+  `enviado_en` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pacientes`
+--
+
+CREATE TABLE `pacientes` (
+  `id_paciente` int(11) NOT NULL,
+  `tipo` enum('adulto','menor') DEFAULT NULL,
+  `id_origen` int(11) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `pacientes`
+--
+
+INSERT INTO `pacientes` (`id_paciente`, `tipo`, `id_origen`) VALUES
+(3, 'adulto', 9),
+(4, 'adulto', 10),
+(5, 'adulto', 15),
+(6, 'adulto', 17),
+(7, 'adulto', 13),
+(8, 'adulto', 18),
+(9, 'adulto', 20);
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `pagos`
+--
+
+CREATE TABLE `pagos` (
+  `id_pago` int(11) NOT NULL,
+  `cita_id` int(11) DEFAULT NULL,
+  `monto` decimal(10,2) DEFAULT NULL,
+  `metodo` enum('efectivo','tarjeta_credito','tarjeta_debito','transferencia','otro') DEFAULT NULL,
+  `estado` enum('pendiente','completado','fallido','reembolsado') DEFAULT NULL,
+  `fecha_pago` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `observaciones` text DEFAULT NULL,
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `presupuestos`
+--
+
+CREATE TABLE `presupuestos` (
+  `id_presupuesto` int(11) NOT NULL,
+  `paciente_id` int(11) DEFAULT NULL,
+  `doctor_id` int(11) DEFAULT NULL,
+  `total` decimal(10,2) DEFAULT NULL,
+  `estado` enum('pendiente','aprobado','rechazado','cancelado') DEFAULT NULL,
+  `fecha_creacion` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `roles`
+--
+
+CREATE TABLE `roles` (
+  `id_rol` int(11) NOT NULL,
+  `nombre` enum('administrador','doctor','recepcionista','paciente') DEFAULT NULL,
+  `descripcion` text DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `roles`
+--
+
+INSERT INTO `roles` (`id_rol`, `nombre`, `descripcion`) VALUES
+(1, 'administrador', 'Administrador del sistema'),
+(2, 'doctor', 'Personal médico'),
+(3, 'recepcionista', 'Personal de recepción'),
+(4, 'paciente', 'Pacientes del consultorio');
+
+-- --------------------------------------------------------
+
+--
+-- Estructura de tabla para la tabla `tratamientos`
+--
+
+CREATE TABLE `tratamientos` (
+  `id_tratamiento` int(11) NOT NULL,
+  `nombre` varchar(100) DEFAULT NULL,
+  `descripcion` text DEFAULT NULL,
+  `costo` decimal(10,2) DEFAULT NULL,
+  `duracion_estimada` int(11) DEFAULT NULL,
+  `activo` tinyint(1) DEFAULT 1,
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Volcado de datos para la tabla `tratamientos`
+--
+
+INSERT INTO `tratamientos` (`id_tratamiento`, `nombre`, `descripcion`, `costo`, `duracion_estimada`, `activo`, `creado_en`) VALUES
+(1, 'Limpieza dental', 'Limpieza profesional de dientes y encías', 50.00, 30, 1, '2025-10-15 01:37:54'),
+(2, 'Extracción dental', 'Extracción de pieza dental', 80.00, 45, 1, '2025-10-15 01:37:54'),
+(3, 'Ortodoncia', 'Tratamiento de ortodoncia correctiva', 150.00, 60, 1, '2025-10-15 01:37:54'),
+(4, 'Blanqueamiento', 'Blanqueamiento dental profesional', 120.00, 60, 1, '2025-10-15 01:37:54'),
+(5, 'Consulta general', 'Consulta odontológica general', 30.00, 20, 1, '2025-10-15 01:37:54');
+
+-- --------------------------------------------------------
+
+--
+=======
+>>>>>>> master
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -78,6 +389,93 @@ ALTER TABLE `usuarios`
 --
 
 --
+<<<<<<< HEAD
+-- AUTO_INCREMENT de la tabla `adjuntos_pacientes`
+--
+ALTER TABLE `adjuntos_pacientes`
+  MODIFY `id_adjunto` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `agenda_horaria`
+--
+ALTER TABLE `agenda_horaria`
+  MODIFY `id_agenda` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `bloqueos_horarios`
+--
+ALTER TABLE `bloqueos_horarios`
+  MODIFY `id_bloqueo` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `citas`
+--
+ALTER TABLE `citas`
+  MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT de la tabla `familiares`
+--
+ALTER TABLE `familiares`
+  MODIFY `id_familiar` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `historial_citas`
+--
+ALTER TABLE `historial_citas`
+  MODIFY `id_historial_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+
+--
+-- AUTO_INCREMENT de la tabla `historial_medico`
+--
+ALTER TABLE `historial_medico`
+  MODIFY `id_historial_medico` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `horarios_doctores`
+--
+ALTER TABLE `horarios_doctores`
+  MODIFY `id_horario` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `notificaciones`
+--
+ALTER TABLE `notificaciones`
+  MODIFY `id_notificacion` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `pacientes`
+--
+ALTER TABLE `pacientes`
+  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+
+--
+-- AUTO_INCREMENT de la tabla `pagos`
+--
+ALTER TABLE `pagos`
+  MODIFY `id_pago` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `presupuestos`
+--
+ALTER TABLE `presupuestos`
+  MODIFY `id_presupuesto` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT de la tabla `roles`
+--
+ALTER TABLE `roles`
+  MODIFY `id_rol` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+
+--
+-- AUTO_INCREMENT de la tabla `tratamientos`
+--
+ALTER TABLE `tratamientos`
+  MODIFY `id_tratamiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
+
+--
+=======
+>>>>>>> master
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
