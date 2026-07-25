@@ -69,14 +69,14 @@ export async function syncAllAppointmentReminders(
         await Notifications.cancelAllScheduledNotificationsAsync();
 
         const now = new Date();
-        const patientAppointments = appointments.filter(app => 
-            app.pacienteEmail && 
+        const patientAppointments = appointments.filter(app =>
+            app.pacienteEmail &&
             app.pacienteEmail.toLowerCase() === userEmail.toLowerCase() &&
             (app.estado === 'pendiente' || app.estado === 'confirmada')
         );
 
         for (const app of patientAppointments) {
-            // Parsear fecha y hora localmente de manera segura (evitando desfases de huso horario)
+            // Parsear fecha y hora localmente de manera segura (evitando desfases de uso horario)
             const [year, month, day] = app.fecha.split('-').map(Number);
             const [hour, minute] = app.hora.split(':').map(Number);
             const appointmentDate = new Date(year, month - 1, day, hour, minute);
@@ -94,7 +94,6 @@ export async function syncAllAppointmentReminders(
                     content: {
                         title: 'Recordatorio de Cita',
                         body: `Mañana a las ${app.hora} tienes tu cita de ${app.procedimiento}. ¡No olvides asistir!`,
-                        sound: true,
                         data: { appointmentId: app.id, type: 'day_before' },
                     },
                     trigger: {
@@ -113,7 +112,6 @@ export async function syncAllAppointmentReminders(
                     content: {
                         title: 'Tu cita es pronto',
                         body: `Recuerda que en 2 horas (a las ${app.hora}) tienes tu cita de ${app.procedimiento}.`,
-                        sound: true,
                         data: { appointmentId: app.id, type: 'two_hours_before' },
                     },
                     trigger: {
@@ -123,7 +121,7 @@ export async function syncAllAppointmentReminders(
                 });
             }
         }
-        
+
         console.log(`Recordatorios de citas sincronizados. Citas analizadas: ${patientAppointments.length}`);
     } catch (error) {
         console.error('Error sincronizando recordatorios locales:', error);
