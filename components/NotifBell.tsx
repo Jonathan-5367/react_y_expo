@@ -9,10 +9,10 @@ import {
     TouchableWithoutFeedback,
     View,
 } from 'react-native';
-import { useNotifications, markRead, markAllRead } from '@/store/notifications';
+import { useNotifications } from '@/store/notifications';
 
 export function NotifBell() {
-    const { notifications, unreadCount } = useNotifications();
+    const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
     const [open, setOpen] = useState(false);
 
     return (
@@ -29,6 +29,7 @@ export function NotifBell() {
 
             {/* Dropdown panel */}
             <Modal
+                key={unreadCount}
                 transparent
                 visible={open}
                 animationType="fade"
@@ -62,7 +63,7 @@ export function NotifBell() {
                             <Text style={styles.emptyText}>Sin notificaciones</Text>
                         </View>
                     ) : (
-                        notifications.map(notif => (
+                        notifications.slice(0, 2).map(notif => (
                             <TouchableOpacity
                                 key={notif.id}
                                 style={[styles.notifCard, !notif.read && styles.notifCardUnread]}

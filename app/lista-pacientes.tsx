@@ -54,17 +54,19 @@ export default function ListaPacientesScreen() {
         return null; // Don't render while redirecting
     }
 
-    // Search across name, cedula, and phone
+    // --- BÚSQUEDA GENERAL ---
+    // Busca coincidencias de texto en el nombre, la cédula o el número de teléfono.
     const query = searchQuery.toLowerCase().trim();
     let filteredPacientes = pacientes.filter(p => {
-        if (!query) return true;
+        if (!query) return true; // Si no hay búsqueda, mostramos todos
         const name = (p.name || '').toLowerCase();
         const cedula = (p.cedula || '').toLowerCase();
         const phone = (p.phone || '').toLowerCase();
         return name.includes(query) || cedula.includes(query) || phone.includes(query);
     });
 
-    // Apply category filter
+    // --- FILTRADO POR CATEGORÍAS ---
+    // Dependiendo del botón superior seleccionado, aplicamos filtros adicionales.
     if (filterType === 'Con Citas') {
         filteredPacientes = filteredPacientes.filter(p => p.lastVisit && p.lastVisit !== 'Sin citas');
     } else if (filterType === 'Sin Citas') {
@@ -157,7 +159,11 @@ export default function ListaPacientesScreen() {
                     ) : (
                         <>
                             {filteredPacientes.map((paciente) => (
-                                <TouchableOpacity key={paciente.id} style={styles.card}>
+                                <TouchableOpacity 
+                                    key={paciente.id} 
+                                    style={styles.card}
+                                    onPress={() => router.push(`/paciente/${paciente.id}` as any)}
+                                >
                                     <View style={styles.avatar}>
                                         <ThemedText style={styles.avatarText}>{(paciente.name || '').charAt(0)}</ThemedText>
                                     </View>
@@ -230,7 +236,7 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: '#333',
+        color: '#000',
     },
     filterScroll: {
         marginBottom: 12,

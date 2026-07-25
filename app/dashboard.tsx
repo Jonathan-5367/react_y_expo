@@ -8,6 +8,7 @@ import { Alert } from 'react-native';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth, useProtectedRoute } from '@/store/auth';
+import { useNotifications } from '@/store/notifications';
 
 export default function DashboardScreen() {
     const router = useRouter();
@@ -16,27 +17,13 @@ export default function DashboardScreen() {
     const { user, logout } = useAuth();
 
     useProtectedRoute();
+    const { notifications, unreadCount, markRead, markAllRead } = useNotifications();
 
     if (!user) {
         return null; // Don't render while redirecting
     }
 
     const userName = user?.nombre || "Usuario";
-    const [notifications, setNotifications] = useState([
-        { id: 1, title: 'Cita confirmada', message: 'Tu cita del 2 de junio a las 10:00 AM ha sido confirmada.', time: 'Hace 5 min', read: false, icon: 'checkmark-circle', color: '#2E8B57' },
-        { id: 2, title: 'Recordatorio de cita', message: 'Tienes una cita mañana a las 9:00 AM. ¡No olvides asistir!', time: 'Hace 1 hora', read: false, icon: 'alarm', color: '#F39C12' },
-        { id: 3, title: 'Resultado disponible', message: 'Tu historial de tratamiento ha sido actualizado por la doctora.', time: 'Ayer', read: true, icon: 'document-text', color: '#4A90E2' },
-    ]);
-
-    const unreadCount = notifications.filter(n => !n.read).length;
-
-    const markAllRead = () => {
-        setNotifications(prev => prev.map(n => ({ ...n, read: true })));
-    };
-
-    const markRead = (id: number) => {
-        setNotifications(prev => prev.map(n => n.id === id ? { ...n, read: true } : n));
-    };
 
     const menuItems = [
         { title: 'Mi Perfil', icon: 'person', route: '/profile', color: '#4A90E2', desc: 'Ver datos personales' },
@@ -102,7 +89,7 @@ export default function DashboardScreen() {
                             <ThemedText style={styles.emptyNotifText}>Sin notificaciones pendientes</ThemedText>
                         </View>
                     ) : (
-                        notifications.map(notif => (
+                        notifications.slice(0, 2).map(notif => (
                             <TouchableOpacity
                                 key={notif.id}
                                 style={[styles.notifCard, !notif.read && styles.notifCardUnread]}

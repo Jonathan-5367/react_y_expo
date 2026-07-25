@@ -1,8 +1,8 @@
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
-import { Stack, useRouter } from 'expo-router';
-import React, { useState } from 'react';
+import { Stack, useRouter, useFocusEffect } from 'expo-router';
+import React, { useState, useCallback } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View, Alert } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { SideMenu } from '@/components/SideMenu';
@@ -15,7 +15,13 @@ export default function HistorialCitasScreen() {
     const insets = useSafeAreaInsets();
     const [isMenuVisible, setIsMenuVisible] = useState(false);
     const { user } = useAuth();
-    const { appointments, cancelAppointment } = useAppointments();
+    const { appointments, cancelAppointment, confirmAppointment, fetchAppointments } = useAppointments();
+
+    useFocusEffect(
+        useCallback(() => {
+            fetchAppointments();
+        }, [fetchAppointments])
+    );
 
     const isAdmin = user?.rol === 'administrador' || user?.rol === 'doctor' || user?.rol === 'recepcionista';
     
@@ -59,6 +65,27 @@ export default function HistorialCitasScreen() {
                             Alert.alert('Cita Cancelada', 'La cita ha sido cancelada con éxito.');
                         } else {
                             Alert.alert('Error', 'No se pudo cancelar la cita.');
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+    const handleConfirmar = (id: number) => {
+        Alert.alert(
+            'Confirmar Cita',
+            '¿Estás seguro de que deseas confirmar esta cita?',
+            [
+                { text: 'No', style: 'cancel' },
+                {
+                    text: 'Sí, Confirmar',
+                    onPress: async () => {
+                        const success = await confirmAppointment(id);
+                        if (success) {
+                            Alert.alert('Cita Confirmada', 'La cita ha sido confirmada con éxito.');
+                        } else {
+                            Alert.alert('Error', 'No se pudo confirmar la cita.');
                         }
                     }
                 }
@@ -121,12 +148,20 @@ export default function HistorialCitasScreen() {
                                 </View>
                             </View>
 
-                            {!cita.pasada && cita.estado !== 'cancelada' && (
+                            {!cita.pasada && (
                                 <View style={styles.cardFooter}>
-                                    <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancelar(cita.id)}>
-                                        <Ionicons name="close-circle-outline" size={18} color="#F44336" style={{ marginRight: 4 }} />
-                                        <ThemedText style={styles.cancelText}>Cancelar Cita</ThemedText>
-                                    </TouchableOpacity>
+                                    {isAdmin && cita.estado === 'pendiente' && (
+                                        <TouchableOpacity style={styles.confirmButton} onPress={() => handleConfirmar(cita.id)}>
+                                            <Ionicons name="checkmark-circle-outline" size={18} color="#4CAF50" style={{ marginRight: 4 }} />
+                                            <ThemedText style={styles.confirmText}>Confirmar Cita</ThemedText>
+                                        </TouchableOpacity>
+                                    )}
+                                    {cita.estado !== 'cancelada' && cita.estado !== 'completada' && (
+                                        <TouchableOpacity style={styles.cancelButton} onPress={() => handleCancelar(cita.id)}>
+                                            <Ionicons name="close-circle-outline" size={18} color="#F44336" style={{ marginRight: 4 }} />
+                                            <ThemedText style={styles.cancelText}>Cancelar Cita</ThemedText>
+                                        </TouchableOpacity>
+                                    )}
                                 </View>
                             )}
                         </View>
@@ -267,6 +302,17 @@ const styles = StyleSheet.create({
         borderTopWidth: 1,
         borderTopColor: '#F0F0F0',
         paddingTop: 12,
+    },
+    confirmButton: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        padding: 6,
+        marginRight: 12,
+    },
+    confirmText: {
+        color: '#4CAF50',
+        fontWeight: 'bold',
+        fontSize: 14,
     },
     cancelButton: {
         flexDirection: 'row',

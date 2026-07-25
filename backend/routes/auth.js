@@ -3,15 +3,15 @@ const router = express.Router();
 const bcrypt = require('bcryptjs');
 const db = require('../db');
 
-// Helper to compare bcrypt hashes from PHP ($2y$) and plain text
+// Función de ayuda para comparar hashes bcrypt desde PHP ($2y$) y texto plano
 const comparePassword = (inputPassword, dbHash) => {
     if (!dbHash) return false;
-    // Normalized PHP variant $2y$ to $2a$ for node compatibility
+    // Normaliza la variante PHP $2y$ a $2a$ para compatibilidad con node
     const normalizedHash = dbHash.startsWith('$2y$') ? '$2a$' + dbHash.slice(4) : dbHash;
     try {
         return bcrypt.compareSync(inputPassword, normalizedHash);
     } catch (e) {
-        // Fallback for plain text passwords in demo/mock accounts
+        // Respaldo para contraseñas en texto plano en cuentas de demostración
         return inputPassword === dbHash;
     }
 };
@@ -47,7 +47,7 @@ router.post('/login', async (req, res) => {
             return res.status(401).json({ error: 'Contraseña incorrecta' });
         }
 
-        // Clean user response
+        // Limpiar contraseña de la respuesta del usuario
         delete user.password;
 
         return res.json({
@@ -82,7 +82,7 @@ router.post('/register', async (req, res) => {
         const trimmedEmail = email.trim().toLowerCase();
         const trimmedCedula = cedula.trim();
 
-        // Check unique fields
+        // Verificar campos únicos
         const [existing] = await db.query(
             'SELECT id_usuario FROM usuarios WHERE email = ? OR cedula = ?',
             [trimmedEmail, trimmedCedula]
@@ -92,7 +92,7 @@ router.post('/register', async (req, res) => {
             return res.status(400).json({ error: 'El correo o la cédula ya se encuentran registrados.' });
         }
 
-        // Hash password
+        // Hashear la contraseña
         const passwordHash = bcrypt.hashSync(password.trim(), 10);
         
         // Insert into usuarios
@@ -113,7 +113,7 @@ router.post('/register', async (req, res) => {
 
         const newUserId = result.insertId;
 
-        // Insert into pacientes
+        // Insertar en pacientes
         await db.query(
             'INSERT INTO pacientes (tipo, id_origen) VALUES (?, ?)',
             ['adulto', newUserId]
@@ -161,7 +161,7 @@ router.post('/register-admin', async (req, res) => {
             return res.status(400).json({ error: 'El correo o la cédula ya se encuentran registrados.' });
         }
 
-        // Map role name to role id
+        // Mapear el nombre del rol al ID del rol
         const roleMap = {
             'administrador': 1,
             'doctor': 2,
@@ -190,7 +190,7 @@ router.post('/register-admin', async (req, res) => {
 
         const newUserId = result.insertId;
 
-        // If registered as patient, create references
+        // Si se registró como paciente, crear la referencia en la tabla pacientes
         if (roleId === 4) {
             await db.query(
                 'INSERT INTO pacientes (tipo, id_origen) VALUES (?, ?)',
@@ -267,7 +267,7 @@ router.put('/profile/:id', async (req, res) => {
         const trimmedEmail = email.trim().toLowerCase();
         const trimmedCedula = cedula.trim();
 
-        // Check unique constraints (email and cedula) for other users
+        // Validar que el email y cédula sean únicos para otros usuarios
         const [existing] = await db.query(
             'SELECT id_usuario FROM usuarios WHERE (email = ? OR cedula = ?) AND id_usuario != ?',
             [trimmedEmail, trimmedCedula, id]
@@ -277,7 +277,7 @@ router.put('/profile/:id', async (req, res) => {
             return res.status(400).json({ error: 'El correo o la cédula ya se encuentran registrados por otro usuario.' });
         }
 
-        // Update user
+        // Actualizar usuario
         await db.query(
             `UPDATE usuarios 
              SET nombre = ?, cedula = ?, email = ?, telefono = ?, fecha_nacimiento = ?, telefono_familiar = ?, alergias = ?
@@ -294,7 +294,7 @@ router.put('/profile/:id', async (req, res) => {
             ]
         );
 
-        // Fetch updated data
+        // Obtener los datos actualizados
         const [users] = await db.query(
             `SELECT u.*, r.nombre as rol 
              FROM usuarios u 

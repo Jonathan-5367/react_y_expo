@@ -1,12 +1,12 @@
+import { CalendarModal } from '@/components/CalendarModal';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAuth } from '@/store/auth';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
+import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useAuth } from '@/store/auth';
-import { CalendarModal } from '@/components/CalendarModal';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 export default function RegisterScreen() {
     const router = useRouter();
@@ -57,7 +57,11 @@ export default function RegisterScreen() {
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <Stack.Screen options={{ title: 'Registro', headerTransparent: true }} />
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <ScrollView 
+                contentContainerStyle={styles.scrollContent}
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.header}>
                     <ThemedText type="title" style={styles.title}>Crear Cuenta</ThemedText>
                     <ThemedText style={styles.subtitle}>Únete a nuestra comunidad hoy mismo.</ThemedText>
@@ -121,7 +125,7 @@ export default function RegisterScreen() {
                             placeholder="Ej. 04141234567"
                             placeholderTextColor="#888"
                             value={telefono}
-                            onChangeText={setTelefono}
+                            onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             maxLength={11}
                         />
@@ -153,7 +157,7 @@ export default function RegisterScreen() {
                             placeholder="Ej. 04141234567"
                             placeholderTextColor="#888"
                             value={telefonoFamiliar}
-                            onChangeText={setTelefonoFamiliar}
+                            onChangeText={(text) => setTelefonoFamiliar(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             maxLength={11}
                         />
@@ -227,6 +231,7 @@ const styles = StyleSheet.create({
         fontSize: 14,
         fontWeight: '600',
         marginBottom: 4,
+        color: '#101010ff',
     },
     input: {
         height: 50,
@@ -236,6 +241,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E1E4E8',
         fontSize: 16,
+        color: '#000',
     },
     textArea: {
         minHeight: 100,
@@ -246,6 +252,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E1E4E8',
         fontSize: 16,
+        color: '#000',
     },
     button: {
         backgroundColor: '#e83e8c',

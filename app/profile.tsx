@@ -7,7 +7,7 @@ import { CalendarModal } from '@/components/CalendarModal';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, ScrollView, StyleSheet, TouchableOpacity, View, TextInput, Alert } from 'react-native';
+import { ActivityIndicator, Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function ProfileScreen() {
@@ -186,7 +186,15 @@ export default function ProfileScreen() {
                     <ThemedText style={{ marginTop: 12, color: '#e83e8c', fontWeight: 'bold' }}>Cargando perfil...</ThemedText>
                 </View>
             ) : (
-                <ScrollView contentContainerStyle={styles.scrollContent}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={{ flex: 1 }}
+            >
+                <ScrollView 
+                    contentContainerStyle={styles.scrollContent}
+                    automaticallyAdjustKeyboardInsets={true}
+                    keyboardShouldPersistTaps="handled"
+                >
 
                     <View style={styles.header}>
                         <View style={styles.avatarContainer}>
@@ -248,9 +256,10 @@ export default function ProfileScreen() {
                             label="Teléfono" 
                             value={isEditing ? telefono : (profileData?.telefono || 'N/A')} 
                             isEditing={isEditing} 
-                            onChangeText={setTelefono} 
+                            onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, ''))} 
                             placeholder="Ej. 04141234567"
                             keyboardType="phone-pad"
+                            maxLength={11}
                         />
                         <ProfileItem 
                             icon="calendar" 
@@ -279,9 +288,10 @@ export default function ProfileScreen() {
                             label="Número de Familiar" 
                             value={isEditing ? telefonoFamiliar : (profileData?.telefonoFamiliar || 'N/A')} 
                             isEditing={isEditing} 
-                            onChangeText={setTelefonoFamiliar} 
+                            onChangeText={(text) => setTelefonoFamiliar(text.replace(/[^0-9]/g, ''))} 
                             placeholder="Ej. 04149876543"
                             keyboardType="phone-pad"
+                            maxLength={11}
                         />
                         <ProfileItem 
                             icon="alert-circle" 
@@ -294,12 +304,13 @@ export default function ProfileScreen() {
                     </View>
 
                 </ScrollView>
+            </KeyboardAvoidingView>
             )}
         </ThemedView>
     );
 }
 
-function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyboardType, placeholder, editable = true, onPress, isButton = false }: { 
+function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyboardType, placeholder, editable = true, onPress, isButton = false, maxLength }: { 
     icon: any, 
     label: string, 
     value: string, 
@@ -309,7 +320,8 @@ function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyb
     placeholder?: string,
     editable?: boolean,
     onPress?: () => void,
-    isButton?: boolean
+    isButton?: boolean,
+    maxLength?: number
 }) {
     return (
         <View style={styles.profileItem}>
@@ -334,6 +346,7 @@ function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyb
                             keyboardType={keyboardType}
                             placeholder={placeholder}
                             placeholderTextColor="#aaa"
+                            maxLength={maxLength}
                         />
                     )
                 ) : (
@@ -352,6 +365,7 @@ const styles = StyleSheet.create({
     },
     scrollContent: {
         padding: 24,
+        paddingBottom: 120,
     },
     topBar: {
         flexDirection: 'row',
@@ -439,7 +453,7 @@ const styles = StyleSheet.create({
     },
     inputField: {
         fontSize: 16,
-        color: '#333',
+        color: '#000',
         fontWeight: '500',
         borderBottomWidth: 1,
         borderBottomColor: '#e83e8c',

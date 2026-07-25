@@ -15,6 +15,7 @@ interface CalendarModalProps {
     onClose: () => void;
     onSelectDate: (date: string) => void;
     initialDate?: string;
+    restrictDates?: boolean;
 }
 
 const MONTHS = [
@@ -24,7 +25,7 @@ const MONTHS = [
 
 const DAYS_OF_WEEK = ['Do', 'Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sa'];
 
-export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: CalendarModalProps) {
+export function CalendarModal({ visible, onClose, onSelectDate, initialDate, restrictDates = false }: CalendarModalProps) {
     const today = new Date();
     const [currentYear, setCurrentYear] = useState(today.getFullYear());
     const [currentMonth, setCurrentMonth] = useState(today.getMonth());
@@ -81,24 +82,35 @@ export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: C
         onClose();
     };
 
-    // Generate years from 1930 to current year + 5
+    // Generar años desde 1930 hasta el año actual + 5
     const years: number[] = [];
     const endYear = today.getFullYear() + 5;
     for (let y = endYear; y >= 1930; y--) {
         years.push(y);
     }
 
+    // Días bloqueados: 0=Domingo, 5=Viernes, 6=Sábado
+    const BLOCKED_DAYS = [0, 5, 6];
+
+    const isDateBlocked = (year: number, month: number, day: number): boolean => {
+        if (!restrictDates) return false;
+        const d = new Date(year, month, day);
+        const todayMidnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+        if (d < todayMidnight) return true; // días pasados
+        return BLOCKED_DAYS.includes(d.getDay()); // fines de semana
+    };
+
     const renderCalendarGrid = () => {
         const daysInMonth = getDaysInMonth(currentYear, currentMonth);
         const firstDay = getFirstDayOfMonth(currentYear, currentMonth);
         const gridCells = [];
 
-        // Blank cells before the first day of the month
+        // Celdas vacías antes del primer día del mes
         for (let i = 0; i < firstDay; i++) {
             gridCells.push(<View key={`empty-${i}`} style={styles.dayCellEmpty} />);
         }
 
-        // Days of the month
+        // Días del mes
         for (let day = 1; day <= daysInMonth; day++) {
             const monthStr = String(currentMonth + 1).padStart(2, '0');
             const dayStr = String(day).padStart(2, '0');
@@ -108,22 +120,26 @@ export function CalendarModal({ visible, onClose, onSelectDate, initialDate }: C
                 day === today.getDate() &&
                 currentMonth === today.getMonth() &&
                 currentYear === today.getFullYear();
+            const blocked = isDateBlocked(currentYear, currentMonth, day);
 
             gridCells.push(
                 <TouchableOpacity
                     key={`day-${day}`}
                     style={[
                         styles.dayCell,
-                        isToday && styles.dayCellToday,
-                        isSelected && styles.dayCellSelected
+                        isToday && !blocked && styles.dayCellToday,
+                        isSelected && styles.dayCellSelected,
+                        blocked && styles.dayCellBlocked,
                     ]}
-                    onPress={() => handleSelectDay(day)}
+                    onPress={() => !blocked && handleSelectDay(day)}
+                    disabled={blocked}
                 >
                     <Text
                         style={[
                             styles.dayText,
-                            isToday && styles.dayTextToday,
-                            isSelected && styles.dayTextSelected
+                            isToday && !blocked && styles.dayTextToday,
+                            isSelected && styles.dayTextSelected,
+                            blocked && styles.dayTextBlocked,
                         ]}
                     >
                         {day}
@@ -314,6 +330,10 @@ const styles = StyleSheet.create({
     dayCellSelected: {
         backgroundColor: '#e83e8c',
     },
+    dayCellBlocked: {
+        backgroundColor: '#F5F5F5',
+        opacity: 0.45,
+    },
     dayText: {
         fontSize: 14,
         fontWeight: '500',
@@ -326,6 +346,9 @@ const styles = StyleSheet.create({
     dayTextSelected: {
         color: '#FFFFFF',
         fontWeight: 'bold',
+    },
+    dayTextBlocked: {
+        color: '#BBBBBB',
     },
     yearPickerContainer: {
         height: 240,

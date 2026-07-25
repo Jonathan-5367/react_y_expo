@@ -1,25 +1,25 @@
+import { NotifBell } from '@/components/NotifBell';
+import { SideMenu } from '@/components/SideMenu';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import Ionicons from '@expo/vector-icons/Ionicons';
 import { Image } from 'expo-image';
 import { Stack } from 'expo-router';
 import React, { useState } from 'react';
 import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { SideMenu } from '@/components/SideMenu';
-import { NotifBell } from '@/components/NotifBell';
-import Ionicons from '@expo/vector-icons/Ionicons';
 
 const testimonials = [
     {
         id: 1,
-        name: 'Ana García',
+        name: 'Carlos Rodríguez',
         role: 'Paciente de Ortodoncia',
         text: '¡Mi sonrisa cambió por completo! El tratamiento fue mucho más rápido de lo que esperaba y la atención de la Dra. López fue excelente.',
         avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
     },
     {
         id: 2,
-        name: 'Carlos Rodríguez',
+        name: 'Ana García',
         role: 'Paciente de Implantes',
         text: 'Recuperé la confianza para sonreír. El procedimiento fue indoloro y los resultados se ven increíblemente naturales.',
         avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026704d',
@@ -29,14 +29,14 @@ const testimonials = [
         name: 'Lucía Fernández',
         role: 'Madre de Paciente',
         text: 'La Dra. tiene un trato maravilloso con los niños. Mi hijo va feliz a sus consultas de revisión. ¡Totalmente recomendada!',
-        avatar: 'https://i.pravatar.cc/150?u=a04258114e29026302d',
+        avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
     },
     {
         id: 4,
         name: 'Miguel Ángel',
         role: 'Diseño de Sonrisa',
         text: 'Gracias al blanqueamiento y las carillas, tengo la sonrisa que siempre soñé. Un servicio profesional y de alta calidad.',
-        avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
+        avatar: 'https://i.pravatar.cc/150?u=a04258114e29026302d',
     },
 ];
 
@@ -48,7 +48,7 @@ export default function TestimonialsScreen() {
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <SideMenu visible={isMenuVisible} onClose={() => setIsMenuVisible(false)} />
             <Stack.Screen options={{ headerShown: false }} />
-            
+
             <View style={styles.topBar}>
                 <TouchableOpacity onPress={() => setIsMenuVisible(true)} style={styles.menuButton}>
                     <Ionicons name="menu" size={32} color="#e83e8c" />

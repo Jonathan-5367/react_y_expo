@@ -31,27 +31,27 @@ export default function AgendarCitasScreen() {
     const [hora, setHora] = useState('');
     const [procedimiento, setProcedimiento] = useState('');
 
-    const handleAgendar = () => {
+    const handleAgendar = async () => {
         if (!pacienteNombre.trim() || !pacienteTelefono.trim() || !pacienteEmail.trim() || !fecha.trim() || !hora.trim() || !procedimiento.trim()) {
             Alert.alert('Campos requeridos', 'Por favor complete todos los campos.');
             return;
         }
 
-        // Validate date format YYYY-MM-DD
+        // Validar formato de fecha AAAA-MM-DD
         const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
         if (!dateRegex.test(fecha.trim())) {
             Alert.alert('Fecha inválida', 'La fecha debe estar en formato AAAA-MM-DD (ej: 2026-06-15).');
             return;
         }
 
-        // Validate time format (HH:MM)
+        // Validar formato de hora (HH:MM)
         const timeRegex = /^\d{2}:\d{2}$/;
         if (!timeRegex.test(hora.trim())) {
             Alert.alert('Hora inválida', 'La hora debe estar en formato de 24 horas HH:MM (ej: 14:30).');
             return;
         }
 
-        addAppointment({
+        const result = await addAppointment({
             pacienteNombre: pacienteNombre.trim(),
             pacienteTelefono: pacienteTelefono.trim(),
             pacienteEmail: pacienteEmail.trim().toLowerCase(),
@@ -60,9 +60,16 @@ export default function AgendarCitasScreen() {
             procedimiento: procedimiento.trim()
         });
 
-        Alert.alert('Cita Agendada', 'La cita ha sido registrada con éxito en el sistema.', [
-            { text: 'Aceptar', onPress: () => router.back() }
-        ]);
+        if (result.success) {
+            Alert.alert('Cita Agendada', 'La cita ha sido registrada con éxito en el sistema.', [
+                { text: 'Aceptar', onPress: () => router.back() }
+            ]);
+        } else {
+            // --- MANEJO DE ERRORES DEL SERVIDOR ---
+            // Si la cita no se pudo agendar (ej: más de 4 citas en un día, misma hora ocupada, fin de semana),
+            // el backend devuelve un mensaje de error específico que se almacena en el estado 'error'.
+            Alert.alert('No se pudo agendar', result.error || 'Revisa los datos e intenta nuevamente.');
+        }
     };
 
     return (
@@ -100,9 +107,10 @@ export default function AgendarCitasScreen() {
                         <TextInput
                             style={styles.input}
                             value={pacienteTelefono}
-                            onChangeText={setPacienteTelefono}
+                            onChangeText={(text) => setPacienteTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
                             placeholder="Ej. 04161234567"
+                            maxLength={11}
                         />
                     </View>
 
@@ -135,6 +143,7 @@ export default function AgendarCitasScreen() {
                             onClose={() => setIsCalendarVisible(false)}
                             onSelectDate={(date) => setFecha(date)}
                             initialDate={fecha || new Date().toISOString().split('T')[0]}
+                            restrictDates={true}
                         />
                     </View>
 
@@ -246,7 +255,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E0E0E0',
         fontSize: 16,
-        color: '#333',
+        color: '#000',
         textAlign: 'center',
     },
     readOnlyInput: {
