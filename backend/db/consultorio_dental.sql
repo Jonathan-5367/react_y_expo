@@ -3,8 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
--- Tiempo de generación: 15-06-2026 a las 08:01:45
--- Tiempo de generación: 17-10-2025 a las 02:22:14
+-- Tiempo de generación: 15-06-2026 a las 08:01:37
+-- Tiempo de generación: 15-06-2026 a las 07:03:17
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -100,7 +100,6 @@ INSERT INTO `citas` (`id_cita`, `paciente_id`, `doctor_id`, `id_agenda`, `fecha_
 (4, 4, 1, NULL, '2026-02-20 10:30:00', 'Limpieza dental', 'confirmada', 10, '2026-02-16 04:30:47'),
 (5, 4, 1, NULL, '2026-02-18 10:00:00', 'Extracción', 'confirmada', 10, '2026-02-16 04:44:48'),
 (6, 7, 1, NULL, '2026-06-18 09:00:00', 'Ortodoncia', 'confirmada', 13, '2026-06-14 01:21:22');
-(1, 1, 1, NULL, '2025-10-24 08:30:00', 'Limpieza dental', 'pendiente', 2, '2025-10-17 00:01:28');
 
 -- --------------------------------------------------------
 
@@ -245,7 +244,6 @@ INSERT INTO `pacientes` (`id_paciente`, `tipo`, `id_origen`) VALUES
 (7, 'adulto', 13),
 (8, 'adulto', 18),
 (9, 'adulto', 20);
-(1, 'adulto', 2);
 
 -- --------------------------------------------------------
 
@@ -341,8 +339,6 @@ CREATE TABLE `usuarios` (
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `telefono` varchar(11) DEFAULT NULL,
-  `telefono_familiar` varchar(11) DEFAULT NULL,
-  `alergias` varchar(255) DEFAULT NULL,
   `fecha_nacimiento` date DEFAULT NULL,
   `es_menor` tinyint(1) DEFAULT NULL,
   `id_rol` int(11) DEFAULT NULL,
@@ -350,7 +346,6 @@ CREATE TABLE `usuarios` (
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
   `telefono_familiar` varchar(11) DEFAULT NULL,
   `alergias` varchar(255) DEFAULT NULL
-  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -369,135 +364,10 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre`, `cedula`, `email`, `password`, `
 (18, 'Paciente Prueba', '87654321', 'paciente@paciente.com', '$2a$10$jAbiV0jXkAE.sg6/2H7riOzPNALhFxUDMPG.byoIuwig2v3hYnyUO', '04147654321', NULL, NULL, 4, 1, '2026-06-14 02:07:47', NULL, NULL),
 (19, 'Administrador Prueba', '99999999', 'admin@admin.com', '$2a$10$3rBsIL2b25YBeablO7NkeO6MOBp9T1/eQRiel.B1TyoyctwJ6dKV.', '04141234567', NULL, NULL, 1, 1, '2026-06-14 02:08:00', NULL, NULL),
 (20, 'Alexander vivas', '22745656', 'viva@correo.com', '$2a$10$0QLvexTq4zSHsLQoMcmAs.y/kq95itVeahF1jKqrywoWoBDfryFda', '04141235566', NULL, NULL, 4, 1, '2026-06-14 02:21:08', NULL, NULL);
-INSERT INTO `usuarios` (`id_usuario`, `nombre`, `cedula`, `email`, `password`, `telefono`, `fecha_nacimiento`, `es_menor`, `id_rol`, `activo`, `creado_en`) VALUES
-(1, 'Juan Echenque', '30829758', 'gonzalezjuanluis084@gmail.com', '$2y$10$JDHRPDYlpQTZLg9Okzy5hOwvXEabqYhp9P38qmfiVESDOItq51hBS', NULL, NULL, NULL, 2, 1, '2025-10-15 01:35:05'),
-(2, 'Luis', '6511641', 'gonzalezjuanluis088@gmail.com', '$2y$10$OO89AXIzjeMPOaANMCcJ1ODzaz7YTlqj3I.Xu6HeJZCN7Z05nRItW', '04161413302', '1965-09-28', NULL, 4, 1, '2025-10-16 22:52:26'),
-(3, 'dayerson Echenique', '30829759', 'gonzalezjuanluis88@gmail.com', '$2y$10$3NHTQ8/C6l3iGyC0oTyZCOA98P8a/dNYH9.DZ5CJOcfxw14P3yDIG', '3055009199', '2010-04-29', NULL, 4, 1, '2025-10-16 23:39:30');
 
 --
 -- Índices para tablas volcadas
 --
-
---
--- Indices de la tabla `adjuntos_pacientes`
---
-ALTER TABLE `adjuntos_pacientes`
-  ADD PRIMARY KEY (`id_adjunto`),
-  ADD KEY `paciente_id` (`paciente_id`),
-  ADD KEY `cita_id` (`cita_id`),
-  ADD KEY `subido_por` (`subido_por`);
-
---
--- Indices de la tabla `agenda_horaria`
---
-ALTER TABLE `agenda_horaria`
-  ADD PRIMARY KEY (`id_agenda`),
-  ADD KEY `doctor_id` (`doctor_id`);
-
---
--- Indices de la tabla `bloqueos_horarios`
---
-ALTER TABLE `bloqueos_horarios`
-  ADD PRIMARY KEY (`id_bloqueo`),
-  ADD KEY `doctor_id` (`doctor_id`);
-
---
--- Indices de la tabla `citas`
---
-ALTER TABLE `citas`
-  ADD PRIMARY KEY (`id_cita`),
-  ADD KEY `paciente_id` (`paciente_id`),
-  ADD KEY `doctor_id` (`doctor_id`),
-  ADD KEY `id_agenda` (`id_agenda`),
-  ADD KEY `creado_por` (`creado_por`);
-
---
--- Indices de la tabla `cita_tratamiento`
---
-ALTER TABLE `cita_tratamiento`
-  ADD PRIMARY KEY (`cita_id`,`tratamiento_id`),
-  ADD KEY `tratamiento_id` (`tratamiento_id`);
-
---
--- Indices de la tabla `detalle_presupuesto`
---
-ALTER TABLE `detalle_presupuesto`
-  ADD PRIMARY KEY (`presupuesto_id`,`tratamiento_id`),
-  ADD KEY `tratamiento_id` (`tratamiento_id`);
-
---
--- Indices de la tabla `familiares`
---
-ALTER TABLE `familiares`
-  ADD PRIMARY KEY (`id_familiar`),
-  ADD UNIQUE KEY `cedula` (`cedula`),
-  ADD KEY `id_usuario` (`id_usuario`);
-
---
--- Indices de la tabla `historial_citas`
---
-ALTER TABLE `historial_citas`
-  ADD PRIMARY KEY (`id_historial_cita`),
-  ADD KEY `cita_id` (`cita_id`),
-  ADD KEY `actualizado_por` (`actualizado_por`);
-
---
--- Indices de la tabla `historial_medico`
---
-ALTER TABLE `historial_medico`
-  ADD PRIMARY KEY (`id_historial_medico`),
-  ADD KEY `paciente_id` (`paciente_id`),
-  ADD KEY `cita_id` (`cita_id`),
-  ADD KEY `doctor_id` (`doctor_id`);
-
---
--- Indices de la tabla `horarios_doctores`
---
-ALTER TABLE `horarios_doctores`
-  ADD PRIMARY KEY (`id_horario`),
-  ADD KEY `doctor_id` (`doctor_id`);
-
---
--- Indices de la tabla `notificaciones`
---
-ALTER TABLE `notificaciones`
-  ADD PRIMARY KEY (`id_notificacion`),
-  ADD KEY `usuario_id` (`usuario_id`),
-  ADD KEY `cita_id` (`cita_id`);
-
---
--- Indices de la tabla `pacientes`
---
-ALTER TABLE `pacientes`
-  ADD PRIMARY KEY (`id_paciente`),
-  ADD KEY `id_origen` (`id_origen`);
-
---
--- Indices de la tabla `pagos`
---
-ALTER TABLE `pagos`
-  ADD PRIMARY KEY (`id_pago`),
-  ADD KEY `cita_id` (`cita_id`);
-
---
--- Indices de la tabla `presupuestos`
---
-ALTER TABLE `presupuestos`
-  ADD PRIMARY KEY (`id_presupuesto`),
-  ADD KEY `paciente_id` (`paciente_id`),
-  ADD KEY `doctor_id` (`doctor_id`);
-
---
--- Indices de la tabla `roles`
---
-ALTER TABLE `roles`
-  ADD PRIMARY KEY (`id_rol`);
-
---
--- Indices de la tabla `tratamientos`
---
-ALTER TABLE `tratamientos`
-  ADD PRIMARY KEY (`id_tratamiento`);
 
 --
 -- Indices de la tabla `usuarios`
@@ -535,7 +405,6 @@ ALTER TABLE `bloqueos_horarios`
 --
 ALTER TABLE `citas`
   MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
-  MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `familiares`
@@ -548,7 +417,6 @@ ALTER TABLE `familiares`
 --
 ALTER TABLE `historial_citas`
   MODIFY `id_historial_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
-  MODIFY `id_historial_cita` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_medico`
@@ -573,7 +441,6 @@ ALTER TABLE `notificaciones`
 --
 ALTER TABLE `pacientes`
   MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
-  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
@@ -604,139 +471,16 @@ ALTER TABLE `tratamientos`
 --
 ALTER TABLE `usuarios`
   MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
-  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas
 --
 
 --
--- Filtros para la tabla `adjuntos_pacientes`
---
-ALTER TABLE `adjuntos_pacientes`
-  ADD CONSTRAINT `adjuntos_pacientes_ibfk_1` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `adjuntos_pacientes_ibfk_2` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `adjuntos_pacientes_ibfk_3` FOREIGN KEY (`subido_por`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `adjuntos_pacientes_ibfk_4` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `adjuntos_pacientes_ibfk_5` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `adjuntos_pacientes_ibfk_6` FOREIGN KEY (`subido_por`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `agenda_horaria`
---
-ALTER TABLE `agenda_horaria`
-  ADD CONSTRAINT `agenda_horaria_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `agenda_horaria_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `bloqueos_horarios`
---
-ALTER TABLE `bloqueos_horarios`
-  ADD CONSTRAINT `bloqueos_horarios_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `bloqueos_horarios_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `citas`
---
-ALTER TABLE `citas`
-  ADD CONSTRAINT `citas_ibfk_1` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `citas_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `citas_ibfk_3` FOREIGN KEY (`id_agenda`) REFERENCES `agenda_horaria` (`id_agenda`),
-  ADD CONSTRAINT `citas_ibfk_4` FOREIGN KEY (`creado_por`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `citas_ibfk_5` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `citas_ibfk_6` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `citas_ibfk_7` FOREIGN KEY (`id_agenda`) REFERENCES `agenda_horaria` (`id_agenda`),
-  ADD CONSTRAINT `citas_ibfk_8` FOREIGN KEY (`creado_por`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `cita_tratamiento`
---
-ALTER TABLE `cita_tratamiento`
-  ADD CONSTRAINT `cita_tratamiento_ibfk_1` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `cita_tratamiento_ibfk_2` FOREIGN KEY (`tratamiento_id`) REFERENCES `tratamientos` (`id_tratamiento`),
-  ADD CONSTRAINT `cita_tratamiento_ibfk_3` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `cita_tratamiento_ibfk_4` FOREIGN KEY (`tratamiento_id`) REFERENCES `tratamientos` (`id_tratamiento`);
-
---
--- Filtros para la tabla `detalle_presupuesto`
---
-ALTER TABLE `detalle_presupuesto`
-  ADD CONSTRAINT `detalle_presupuesto_ibfk_1` FOREIGN KEY (`presupuesto_id`) REFERENCES `presupuestos` (`id_presupuesto`),
-  ADD CONSTRAINT `detalle_presupuesto_ibfk_2` FOREIGN KEY (`tratamiento_id`) REFERENCES `tratamientos` (`id_tratamiento`),
-  ADD CONSTRAINT `detalle_presupuesto_ibfk_3` FOREIGN KEY (`presupuesto_id`) REFERENCES `presupuestos` (`id_presupuesto`),
-  ADD CONSTRAINT `detalle_presupuesto_ibfk_4` FOREIGN KEY (`tratamiento_id`) REFERENCES `tratamientos` (`id_tratamiento`);
-
---
--- Filtros para la tabla `familiares`
---
-ALTER TABLE `familiares`
-  ADD CONSTRAINT `familiares_ibfk_1` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `familiares_ibfk_2` FOREIGN KEY (`id_usuario`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `historial_citas`
---
-ALTER TABLE `historial_citas`
-  ADD CONSTRAINT `historial_citas_ibfk_1` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `historial_citas_ibfk_2` FOREIGN KEY (`actualizado_por`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `historial_citas_ibfk_3` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `historial_citas_ibfk_4` FOREIGN KEY (`actualizado_por`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `historial_medico`
---
-ALTER TABLE `historial_medico`
-  ADD CONSTRAINT `historial_medico_ibfk_1` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `historial_medico_ibfk_2` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `historial_medico_ibfk_3` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `historial_medico_ibfk_4` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `historial_medico_ibfk_5` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `historial_medico_ibfk_6` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `horarios_doctores`
---
-ALTER TABLE `horarios_doctores`
-  ADD CONSTRAINT `horarios_doctores_ibfk_1` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `horarios_doctores_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `notificaciones`
---
-ALTER TABLE `notificaciones`
-  ADD CONSTRAINT `notificaciones_ibfk_1` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `notificaciones_ibfk_2` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `notificaciones_ibfk_3` FOREIGN KEY (`usuario_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `notificaciones_ibfk_4` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`);
-
---
--- Filtros para la tabla `pacientes`
---
-ALTER TABLE `pacientes`
-  ADD CONSTRAINT `pacientes_ibfk_1` FOREIGN KEY (`id_origen`) REFERENCES `usuarios` (`id_usuario`);
-
---
--- Filtros para la tabla `pagos`
---
-ALTER TABLE `pagos`
-  ADD CONSTRAINT `pagos_ibfk_1` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`),
-  ADD CONSTRAINT `pagos_ibfk_2` FOREIGN KEY (`cita_id`) REFERENCES `citas` (`id_cita`);
-
---
--- Filtros para la tabla `presupuestos`
---
-ALTER TABLE `presupuestos`
-  ADD CONSTRAINT `presupuestos_ibfk_1` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `presupuestos_ibfk_2` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`),
-  ADD CONSTRAINT `presupuestos_ibfk_3` FOREIGN KEY (`paciente_id`) REFERENCES `pacientes` (`id_paciente`),
-  ADD CONSTRAINT `presupuestos_ibfk_4` FOREIGN KEY (`doctor_id`) REFERENCES `usuarios` (`id_usuario`);
-
---
 -- Filtros para la tabla `usuarios`
 --
 ALTER TABLE `usuarios`
-  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`),
-  ADD CONSTRAINT `usuarios_ibfk_2` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`);
+  ADD CONSTRAINT `usuarios_ibfk_1` FOREIGN KEY (`id_rol`) REFERENCES `roles` (`id_rol`);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

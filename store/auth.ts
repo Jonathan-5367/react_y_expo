@@ -32,7 +32,7 @@ const getHostIp = () => {
 // Usa variables de entorno (EXPO_PUBLIC_API_URL) en producción, o usa Railway por defecto.
 export const API_URL = process.env.EXPO_PUBLIC_API_URL 
     ? process.env.EXPO_PUBLIC_API_URL 
-    : 'https://reactyexpo-production.up.railway.app/api';
+    : 'https://backend-reactyexpo-production.up.railway.app/api';
 
 const STORAGE_KEY = 'dental_current_user';
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
