@@ -231,7 +231,7 @@ const styles = StyleSheet.create({
         gap: 10,
     },
     emptyNotifText: {
-        color: '#aaa',
+        color: '#555',
         fontSize: 15,
     },
     notifCard: {
@@ -288,7 +288,7 @@ const styles = StyleSheet.create({
     },
     notifTime: {
         fontSize: 11,
-        color: '#aaa',
+        color: '#555',
         marginTop: 2,
     },
     header: {
@@ -382,7 +382,7 @@ const styles = StyleSheet.create({
     },
     cardDesc: {
         fontSize: 14,
-        color: '#888',
+        color: '#555',
         textAlign: 'center',
     },
 });

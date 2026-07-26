@@ -21,6 +21,7 @@ export default function RegisterScreen() {
     const [telefonoFamiliar, setTelefonoFamiliar] = useState('');
     const [alergias, setAlergias] = useState('');
     const [isCalendarVisible, setIsCalendarVisible] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     const handleRegister = async () => {
@@ -73,7 +74,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej. Juan Pérez"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={name}
                             onChangeText={setName}
                             maxLength={50}
@@ -85,7 +86,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej. 12345678"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={cedula}
                             onChangeText={setCedula}
                             keyboardType="numeric"
@@ -98,7 +99,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="correo@ejemplo.com"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={email}
                             onChangeText={setEmail}
                             keyboardType="email-address"
@@ -108,14 +109,23 @@ export default function RegisterScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Contraseña</ThemedText>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="••••••••"
-                            placeholderTextColor="#888"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
+                        <View style={styles.passwordWrapper}>
+                            <TextInput
+                                style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                placeholder="••••••••"
+                                placeholderTextColor="#555"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                            />
+                            <TouchableOpacity 
+                                onPress={() => setShowPassword(!showPassword)} 
+                                style={styles.eyeButton}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            >
+                                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#000" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     <View style={styles.inputContainer}>
@@ -123,7 +133,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej. 04141234567"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={telefono}
                             onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
@@ -155,7 +165,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej. 04141234567"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={telefonoFamiliar}
                             onChangeText={(text) => setTelefonoFamiliar(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
@@ -168,7 +178,7 @@ export default function RegisterScreen() {
                         <TextInput
                             style={styles.textArea}
                             placeholder="Ej. Penicilina, látex, anestesia local..."
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={alergias}
                             onChangeText={setAlergias}
                             multiline
@@ -298,6 +308,21 @@ const styles = StyleSheet.create({
     },
     placeholderText: {
         fontSize: 16,
-        color: '#888888',
+        color: '#555555',
+    },
+    passwordWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E4E9F2',
+        borderRadius: 12,
+        backgroundColor: '#F7F9FC',
+        overflow: 'hidden',
+    },
+    eyeButton: {
+        paddingHorizontal: 14,
+        height: 52,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

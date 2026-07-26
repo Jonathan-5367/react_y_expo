@@ -172,7 +172,7 @@ const styles = StyleSheet.create({
         gap: 8,
     },
     emptyText: {
-        color: '#aaa',
+        color: '#555',
         fontSize: 14,
     },
     notifCard: {
@@ -224,7 +224,7 @@ const styles = StyleSheet.create({
     },
     notifTime: {
         fontSize: 11,
-        color: '#aaa',
+        color: '#555',
     },
     closeBtn: {
         alignItems: 'center',

@@ -178,7 +178,7 @@ export default function AgendarCitasScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej: Limpieza dental, Ortodoncia..."
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={procedimiento}
                             onChangeText={setProcedimiento}
                         />
@@ -260,7 +260,7 @@ const styles = StyleSheet.create({
     },
     readOnlyInput: {
         backgroundColor: '#F0F0F0',
-        color: '#888',
+        color: '#555',
     },
     button: {
         backgroundColor: '#e83e8c',
@@ -297,7 +297,7 @@ const styles = StyleSheet.create({
     },
     placeholderText: {
         fontSize: 16,
-        color: '#888',
+        color: '#555',
     },
     timeSlotsContainer: {
         flexDirection: 'row',

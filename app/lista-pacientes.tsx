@@ -108,17 +108,17 @@ export default function ListaPacientesScreen() {
                 </View>
 
                 <View style={styles.searchContainer}>
-                    <Ionicons name="search" size={20} color="#888" style={styles.searchIcon} />
+                    <Ionicons name="search" size={20} color="#555" style={styles.searchIcon} />
                     <TextInput
                         style={styles.searchInput}
                         placeholder="Buscar: Nombre, CI o Tlf."
-                        placeholderTextColor="#888"
+                        placeholderTextColor="#555"
                         value={searchQuery}
                         onChangeText={setSearchQuery}
                     />
                     {searchQuery.length > 0 && (
                         <TouchableOpacity onPress={() => setSearchQuery('')}>
-                            <Ionicons name="close-circle" size={20} color="#aaa" />
+                            <Ionicons name="close-circle" size={20} color="#555" />
                         </TouchableOpacity>
                     )}
                 </View>
@@ -130,7 +130,7 @@ export default function ListaPacientesScreen() {
                             style={[styles.filterChip, filterType === key && styles.filterChipActive]}
                             onPress={() => setFilterType(key)}
                         >
-                            <Ionicons name={icon} size={14} color={filterType === key ? '#FFF' : '#888'} style={{ marginRight: 4 }} />
+                            <Ionicons name={icon} size={14} color={filterType === key ? '#FFF' : '#555'} style={{ marginRight: 4 }} />
                             <ThemedText style={[styles.filterText, filterType === key && styles.filterTextActive]}>{key}</ThemedText>
                         </TouchableOpacity>
                     ))}
@@ -269,7 +269,7 @@ const styles = StyleSheet.create({
     },
     resultCount: {
         fontSize: 13,
-        color: '#999',
+        color: '#555',
         marginBottom: 16,
         fontWeight: '500',
     },
@@ -313,11 +313,11 @@ const styles = StyleSheet.create({
     },
     patientDetails: {
         fontSize: 14,
-        color: '#888',
+        color: '#555',
     },
     emptyText: {
         textAlign: 'center',
-        color: '#888',
+        color: '#555',
         fontSize: 16,
         marginTop: 20,
     },

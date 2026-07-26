@@ -49,7 +49,7 @@ Si estás pensando en mejorar tu sonrisa sin comprometer tu imagen durante el pr
 4. **Sigue una "Dieta Blanca" post-tratamiento:** Durante las primeras 48 horas, evita alimentos con fuertes colorantes como el café, té, vino tinto, salsa de tomate, etc.
 5. **Mantén una buena higiene:** El blanqueamiento no sustituye la limpieza diaria. Cepíllate al menos dos veces al día y usa hilo dental.
 
-Recuerda que el esmalte dental no se regenera. ¡Cuídalo!`,
+Recuerda que el esmalte dental no se regenera. Â¡Cuídalo!`,
     },
     {
         id: 3,
@@ -71,7 +71,7 @@ A partir de la erupción del primer diente, se debe usar una cantidad de pasta c
 **La primera visita al odontopediatra**
 Se recomienda que la primera visita al dentista sea durante el primer año de vida o cuando salga el primer diente. Esto ayuda a detectar problemas a tiempo y a que el niño se familiarice con el entorno.
 
-**Consejo para padres:** ¡Haz que el cepillado sea divertido! Usa canciones, juegos o cepillos de sus personajes favoritos. El ejemplo es fundamental; si te ven cepillarte, ellos también querrán hacerlo.`,
+**Consejo para padres:** Â¡Haz que el cepillado sea divertido! Usa canciones, juegos o cepillos de sus personajes favoritos. El ejemplo es fundamental; si te ven cepillarte, ellos también querrán hacerlo.`,
     },
 ];
 
@@ -109,8 +109,8 @@ export default function BlogScreen() {
                                 <ThemedText type="subtitle" style={styles.cardTitle}>{post.title}</ThemedText>
                                 <ThemedText style={styles.excerpt} numberOfLines={3}>{post.excerpt}</ThemedText>
                                 <View style={styles.footerRow}>
-                                    <ThemedText style={styles.readMore}>Leer más →</ThemedText>
-                                    <ThemedText style={styles.likes}>❤️ {post.likes}</ThemedText>
+                                    <ThemedText style={styles.readMore}>Leer más â†’</ThemedText>
+                                    <ThemedText style={styles.likes}>â¤ï¸ {post.likes}</ThemedText>
                                 </View>
                             </View>
                         </TouchableOpacity>
@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
     },
     metaText: {
         fontSize: 12,
-        color: '#888',
+        color: '#555',
         textTransform: 'uppercase',
         fontWeight: '600',
         letterSpacing: 0.5,

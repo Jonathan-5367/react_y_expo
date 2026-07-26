@@ -14,7 +14,7 @@ const testimonials = [
         id: 1,
         name: 'Carlos Rodríguez',
         role: 'Paciente de Ortodoncia',
-        text: '¡Mi sonrisa cambió por completo! El tratamiento fue mucho más rápido de lo que esperaba y la atención de la Dra. López fue excelente.',
+        text: 'Â¡Mi sonrisa cambió por completo! El tratamiento fue mucho más rápido de lo que esperaba y la atención de la Dra. López fue excelente.',
         avatar: 'https://i.pravatar.cc/150?u=a042581f4e29026024d',
     },
     {
@@ -28,7 +28,7 @@ const testimonials = [
         id: 3,
         name: 'Lucía Fernández',
         role: 'Madre de Paciente',
-        text: 'La Dra. tiene un trato maravilloso con los niños. Mi hijo va feliz a sus consultas de revisión. ¡Totalmente recomendada!',
+        text: 'La Dra. tiene un trato maravilloso con los niños. Mi hijo va feliz a sus consultas de revisión. Â¡Totalmente recomendada!',
         avatar: 'https://i.pravatar.cc/150?u=a04258114e29026702d',
     },
     {

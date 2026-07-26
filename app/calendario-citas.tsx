@@ -134,11 +134,11 @@ export default function CalendarioCitasScreen() {
                                     <ThemedText style={styles.citaType}>{cita.procedimiento}</ThemedText>
                                     {isAdmin && (
                                         <ThemedText style={styles.patientLabel}>
-                                            Paciente: <ThemedText style={{ fontWeight: 'bold' }}>{cita.pacienteNombre}</ThemedText>
+                                            Paciente: <ThemedText style={{ fontWeight: 'bold', color: '#000' }}>{cita.pacienteNombre}</ThemedText>
                                         </ThemedText>
                                     )}
                                     <View style={styles.citaTimeRow}>
-                                        <Ionicons name="time-outline" size={16} color="#888" style={{ marginRight: 4 }} />
+                                        <Ionicons name="time-outline" size={16} color="#555" style={{ marginRight: 4 }} />
                                         <ThemedText style={styles.citaTime}>{cita.hora}</ThemedText>
                                     </View>
                                 </View>
@@ -147,7 +147,7 @@ export default function CalendarioCitasScreen() {
                     })}
                     {relevantAppointments.length === 0 && (
                         <View style={styles.emptyAppointments}>
-                            <Ionicons name="calendar-clear-outline" size={32} color="#aaa" />
+                            <Ionicons name="calendar-clear-outline" size={32} color="#555" />
                             <ThemedText style={styles.emptyAppointmentsText}>No hay citas programadas para este mes.</ThemedText>
                         </View>
                     )}
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     dayOfWeek: {
         width: `${100/7}%`,
         textAlign: 'center',
-        color: '#888',
+        color: '#555',
         fontWeight: '600',
         fontSize: 16,
     },
@@ -309,7 +309,7 @@ const styles = StyleSheet.create({
     },
     patientLabel: {
         fontSize: 13,
-        color: '#555',
+        color: '#000',
         marginBottom: 2,
     },
     citaTimeRow: {
@@ -318,7 +318,7 @@ const styles = StyleSheet.create({
     },
     citaTime: {
         fontSize: 16,
-        color: '#888',
+        color: '#555',
     },
     emptyAppointments: {
         alignItems: 'center',
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     },
     emptyAppointmentsText: {
         fontSize: 14,
-        color: '#888',
+        color: '#555',
         textAlign: 'center',
     },
 });

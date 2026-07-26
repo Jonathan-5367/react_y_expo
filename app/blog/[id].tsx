@@ -20,7 +20,7 @@ export default function BlogPostScreen() {
         return (
             <ThemedView style={[styles.container, { paddingTop: insets.top, justifyContent: 'center', alignItems: 'center' }]}>
                 <Ionicons name="document-text-outline" size={60} color="#ccc" />
-                <ThemedText style={{ marginTop: 16, fontSize: 18, color: '#888' }}>Artículo no encontrado</ThemedText>
+                <ThemedText style={{ marginTop: 16, fontSize: 18, color: '#555' }}>Artículo no encontrado</ThemedText>
                 <TouchableOpacity style={styles.backButtonCenter} onPress={() => router.back()}>
                     <ThemedText style={styles.backTextCenter}>Volver al Blog</ThemedText>
                 </TouchableOpacity>
@@ -161,7 +161,7 @@ const styles = StyleSheet.create({
     },
     dateText: {
         fontSize: 14,
-        color: '#888',
+        color: '#555',
     },
     divider: {
         height: 1,

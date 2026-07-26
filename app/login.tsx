@@ -13,6 +13,7 @@ export default function LoginScreen() {
     const { login } = useAuth();
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [rememberMe, setRememberMe] = useState(false);
     const [loading, setLoading] = useState(false);
 
@@ -57,7 +58,7 @@ export default function LoginScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="tu@correo.com"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={email}
                             onChangeText={setEmail}
                             keyboardType="email-address"
@@ -68,15 +69,24 @@ export default function LoginScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Contraseña</ThemedText>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="••••••••"
-                            placeholderTextColor="#888"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                            autoComplete="password"
-                        />
+                        <View style={styles.passwordWrapper}>
+                            <TextInput
+                                style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                placeholder="••••••••"
+                                placeholderTextColor="#555"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                                autoComplete="password"
+                            />
+                            <TouchableOpacity 
+                                onPress={() => setShowPassword(!showPassword)} 
+                                style={styles.eyeButton}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            >
+                                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#000" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     <TouchableOpacity style={styles.rememberMe} onPress={() => setRememberMe(!rememberMe)}>
@@ -139,7 +149,7 @@ const styles = StyleSheet.create({
     clinicName: {
         fontSize: 12,
         fontWeight: '800',
-        color: '#888',
+        color: '#555',
         letterSpacing: 3,
         marginBottom: 4,
         textAlign: 'center',
@@ -252,5 +262,20 @@ const styles = StyleSheet.create({
     boldText: {
         fontWeight: 'bold',
         color: '#e83e8c',
+    },
+    passwordWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E4E9F2',
+        borderRadius: 12,
+        backgroundColor: '#F7F9FC',
+        overflow: 'hidden',
+    },
+    eyeButton: {
+        paddingHorizontal: 14,
+        height: 52,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });

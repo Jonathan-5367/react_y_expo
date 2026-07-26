@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
         width: 38,
         textAlign: 'center',
         fontWeight: '600',
-        color: '#888',
+        color: '#555',
         fontSize: 13,
     },
     grid: {
@@ -395,7 +395,7 @@ const styles = StyleSheet.create({
         borderRadius: 8,
     },
     closeButtonText: {
-        color: '#888',
+        color: '#555',
         fontWeight: '600',
         fontSize: 14,
     },

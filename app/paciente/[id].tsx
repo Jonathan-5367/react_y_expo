@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     },
     patientId: {
         fontSize: 16,
-        color: '#888',
+        color: '#555',
         marginBottom: 20,
     },
     detailsGrid: {
@@ -347,7 +347,7 @@ const styles = StyleSheet.create({
     },
     emptyText: {
         marginTop: 12,
-        color: '#888',
+        color: '#555',
         fontSize: 16,
     },
     errorContainer: {

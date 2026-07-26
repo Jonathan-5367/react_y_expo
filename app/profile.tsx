@@ -345,7 +345,7 @@ function ProfileItem({ icon, label, value, isEditing = false, onChangeText, keyb
                             onChangeText={onChangeText}
                             keyboardType={keyboardType}
                             placeholder={placeholder}
-                            placeholderTextColor="#aaa"
+                            placeholderTextColor="#555"
                             maxLength={maxLength}
                         />
                     )
@@ -435,7 +435,7 @@ const styles = StyleSheet.create({
     },
     label: {
         fontSize: 12,
-        color: '#888',
+        color: '#555',
         marginBottom: 4,
         fontWeight: '600',
         textTransform: 'uppercase',
@@ -470,7 +470,7 @@ const styles = StyleSheet.create({
         width: '100%',
     },
     placeholderText: {
-        color: '#aaa',
+        color: '#555',
     },
     readOnlyValue: {
         color: '#777',

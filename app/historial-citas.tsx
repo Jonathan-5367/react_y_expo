@@ -37,7 +37,7 @@ export default function HistorialCitasScreen() {
             case 'completada': return '#2196F3';
             case 'cancelada': return '#F44336';
             case 'pendiente': return '#FFC107';
-            default: return '#888';
+            default: return '#555';
         }
     };
 
@@ -137,13 +137,13 @@ export default function HistorialCitasScreen() {
                                     <View style={styles.patientInfoRow}>
                                         <Ionicons name="person" size={15} color="#e83e8c" style={{ marginRight: 6 }} />
                                         <ThemedText style={styles.patientInfoText}>
-                                            Paciente: <ThemedText style={{ fontWeight: 'bold' }}>{cita.pacienteNombre}</ThemedText> ({cita.pacienteTelefono})
+                                            Paciente: <ThemedText style={{ fontWeight: 'bold', color: '#000' }}>{cita.pacienteNombre}</ThemedText> ({cita.pacienteTelefono})
                                         </ThemedText>
                                     </View>
                                 )}
 
                                 <View style={styles.doctorInfo}>
-                                    <Ionicons name="medical" size={16} color="#888" style={{ marginRight: 6 }} />
+                                    <Ionicons name="medical" size={16} color="#555" style={{ marginRight: 6 }} />
                                     <ThemedText style={styles.doctorText}>{cita.doctor}</ThemedText>
                                 </View>
                             </View>
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     },
     patientInfoText: {
         fontSize: 13,
-        color: '#555',
+        color: '#000',
     },
     cardFooter: {
         flexDirection: 'row',
@@ -334,7 +334,7 @@ const styles = StyleSheet.create({
     emptyText: {
         marginTop: 16,
         marginBottom: 24,
-        color: '#888',
+        color: '#555',
         fontSize: 16,
         textAlign: 'center',
         paddingHorizontal: 16,

@@ -23,6 +23,7 @@ export default function RegistroAdminScreen() {
     const [telefono, setTelefono] = useState('');
     const [rol, setRol] = useState<UserRole>('administrador');
     const [isRolDropdownVisible, setIsRolDropdownVisible] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
 
     // Access control: only admins and doctors allowed
@@ -94,7 +95,7 @@ export default function RegistroAdminScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej. Dra. María Silva"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={nombre}
                             onChangeText={setNombre}
                             maxLength={50}
@@ -106,7 +107,7 @@ export default function RegistroAdminScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej. 12345678"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={cedula}
                             onChangeText={setCedula}
                             keyboardType="numeric"
@@ -119,7 +120,7 @@ export default function RegistroAdminScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="admin@ejemplo.com"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={email}
                             onChangeText={setEmail}
                             keyboardType="email-address"
@@ -129,14 +130,23 @@ export default function RegistroAdminScreen() {
 
                     <View style={styles.inputContainer}>
                         <ThemedText style={styles.label}>Contraseña *</ThemedText>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="••••••••"
-                            placeholderTextColor="#888"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                        />
+                        <View style={styles.passwordWrapper}>
+                            <TextInput
+                                style={[styles.input, { flex: 1, marginBottom: 0 }]}
+                                placeholder="••••••••"
+                                placeholderTextColor="#555"
+                                value={password}
+                                onChangeText={setPassword}
+                                secureTextEntry={!showPassword}
+                            />
+                            <TouchableOpacity 
+                                onPress={() => setShowPassword(!showPassword)} 
+                                style={styles.eyeButton}
+                                hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+                            >
+                                <Ionicons name={showPassword ? 'eye-off-outline' : 'eye-outline'} size={22} color="#000" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     <View style={styles.inputContainer}>
@@ -144,7 +154,7 @@ export default function RegistroAdminScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="Ej. 04141234567"
-                            placeholderTextColor="#888"
+                            placeholderTextColor="#555"
                             value={telefono}
                             onChangeText={(text) => setTelefono(text.replace(/[^0-9]/g, ''))}
                             keyboardType="phone-pad"
@@ -307,5 +317,20 @@ const styles = StyleSheet.create({
         color: '#333333',
         flex: 1,
         textAlign: 'left',
+    },
+    passwordWrapper: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        borderWidth: 1,
+        borderColor: '#E4E9F2',
+        borderRadius: 12,
+        backgroundColor: '#F7F9FC',
+        overflow: 'hidden',
+    },
+    eyeButton: {
+        paddingHorizontal: 14,
+        height: 52,
+        justifyContent: 'center',
+        alignItems: 'center',
     },
 });
