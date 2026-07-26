@@ -236,7 +236,7 @@ const styles = StyleSheet.create({
     searchInput: {
         flex: 1,
         fontSize: 16,
-        color: '#333',
+        color: '#000',
     },
     filterScroll: {
         marginBottom: 12,

@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Platform } from 'react-native';
-import { API_URL } from './auth';
+import { API_URL, useAuth } from './auth';
 import { addNotification } from './notifications';
+import { syncAllAppointmentReminders } from '@/utils/local-notifications';
 
 export type AppointmentStatus = 'pendiente' | 'confirmada' | 'completada' | 'cancelada' | 'no_asistio';
 
@@ -200,6 +201,7 @@ export async function confirmAppointment(id: number): Promise<boolean> {
 export function useAppointments() {
     // Almacenamos las citas en el estado local del componente para garantizar la reactividad.
     const [currentAppointments, setCurrentAppointments] = useState<Appointment[]>(appointments);
+    const { user } = useAuth();
 
     useEffect(() => {
         // Función que actualiza el estado local cuando se emite una notificación.
@@ -216,6 +218,13 @@ export function useAppointments() {
         // Limpieza: nos desuscribimos cuando el componente se desmonta.
         return () => { listeners.delete(listener); };
     }, []);
+
+    // Sincronizar recordatorios locales de las citas del paciente
+    useEffect(() => {
+        if (user && user.rol === 'paciente') {
+            syncAllAppointmentReminders(currentAppointments, user.email);
+        }
+    }, [currentAppointments, user]);
 
     return {
         appointments: currentAppointments,

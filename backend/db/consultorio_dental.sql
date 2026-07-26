@@ -4,6 +4,7 @@
 --
 -- Servidor: 127.0.0.1
 -- Tiempo de generación: 15-06-2026 a las 08:01:45
+-- Tiempo de generación: 17-10-2025 a las 02:22:14
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -99,6 +100,7 @@ INSERT INTO `citas` (`id_cita`, `paciente_id`, `doctor_id`, `id_agenda`, `fecha_
 (4, 4, 1, NULL, '2026-02-20 10:30:00', 'Limpieza dental', 'confirmada', 10, '2026-02-16 04:30:47'),
 (5, 4, 1, NULL, '2026-02-18 10:00:00', 'Extracción', 'confirmada', 10, '2026-02-16 04:44:48'),
 (6, 7, 1, NULL, '2026-06-18 09:00:00', 'Ortodoncia', 'confirmada', 13, '2026-06-14 01:21:22');
+(1, 1, 1, NULL, '2025-10-24 08:30:00', 'Limpieza dental', 'pendiente', 2, '2025-10-17 00:01:28');
 
 -- --------------------------------------------------------
 
@@ -243,6 +245,7 @@ INSERT INTO `pacientes` (`id_paciente`, `tipo`, `id_origen`) VALUES
 (7, 'adulto', 13),
 (8, 'adulto', 18),
 (9, 'adulto', 20);
+(1, 'adulto', 2);
 
 -- --------------------------------------------------------
 
@@ -338,6 +341,8 @@ CREATE TABLE `usuarios` (
   `email` varchar(255) DEFAULT NULL,
   `password` varchar(255) DEFAULT NULL,
   `telefono` varchar(11) DEFAULT NULL,
+  `telefono_familiar` varchar(11) DEFAULT NULL,
+  `alergias` varchar(255) DEFAULT NULL,
   `fecha_nacimiento` date DEFAULT NULL,
   `es_menor` tinyint(1) DEFAULT NULL,
   `id_rol` int(11) DEFAULT NULL,
@@ -345,6 +350,7 @@ CREATE TABLE `usuarios` (
   `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
   `telefono_familiar` varchar(11) DEFAULT NULL,
   `alergias` varchar(255) DEFAULT NULL
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
@@ -363,6 +369,10 @@ INSERT INTO `usuarios` (`id_usuario`, `nombre`, `cedula`, `email`, `password`, `
 (18, 'Paciente Prueba', '87654321', 'paciente@paciente.com', '$2a$10$jAbiV0jXkAE.sg6/2H7riOzPNALhFxUDMPG.byoIuwig2v3hYnyUO', '04147654321', NULL, NULL, 4, 1, '2026-06-14 02:07:47', NULL, NULL),
 (19, 'Administrador Prueba', '99999999', 'admin@admin.com', '$2a$10$3rBsIL2b25YBeablO7NkeO6MOBp9T1/eQRiel.B1TyoyctwJ6dKV.', '04141234567', NULL, NULL, 1, 1, '2026-06-14 02:08:00', NULL, NULL),
 (20, 'Alexander vivas', '22745656', 'viva@correo.com', '$2a$10$0QLvexTq4zSHsLQoMcmAs.y/kq95itVeahF1jKqrywoWoBDfryFda', '04141235566', NULL, NULL, 4, 1, '2026-06-14 02:21:08', NULL, NULL);
+INSERT INTO `usuarios` (`id_usuario`, `nombre`, `cedula`, `email`, `password`, `telefono`, `fecha_nacimiento`, `es_menor`, `id_rol`, `activo`, `creado_en`) VALUES
+(1, 'Juan Echenque', '30829758', 'gonzalezjuanluis084@gmail.com', '$2y$10$JDHRPDYlpQTZLg9Okzy5hOwvXEabqYhp9P38qmfiVESDOItq51hBS', NULL, NULL, NULL, 2, 1, '2025-10-15 01:35:05'),
+(2, 'Luis', '6511641', 'gonzalezjuanluis088@gmail.com', '$2y$10$OO89AXIzjeMPOaANMCcJ1ODzaz7YTlqj3I.Xu6HeJZCN7Z05nRItW', '04161413302', '1965-09-28', NULL, 4, 1, '2025-10-16 22:52:26'),
+(3, 'dayerson Echenique', '30829759', 'gonzalezjuanluis88@gmail.com', '$2y$10$3NHTQ8/C6l3iGyC0oTyZCOA98P8a/dNYH9.DZ5CJOcfxw14P3yDIG', '3055009199', '2010-04-29', NULL, 4, 1, '2025-10-16 23:39:30');
 
 --
 -- Índices para tablas volcadas
@@ -525,6 +535,7 @@ ALTER TABLE `bloqueos_horarios`
 --
 ALTER TABLE `citas`
   MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+  MODIFY `id_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `familiares`
@@ -537,6 +548,7 @@ ALTER TABLE `familiares`
 --
 ALTER TABLE `historial_citas`
   MODIFY `id_historial_cita` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id_historial_cita` int(11) NOT NULL AUTO_INCREMENT;
 
 --
 -- AUTO_INCREMENT de la tabla `historial_medico`
@@ -561,6 +573,7 @@ ALTER TABLE `notificaciones`
 --
 ALTER TABLE `pacientes`
   MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
+  MODIFY `id_paciente` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
 
 --
 -- AUTO_INCREMENT de la tabla `pagos`
@@ -591,6 +604,7 @@ ALTER TABLE `tratamientos`
 --
 ALTER TABLE `usuarios`
   MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+  MODIFY `id_usuario` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- Restricciones para tablas volcadas

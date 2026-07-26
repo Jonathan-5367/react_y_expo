@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderColor: '#E4E9F2',
         fontSize: 16,
+        color: '#000',
     },
     rememberMe: {
         flexDirection: 'row',
