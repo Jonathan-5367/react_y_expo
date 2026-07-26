@@ -3,11 +3,8 @@
 -- https://www.phpmyadmin.net/
 --
 -- Servidor: 127.0.0.1
-<<<<<<< HEAD
 -- Tiempo de generación: 15-06-2026 a las 08:01:37
-=======
 -- Tiempo de generación: 15-06-2026 a las 07:03:17
->>>>>>> master
 -- Versión del servidor: 10.4.32-MariaDB
 -- Versión de PHP: 8.2.12
 
@@ -28,7 +25,6 @@ SET time_zone = "+00:00";
 -- --------------------------------------------------------
 
 --
-<<<<<<< HEAD
 -- Estructura de tabla para la tabla `adjuntos_pacientes`
 --
 
@@ -333,8 +329,6 @@ INSERT INTO `tratamientos` (`id_tratamiento`, `nombre`, `descripcion`, `costo`, 
 -- --------------------------------------------------------
 
 --
-=======
->>>>>>> master
 -- Estructura de tabla para la tabla `usuarios`
 --
 
@@ -389,7 +383,6 @@ ALTER TABLE `usuarios`
 --
 
 --
-<<<<<<< HEAD
 -- AUTO_INCREMENT de la tabla `adjuntos_pacientes`
 --
 ALTER TABLE `adjuntos_pacientes`
@@ -474,8 +467,6 @@ ALTER TABLE `tratamientos`
   MODIFY `id_tratamiento` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=6;
 
 --
-=======
->>>>>>> master
 -- AUTO_INCREMENT de la tabla `usuarios`
 --
 ALTER TABLE `usuarios`

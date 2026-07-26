@@ -1,18 +1,6 @@
 const mysql = require('mysql2');
 require('dotenv').config();
 
-<<<<<<< Updated upstream
-const pool = mysql.createPool({
-    host: process.env.DB_HOST || process.env.MYSQLHOST || 'localhost',
-    user: process.env.DB_USER || process.env.MYSQLUSER || 'root',
-    password: process.env.DB_PASSWORD || process.env.MYSQLPASSWORD || '',
-    database: process.env.DB_NAME || process.env.MYSQLDATABASE || 'consultorio_dental',
-    port: process.env.DB_PORT || process.env.MYSQLPORT || 3306,
-    waitForConnections: true,
-    connectionLimit: 10,
-    queueLimit: 0
-});
-=======
 // Railway environment variable check
 let connectionString = process.env.MYSQL_URL || process.env.DATABASE_URL || process.env.DB_URL;
 
@@ -51,7 +39,6 @@ if (connectionString) {
         queueLimit: 0
     });
 }
->>>>>>> Stashed changes
 
 
 // Test connection
