@@ -14,11 +14,13 @@ const authRouter = require('./routes/auth');
 const appointmentsRouter = require('./routes/appointments');
 const patientsRouter = require('./routes/patients');
 const testimonialsRouter = require('./routes/testimonials');
+const { router: notificacionesRouter } = require('./routes/notificaciones');
 
 app.use('/api/auth', authRouter);
 app.use('/api/appointments', appointmentsRouter);
 app.use('/api/patients', patientsRouter);
 app.use('/api/testimonials', testimonialsRouter);
+app.use('/api/notificaciones', notificacionesRouter);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

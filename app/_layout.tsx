@@ -8,7 +8,7 @@ import { ActivityIndicator, StyleSheet, View } from 'react-native';
 
 import { useColorScheme } from '@/hooks/use-color-scheme';
 import { initAuth } from '@/store/auth';
-import { initNotifications } from '@/store/notifications';
+import { fetchNotifications } from '@/store/notifications';
 
 // Configure how notifications are handled when the app is in the foreground
 Notifications.setNotificationHandler({
@@ -33,7 +33,7 @@ export default function RootLayout() {
   useEffect(() => {
     // Al iniciar la app, restauramos tanto la sesión como las notificaciones guardadas.
     // El Stack ya está montado en este punto, por lo que el router funciona correctamente.
-    Promise.all([initAuth(), initNotifications()]).then(([user]) => {
+    Promise.all([initAuth(), fetchNotifications()]).then(([user]) => {
       if (user) {
         // Si hay sesión activa, redirigir directamente al dashboard
         router.replace('/dashboard');

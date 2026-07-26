@@ -284,16 +284,17 @@ CREATE TABLE `presupuestos` (
 --
 
 CREATE TABLE `roles` (
-  `id_rol` int(11) NOT NULL,
+  `id_rol` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` enum('administrador','doctor','recepcionista','paciente') DEFAULT NULL,
-  `descripcion` text DEFAULT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `descripcion` text DEFAULT NULL,
+  PRIMARY KEY (`id_rol`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci AUTO_INCREMENT=5;
 
 --
 -- Volcado de datos para la tabla `roles`
 --
 
-INSERT INTO `roles` (`id_rol`, `nombre`, `descripcion`) VALUES
+INSERT IGNORE INTO `roles` (`id_rol`, `nombre`, `descripcion`) VALUES
 (1, 'administrador', 'Administrador del sistema'),
 (2, 'doctor', 'Personal médico'),
 (3, 'recepcionista', 'Personal de recepción'),
@@ -306,20 +307,21 @@ INSERT INTO `roles` (`id_rol`, `nombre`, `descripcion`) VALUES
 --
 
 CREATE TABLE `tratamientos` (
-  `id_tratamiento` int(11) NOT NULL,
+  `id_tratamiento` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(100) DEFAULT NULL,
   `descripcion` text DEFAULT NULL,
   `costo` decimal(10,2) DEFAULT NULL,
   `duracion_estimada` int(11) DEFAULT NULL,
   `activo` tinyint(1) DEFAULT 1,
-  `creado_en` timestamp NOT NULL DEFAULT current_timestamp()
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+  `creado_en` timestamp NOT NULL DEFAULT current_timestamp(),
+  PRIMARY KEY (`id_tratamiento`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci AUTO_INCREMENT=6;
 
 --
 -- Volcado de datos para la tabla `tratamientos`
 --
 
-INSERT INTO `tratamientos` (`id_tratamiento`, `nombre`, `descripcion`, `costo`, `duracion_estimada`, `activo`, `creado_en`) VALUES
+INSERT IGNORE INTO `tratamientos` (`id_tratamiento`, `nombre`, `descripcion`, `costo`, `duracion_estimada`, `activo`, `creado_en`) VALUES
 (1, 'Limpieza dental', 'Limpieza profesional de dientes y encías', 50.00, 30, 1, '2025-10-15 01:37:54'),
 (2, 'Extracción dental', 'Extracción de pieza dental', 80.00, 45, 1, '2025-10-15 01:37:54'),
 (3, 'Ortodoncia', 'Tratamiento de ortodoncia correctiva', 150.00, 60, 1, '2025-10-15 01:37:54'),

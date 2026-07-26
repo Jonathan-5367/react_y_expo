@@ -3,6 +3,7 @@ import Constants from 'expo-constants';
 import { useRouter } from 'expo-router';
 import { useEffect, useState } from 'react';
 import { Platform } from 'react-native';
+import { clearNotifications, fetchNotifications, setProviders } from './notifications';
 
 export type UserRole = 'administrador' | 'paciente' | 'doctor' | 'recepcionista';
 
@@ -38,6 +39,9 @@ const STORAGE_KEY = 'dental_current_user';
 const isWeb = typeof window !== 'undefined' && !!window.localStorage;
 
 let currentUser: User | null = null;
+
+// Register providers with notifications store to avoid circular imports
+setProviders(() => currentUser, () => API_URL);
 
 // Carga sincrónica para web (localStorage)
 if (isWeb) {
@@ -116,6 +120,8 @@ export async function login(email: string, password: string): Promise<{ success:
         currentUser = data.user;
         saveCurrentUser();
         notify();
+        // Cargar notificaciones del usuario desde el servidor
+        fetchNotifications();
         return { success: true, user: data.user };
     } catch (err) {
         console.error('Error logging in:', err);
@@ -124,6 +130,7 @@ export async function login(email: string, password: string): Promise<{ success:
 }
 
 export async function logout() {
+    clearNotifications(); // Clear in-memory notifications before switching user
     currentUser = null;
     await saveCurrentUser();
     notify();
@@ -148,6 +155,8 @@ export async function registerPatient(details: Omit<User, 'id' | 'rol'>): Promis
         currentUser = data.user;
         saveCurrentUser();
         notify();
+        // Cargar notificaciones del usuario desde el servidor
+        fetchNotifications();
         return { success: true, user: data.user };
     } catch (err) {
         console.error('Error registering patient:', err);

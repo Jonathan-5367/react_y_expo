@@ -1,7 +1,4 @@
-// Simple notification store shared across screens
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useState, useEffect } from 'react';
-import { getCurrentUser } from './auth';
 
 export type Notification = {
     id: number;
@@ -11,144 +8,94 @@ export type Notification = {
     read: boolean;
     icon: string;
     color: string;
-    destinatarioRol?: 'administrador' | 'paciente' | 'doctor' | 'recepcionista' | 'todos';
-    destinatarioEmail?: string;
 };
-
-const NOTIF_STORAGE_KEY = 'dental_notifications';
-const isWeb = typeof window !== 'undefined' && !!window.localStorage;
-
-let initialNotifications: Notification[] = [
-    { id: 1, title: 'Cita confirmada', message: 'Tu cita del 2 de junio a las 10:00 AM ha sido confirmada.', time: 'Hace 5 min', read: false, icon: 'checkmark-circle', color: '#2E8B57', destinatarioRol: 'todos' },
-    { id: 2, title: 'Recordatorio de cita', message: 'Tienes una cita mañana a las 9:00 AM. ¡No olvides asistir!', time: 'Hace 1 hora', read: false, icon: 'alarm', color: '#F39C12', destinatarioRol: 'todos' },
-    { id: 3, title: 'Resultado disponible', message: 'Tu historial de tratamiento ha sido actualizado por la doctora.', time: 'Ayer', read: true, icon: 'document-text', color: '#4A90E2', destinatarioRol: 'todos' },
-];
-
-let notifications: Notification[] = initialNotifications;
-
-// Carga sincrónica para web
-if (isWeb) {
-    try {
-        const stored = window.localStorage.getItem(NOTIF_STORAGE_KEY);
-        if (stored) {
-            notifications = JSON.parse(stored);
-        }
-    } catch (e) {}
-}
-
-async function saveNotifications() {
-    if (isWeb) {
-        try {
-            window.localStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifications));
-        } catch (e) {}
-    } else {
-        try {
-            await AsyncStorage.setItem(NOTIF_STORAGE_KEY, JSON.stringify(notifications));
-        } catch (e) {}
-    }
-}
-
-/**
- * Inicializa las notificaciones leyendo desde AsyncStorage (móvil).
- * Debe llamarse una vez al inicio de la app junto a initAuth().
- */
-export async function initNotifications(): Promise<void> {
-    if (isWeb) return; // En web ya se cargó sincrónicamente
-    try {
-        const stored = await AsyncStorage.getItem(NOTIF_STORAGE_KEY);
-        if (stored) {
-            notifications = JSON.parse(stored);
-            notify();
-        }
-    } catch (e) {}
-}
-
 
 type Listener = () => void;
 const listeners: Set<Listener> = new Set();
+
+let notifications: Notification[] = [];
+let unreadCount = 0;
+
+// Evitar circular dependency
+let _getUserProvider: (() => any) = () => null;
+let _getApiUrlProvider: (() => string) = () => '';
+
+export function setProviders(getUser: () => any, getApiUrl: () => string) {
+    _getUserProvider = getUser;
+    _getApiUrlProvider = getApiUrl;
+}
 
 function notify() {
     listeners.forEach(fn => fn());
 }
 
-export function getNotifications() {
-    const user = getCurrentUser();
-    if (!user) return [];
-    
-    return notifications.filter(n => {
-        // Filter by email if specified
-        if (n.destinatarioEmail && n.destinatarioEmail.toLowerCase() !== user.email.toLowerCase()) {
-            return false;
+export async function fetchNotifications() {
+    const user = _getUserProvider();
+    if (!user) {
+        notifications = [];
+        unreadCount = 0;
+        notify();
+        return;
+    }
+
+    try {
+        const response = await fetch(`${_getApiUrlProvider()}/notificaciones/${user.id}`);
+        if (response.ok) {
+            const data = await response.json();
+            notifications = data.notifications || [];
+            unreadCount = data.unreadCount || 0;
+            notify();
         }
-        // Filter by role if specified
-        if (n.destinatarioRol && n.destinatarioRol !== 'todos') {
-            const isAdmin = user.rol === 'administrador' || user.rol === 'doctor' || user.rol === 'recepcionista';
-            if (n.destinatarioRol === 'doctor' || n.destinatarioRol === 'administrador') {
-                return isAdmin;
-            }
-            if (n.destinatarioRol === 'paciente') {
-                return user.rol === 'paciente';
-            }
-            return n.destinatarioRol === user.rol;
-        }
-        return true;
-    });
+    } catch (err) {
+        console.error('Error fetching notifications:', err);
+    }
 }
 
-export function getUnreadCount() {
-    return getNotifications().filter(n => !n.read).length;
-}
-
-export function markRead(id: number) {
+export async function markRead(id: number) {
+    // Actualización optimista
     notifications = notifications.map(n => n.id === id ? { ...n, read: true } : n);
-    saveNotifications();
+    unreadCount = notifications.filter(n => !n.read).length;
     notify();
+
+    try {
+        await fetch(`${_getApiUrlProvider()}/notificaciones/${id}/read`, { method: 'PUT' });
+    } catch (err) {
+        console.error('Error marking read:', err);
+        fetchNotifications(); // Restaurar desde el servidor en caso de error
+    }
 }
 
-export function markAllRead() {
-    const visibleNotifs = getNotifications();
-    const visibleIds = new Set(visibleNotifs.map(n => n.id));
-    notifications = notifications.map(n => visibleIds.has(n.id) ? { ...n, read: true } : n);
-    saveNotifications();
-    notify();
-}
+export async function markAllRead() {
+    const user = _getUserProvider();
+    if (!user) return;
 
-export function addNotification(
-    title: string, 
-    message: string, 
-    icon: string = 'notifications', 
-    color: string = '#e83e8c',
-    destinatarioRol?: 'administrador' | 'paciente' | 'doctor' | 'recepcionista' | 'todos',
-    destinatarioEmail?: string
-) {
-    const newNotif: Notification = {
-        id: Date.now() + Math.random(),
-        title,
-        message,
-        time: 'Hace un momento',
-        read: false,
-        icon,
-        color,
-        destinatarioRol,
-        destinatarioEmail
-    };
-    notifications = [newNotif, ...notifications];
-    saveNotifications();
+    // Actualización optimista
+    notifications = notifications.map(n => ({ ...n, read: true }));
+    unreadCount = 0;
     notify();
+
+    try {
+        await fetch(`${_getApiUrlProvider()}/notificaciones/read-all/${user.id}`, { method: 'PUT' });
+    } catch (err) {
+        console.error('Error marking all read:', err);
+        fetchNotifications(); // Restaurar desde el servidor en caso de error
+    }
 }
 
 export function useNotifications() {
-    const [currentNotifications, setCurrentNotifications] = useState<Notification[]>(getNotifications());
-    const [currentUnreadCount, setCurrentUnreadCount] = useState(getUnreadCount());
+    const [currentNotifications, setCurrentNotifications] = useState<Notification[]>(notifications);
+    const [currentUnreadCount, setCurrentUnreadCount] = useState(unreadCount);
 
     useEffect(() => {
         const listener = () => {
-            setCurrentNotifications(getNotifications());
-            setCurrentUnreadCount(getUnreadCount());
+            setCurrentNotifications(notifications);
+            setCurrentUnreadCount(unreadCount);
         };
         listeners.add(listener);
-        // Sync on mount
-        listener();
+        
+        // Sincronizar desde la base de datos
+        fetchNotifications();
+
         return () => { listeners.delete(listener); };
     }, []);
 
@@ -157,6 +104,12 @@ export function useNotifications() {
         unreadCount: currentUnreadCount,
         markRead,
         markAllRead,
-        addNotification,
+        fetchNotifications,
     };
+}
+
+export function clearNotifications(): void {
+    notifications = [];
+    unreadCount = 0;
+    notify();
 }

@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const db = require('../db');
+const { crearNotificacion } = require('./notificaciones');
 
 // 1. GET ALL APPOINTMENTS
 router.get('/', async (req, res) => {
@@ -137,6 +138,33 @@ router.post('/', async (req, res) => {
 
         const todayStr = new Date().toISOString().split('T')[0];
 
+        // --- NOTIFICACIONES EN DB ---
+        const citaId = result.insertId;
+        const dateParts = fecha.trim().split('-');
+        const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : fecha.trim();
+
+        // Notificar al paciente
+        await crearNotificacion({
+            usuarioId: userId,
+            citaId,
+            asunto: 'Cita agendada',
+            mensaje: `Tu cita para ${procedimiento.trim()} el ${formattedDate} a las ${hora.trim()} ha sido agendada con éxito.`,
+            icono: 'calendar',
+            color: '#e83e8c'
+        });
+
+        // Notificar al doctor (si hay uno asignado)
+        if (doctorId) {
+            await crearNotificacion({
+                usuarioId: doctorId,
+                citaId,
+                asunto: 'Nueva cita (Doctor)',
+                mensaje: `El paciente ${pacienteNombre.trim()} ha agendado una cita para ${procedimiento.trim()} el ${formattedDate} a las ${hora.trim()}.`,
+                icono: 'medical',
+                color: '#2E8B57'
+            });
+        }
+
         return res.json({
             success: true,
             appointment: {
@@ -163,6 +191,16 @@ router.put('/:id/cancel', async (req, res) => {
     const { id } = req.params;
 
     try {
+        // Obtener detalles de la cita antes de cancelarla
+        const [cita] = await db.query(
+            `SELECT c.*, p.id_origen as paciente_usuario_id, u.nombre as paciente_nombre
+             FROM citas c 
+             LEFT JOIN pacientes p ON c.paciente_id = p.id_paciente
+             LEFT JOIN usuarios u ON p.id_origen = u.id_usuario
+             WHERE c.id_cita = ?`, 
+            [id]
+        );
+
         const [result] = await db.query(
             "UPDATE citas SET estado = 'cancelada' WHERE id_cita = ?",
             [id]
@@ -170,6 +208,35 @@ router.put('/:id/cancel', async (req, res) => {
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ error: 'Cita no encontrada.' });
+        }
+
+        if (cita.length > 0) {
+            const appointment = cita[0];
+            const dateObj = new Date(appointment.fecha_hora);
+            const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+            const formattedTime = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+
+            if (appointment.paciente_usuario_id) {
+                await crearNotificacion({
+                    usuarioId: appointment.paciente_usuario_id,
+                    citaId: id,
+                    asunto: 'Cita cancelada',
+                    mensaje: `La cita para ${appointment.motivo} el ${formattedDate} a las ${formattedTime} ha sido cancelada.`,
+                    icono: 'close-circle',
+                    color: '#F44336'
+                });
+            }
+
+            if (appointment.doctor_id) {
+                await crearNotificacion({
+                    usuarioId: appointment.doctor_id,
+                    citaId: id,
+                    asunto: 'Cita cancelada (Doctor)',
+                    mensaje: `La cita del paciente ${appointment.paciente_nombre} para ${appointment.motivo} el ${formattedDate} a las ${formattedTime} ha sido cancelada.`,
+                    icono: 'close-circle',
+                    color: '#F44336'
+                });
+            }
         }
 
         return res.json({ success: true, message: 'La cita ha sido cancelada.' });
@@ -182,17 +249,55 @@ router.put('/:id/cancel', async (req, res) => {
 // 4. CONFIRM APPOINTMENT
 router.put('/:id/confirm', async (req, res) => {
     const { id } = req.params;
+    console.log(`\n\n--- INICIO DE CONFIRMACIÓN CITA ${id} ---`);
 
     try {
+        // Obtener detalles de la cita
+        const [cita] = await db.query(
+            `SELECT c.*, p.id_origen as paciente_usuario_id 
+             FROM citas c 
+             LEFT JOIN pacientes p ON c.paciente_id = p.id_paciente
+             WHERE c.id_cita = ?`, 
+            [id]
+        );
+        console.log(`Cita recuperada:`, cita.length > 0 ? 'SÍ' : 'NO');
+        if (cita.length > 0) console.log(`Paciente usuario ID: ${cita[0].paciente_usuario_id}`);
+
         const [result] = await db.query(
             "UPDATE citas SET estado = 'confirmada' WHERE id_cita = ?",
             [id]
         );
+        console.log(`Update result: affectedRows=${result.affectedRows}, changedRows=${result.changedRows}`);
 
         if (result.affectedRows === 0) {
+            console.log('Error: Cita no encontrada o affectedRows = 0');
             return res.status(404).json({ error: 'Cita no encontrada.' });
         }
 
+        if (cita.length > 0) {
+            console.log('Intentando generar notificación...');
+            const appointment = cita[0];
+            const dateObj = new Date(appointment.fecha_hora);
+            const formattedDate = `${dateObj.getDate().toString().padStart(2, '0')}/${(dateObj.getMonth() + 1).toString().padStart(2, '0')}/${dateObj.getFullYear()}`;
+            const formattedTime = `${dateObj.getHours().toString().padStart(2, '0')}:${dateObj.getMinutes().toString().padStart(2, '0')}`;
+
+            if (appointment.paciente_usuario_id) {
+                console.log(`Llamando a crearNotificacion para usuario ${appointment.paciente_usuario_id}...`);
+                await crearNotificacion({
+                    usuarioId: appointment.paciente_usuario_id,
+                    citaId: id,
+                    asunto: 'Cita confirmada',
+                    mensaje: `Tu cita para ${appointment.motivo} el ${formattedDate} a las ${formattedTime} ha sido confirmada por el consultorio.`,
+                    icono: 'checkmark-circle',
+                    color: '#2E8B57'
+                });
+                console.log('Notificación creada exitosamente.');
+            } else {
+                console.log('No hay paciente_usuario_id, no se crea notificación.');
+            }
+        }
+
+        console.log('Respondiendo OK al cliente.');
         return res.json({ success: true, message: 'La cita ha sido confirmada.' });
     } catch (err) {
         console.error('Error confirming appointment:', err);
