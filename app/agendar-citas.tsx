@@ -9,7 +9,7 @@ import { useAuth } from '@/store/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function AgendarCitasScreen() {
@@ -84,7 +84,15 @@ export default function AgendarCitasScreen() {
                 <NotifBell />
             </View>
 
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.header}>
                     <ThemedText type="title" style={styles.title}>Agendar Nueva Cita</ThemedText>
                     <ThemedText style={styles.subtitle}>Agenda tu cita de manera fácil y rápida.</ThemedText>
@@ -189,6 +197,7 @@ export default function AgendarCitasScreen() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+            </KeyboardAvoidingView>
         </ThemedView>
     );
 }

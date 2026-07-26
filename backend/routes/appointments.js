@@ -153,12 +153,20 @@ router.post('/', async (req, res) => {
             color: '#e83e8c'
         });
 
-        // Notificar al doctor (si hay uno asignado)
-        if (doctorId) {
+        // Notificar a todos los administradores y recepcionistas
+        const [admins] = await db.query('SELECT id_usuario FROM usuarios WHERE id_rol IN (1, 4)');
+        const adminIds = admins.map(a => a.id_usuario);
+        
+        // Agregar al doctor si no está en la lista
+        if (doctorId && !adminIds.includes(doctorId)) {
+            adminIds.push(doctorId);
+        }
+
+        for (const adminId of adminIds) {
             await crearNotificacion({
-                usuarioId: doctorId,
+                usuarioId: adminId,
                 citaId,
-                asunto: 'Nueva cita (Doctor)',
+                asunto: 'Nueva cita',
                 mensaje: `El paciente ${pacienteNombre.trim()} ha agendado una cita para ${procedimiento.trim()} el ${formattedDate} a las ${hora.trim()}.`,
                 icono: 'medical',
                 color: '#2E8B57'
@@ -222,6 +230,19 @@ router.put('/:id/cancel', async (req, res) => {
                     citaId: id,
                     asunto: 'Cita cancelada',
                     mensaje: `La cita para ${appointment.motivo} el ${formattedDate} a las ${formattedTime} ha sido cancelada.`,
+                    icono: 'close-circle',
+                    color: '#F44336'
+                });
+            }
+
+            // Notificar a los administradores
+            const [admins] = await db.query('SELECT id_usuario FROM usuarios WHERE id_rol IN (1, 4)');
+            for (const admin of admins) {
+                await crearNotificacion({
+                    usuarioId: admin.id_usuario,
+                    citaId: id,
+                    asunto: 'Cita cancelada',
+                    mensaje: `La cita del paciente ${appointment.paciente_nombre} para ${appointment.motivo} el ${formattedDate} a las ${formattedTime} ha sido cancelada.`,
                     icono: 'close-circle',
                     color: '#F44336'
                 });

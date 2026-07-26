@@ -3,7 +3,7 @@ import { ThemedView } from '@/components/themed-view';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState, useEffect } from 'react';
-import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text } from 'react-native';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View, Alert, Text, KeyboardAvoidingView, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth, UserRole } from '@/store/auth';
 import { SideMenu } from '@/components/SideMenu';
@@ -80,7 +80,15 @@ export default function RegistroAdminScreen() {
                 <NotifBell />
             </View>
 
-            <ScrollView contentContainerStyle={styles.scrollContent}>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+            <ScrollView
+                contentContainerStyle={styles.scrollContent}
+                automaticallyAdjustKeyboardInsets={true}
+                keyboardShouldPersistTaps="handled"
+            >
                 <View style={styles.header}>
                     <View style={styles.adminIconCircle}>
                         <Ionicons name="shield-checkmark" size={40} color="#e83e8c" />
@@ -193,6 +201,7 @@ export default function RegistroAdminScreen() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+            </KeyboardAvoidingView>
         </ThemedView>
     );
 }

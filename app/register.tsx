@@ -5,7 +5,7 @@ import { useAuth } from '@/store/auth';
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { Stack, useRouter } from 'expo-router';
 import React, { useState } from 'react';
-import { Alert, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, ScrollView, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export default function RegisterScreen() {
@@ -58,6 +58,10 @@ export default function RegisterScreen() {
     return (
         <ThemedView style={[styles.container, { paddingTop: insets.top }]}>
             <Stack.Screen options={{ title: 'Registro', headerTransparent: true }} />
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
             <ScrollView 
                 contentContainerStyle={styles.scrollContent}
                 automaticallyAdjustKeyboardInsets={true}
@@ -196,6 +200,7 @@ export default function RegisterScreen() {
                     </TouchableOpacity>
                 </View>
             </ScrollView>
+            </KeyboardAvoidingView>
         </ThemedView>
     );
 }

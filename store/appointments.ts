@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { Platform } from 'react-native';
 import { API_URL, useAuth } from './auth';
 import { syncAllAppointmentReminders } from '@/utils/local-notifications';
+import { fetchNotifications } from './notifications';
 
 export type AppointmentStatus = 'pendiente' | 'confirmada' | 'completada' | 'cancelada' | 'no_asistio';
 
@@ -67,6 +68,7 @@ export async function addAppointment(app: Omit<Appointment, 'id' | 'doctor' | 'e
             appointments = [data.appointment, ...appointments];
             notifyListeners();
             fetchAppointments();
+            fetchNotifications(); // Update current user's notification bell
 
             return { success: true, appointment: data.appointment };
         }
@@ -96,6 +98,7 @@ export async function cancelAppointment(id: number): Promise<boolean> {
             );
             notifyListeners();
             fetchAppointments();
+            fetchNotifications(); // Update current user's notification bell
             return true;
         }
         return false;
@@ -124,6 +127,7 @@ export async function confirmAppointment(id: number): Promise<boolean> {
             );
             notifyListeners();
             fetchAppointments();
+            fetchNotifications(); // Update current user's notification bell
             return true;
         }
         return false;

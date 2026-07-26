@@ -30,7 +30,7 @@ const getHostIp = () => {
 };
 
 // --- CONFIGURACIÓN DEL SERVIDOR ---
-// Usa variables de entorno (EXPO_PUBLIC_API_URL) en producción, o usa Railway por defecto.
+// Usa variables de entorno (EXPO_PUBLIC_API_URL) en producción, o Railway por defecto.
 export const API_URL = process.env.EXPO_PUBLIC_API_URL 
     ? process.env.EXPO_PUBLIC_API_URL 
     : 'https://backend-reactyexpo-production.up.railway.app/api';
